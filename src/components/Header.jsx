@@ -30,6 +30,10 @@ const Header = () => {
     navigate("/login");
   };
 
+  const handleRegister = () => {
+    navigate("/register"); // Điều hướng đến trang đăng ký
+  };
+
   return (
     <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
       <div className="flex items-center space-x-2">
@@ -58,12 +62,20 @@ const Header = () => {
             )}
           </>
         ) : (
-          <button
-            onClick={handleLogin}
-            className="text-sm text-blue-600 underline"
-          >
-            Login
-          </button>
+          <>
+            <button
+              onClick={handleLogin}
+              className="text-sm text-blue-600 underline"
+            >
+              Login
+            </button>
+            <button
+              onClick={handleRegister}
+              className="text-sm text-blue-600 underline"
+            >
+              Register
+            </button>
+          </>
         )}
       </div>
     </nav>
