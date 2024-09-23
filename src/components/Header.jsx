@@ -26,6 +26,10 @@ const Header = () => {
     }
   };
 
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
   return (
     <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
       <div className="flex items-center space-x-2">
@@ -35,7 +39,7 @@ const Header = () => {
         </Link>
       </div>
       <div className="flex items-center space-x-4">
-        {userLoggedIn && (
+        {userLoggedIn ? (
           <>
             {currentUser && (
               <span className="text-sm text-gray-700">
@@ -53,6 +57,13 @@ const Header = () => {
               <span className="text-sm text-red-500 ml-2">{error}</span>
             )}
           </>
+        ) : (
+          <button
+            onClick={handleLogin}
+            className="text-sm text-blue-600 underline"
+          >
+            Login
+          </button>
         )}
       </div>
     </nav>

@@ -1,0 +1,66 @@
+/* Header styles */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    width: 100%;
+    height: 4rem;
+    background-color: #f8f9fa; /* Light gray background */
+    border-bottom: 1px solid #ddd; /* Subtle border */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+  }
+  
+  nav .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  nav .logo .icon {
+    font-size: 2rem;
+    color: #1d4ed8; /* Blue color */
+    margin-right: 0.5rem;
+  }
+  
+  nav .logo a {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #1d4ed8;
+    text-decoration: none;
+  }
+  
+  nav .menu {
+    display: flex;
+    align-items: center;
+  }
+  
+  nav .menu .welcome-message {
+    margin-right: 1rem;
+    font-size: 0.875rem;
+    color: #4b5563; /* Gray color for text */
+  }
+  
+  nav .menu button {
+    font-size: 0.875rem;
+    color: #1d4ed8;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+  }
+  
+  nav .menu button:hover {
+    color: #2563eb; /* Darker blue on hover */
+  }
+  
+  nav .menu .error-message {
+    font-size: 0.875rem;
+    color: #f87171; /* Red color for error */
+    margin-left: 1rem;
+  }
+  
