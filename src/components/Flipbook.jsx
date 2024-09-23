@@ -18,6 +18,7 @@ import {
 import "../Modal.css";
 import { db } from "../firebase/firebase"; // Import Firestore
 import { collection, getDocs, addDoc, Timestamp } from "firebase/firestore"; // Firestore methods
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storage methods
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -105,7 +106,7 @@ function Flipbook() {
     link.click();
   };
 
-  // New function to fetch PDFs from Firestore
+  // Fetch PDFs from Firestore
   const fetchSavedPdfs = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "pdfFiles"));
@@ -121,18 +122,30 @@ function Flipbook() {
   };
 
   // Handle PDF selection from the list
-  const handlePdfSelect = (url) => {
+  const handlePdfSelect = async (url) => {
     setPdfFile(url);
     setShowPdfList(false); // Hide the list after selecting
   };
 
-  // Function to save PDF to Firestore with the provided name
+  // Save PDF to Firestore and Firebase Storage with the provided name
   const savePdfToFirestore = async (fileName) => {
     if (pdfFile) {
+      const storage = getStorage();
+      const storageRef = ref(storage, `pdfFiles/${fileName}`); // Define path in Storage
+
+      // Convert blob to a file and upload
+      const response = await fetch(pdfFile);
+      const blob = await response.blob();
+
       try {
+        // Upload the file to Firebase Storage
+        const snapshot = await uploadBytes(storageRef, blob);
+        const downloadURL = await getDownloadURL(snapshot.ref); // Get the download URL
+
+        // Save the URL and name to Firestore
         await addDoc(collection(db, "pdfFiles"), {
           name: fileName,
-          url: pdfFile,
+          url: downloadURL,
           viewedAt: Timestamp.now(),
         });
         alert("PDF file saved to Firestore!");
