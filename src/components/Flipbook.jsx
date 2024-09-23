@@ -123,8 +123,12 @@ function Flipbook() {
 
   // Handle PDF selection from the list
   const handlePdfSelect = async (url) => {
-    setPdfFile(url);
-    setShowPdfList(false); // Hide the list after selecting
+    if (url) {
+      setPdfFile(url); // Set the selected PDF URL
+      setShowPdfList(false); // Hide the list after selecting
+    } else {
+      alert("Invalid PDF file selected.");
+    }
   };
 
   // Save PDF to Firestore and Firebase Storage with the provided name
