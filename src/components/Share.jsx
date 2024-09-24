@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom"; // Import useNavigate
 import { fetchSavedPdfById } from "../utils/firebaseUtils.js";
 
 function Share() {
-  // Get the current location (URL)
   const location = useLocation();
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const [file, setFile] = useState(null);
+  const [pdfFile, setPdfFile] = useState(location?.state?.pdfFile || null);
 
   // Extract query parameters from the URL
   const searchParams = new URLSearchParams(location.search);
-  // Get specific query params (like `id`)
   const id = searchParams.get("id");
   const [showPdf, setShowPdf] = useState(false);
   const [savedPdfFile, setSavedPdfFile] = useState(null);
@@ -24,7 +26,7 @@ function Share() {
     try {
       const pdfFile = await fetchSavedPdfById(id);
       if (pdfFile) {
-        setSavedPdfFile(pdfFile); // Đưa file tìm được vào state
+        setSavedPdfFile(pdfFile);
         setShowPdf(true);
       } else {
         console.log("PDF not found with id: ", id);
@@ -34,28 +36,45 @@ function Share() {
     }
   };
 
+  // Navigate to Flipbook with the selected PDF file URL
+  const handleNavigateToFlipbook = () => {
+    if (savedPdfFile && savedPdfFile.url) {
+      navigate("/flipbook", { state: { pdfFile: savedPdfFile.url } });
+    }
+  };
+
   // Function to format the viewedAt timestamp
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
-    return date.toLocaleString('en-US', { timeZoneName: 'short' });
+    return date.toLocaleString("en-US", { timeZoneName: "short" });
   };
 
   return (
     <div>
       {/* Conditionally render content based on query param */}
-      {id ? (
-        <h1>ID is {id}</h1>
-      ) : (
-        <h1>No ID provided</h1>
-      )}
+      {id ? <h1>ID is {id}</h1> : <h1>No ID provided</h1>}
 
       {/* Conditionally render the PDF information */}
       {showPdf && savedPdfFile ? (
         <div>
           <h2>PDF Details:</h2>
-          <p><strong>Name:</strong> {savedPdfFile.name}</p>
-          <p><strong>URL:</strong> <a href={savedPdfFile.url} target="_blank" rel="noopener noreferrer">View PDF</a></p>
-          <p><strong>Viewed At:</strong> {formatDate(savedPdfFile.viewedAt)}</p>
+          <p>
+            <strong>Name:</strong> {savedPdfFile.name}
+          </p>
+          <p>
+            <strong>URL:</strong>{" "}
+            <a href={savedPdfFile.url} target="_blank" rel="noopener noreferrer">
+              View PDF
+            </a>
+          </p>
+          <p>
+            <strong>Viewed At:</strong> {formatDate(savedPdfFile.viewedAt)}
+          </p>
+
+          {/* Add the button to navigate to /flipbook */}
+          <button onClick={handleNavigateToFlipbook}>
+            Open in Flipbook
+          </button>
         </div>
       ) : (
         <p>Loading PDF details...</p>
