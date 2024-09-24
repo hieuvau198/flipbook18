@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import { collection, getDocs, addDoc, Timestamp } from "firebase/firestore";
+import { collection, getDoc, getDocs , doc, addDoc, Timestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Fetch saved PDFs from Firestore
@@ -12,6 +12,21 @@ export const fetchSavedPdfs = async () => {
     }));
   } catch (error) {
     console.error("Error fetching PDFs: ", error);
+    throw error;
+  }
+};
+
+export const fetchSavedPdfById = async (id) => {
+  try {
+    const pdfDoc = await getDoc(doc(db, "pdfFiles", id));
+    if (pdfDoc.exists()) {
+      return { id: pdfDoc.id, ...pdfDoc.data() };
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching PDF by ID: ", error);
     throw error;
   }
 };
