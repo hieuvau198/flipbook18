@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/authContext.jsx";
 
 function Homepage() {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { userLoggedIn } = useAuth(); // Sử dụng authContext để kiểm tra trạng thái đăng nhập
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -28,8 +30,25 @@ function Homepage() {
     }
   };
 
+  const handleLogin = () => {
+    navigate("/login"); // Điều hướng đến trang đăng nhập
+  };
+
   return (
-    <div className="homepage flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="homepage flex flex-col items-center justify-center min-h-screen bg-gray-100">
+      {/* Nút Login ở góc trên bên phải */}
+      <div className="absolute top-4 right-4">
+        {!userLoggedIn && (
+          <button
+            onClick={handleLogin}
+            className="px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 rounded"
+          >
+            Login
+          </button>
+        )}
+      </div>
+
+      {/* Nội dung trang */}
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">
           Upload your PDF file
