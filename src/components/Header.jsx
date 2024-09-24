@@ -44,11 +44,19 @@ const Header = () => {
             )}
             <button
               onClick={handleLogout}
-              className="text-sm text-blue-600 underline"
+              className="custom-logout-btn"
               disabled={loading}
             >
               {loading ? "Logging out..." : "Logout"}
+              <svg className="star-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48">
+
+              </svg>
+              <svg className="star-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 48">
+
+              </svg>
+              {/* Tương tự cho các star khác */}
             </button>
+
             {error && (
               <span className="text-sm text-red-500 ml-2">{error}</span>
             )}

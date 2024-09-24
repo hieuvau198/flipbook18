@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 function Homepage() {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
+  const [uploadedFiles, setUploadedFiles] = useState([]); // State để lưu trữ các file đã upload
   const navigate = useNavigate();
 
   const handleFileChange = (event) => {
@@ -22,18 +23,22 @@ function Homepage() {
 
   const handleUpload = () => {
     if (file) {
+      // Thêm file vào danh sách các file đã upload
+      setUploadedFiles([...uploadedFiles, file]);
       navigate("/flipbook", { state: { pdfFile: file } });
     } else {
       setError("No file selected or invalid file type.");
     }
   };
 
+  const handleShowUploadedFiles = () => {
+    alert("Uploaded Files:\n" + uploadedFiles.join("\n"));
+  };
+
   return (
     <div className="homepage flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Upload your PDF file
-        </h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">Upload your PDF file</h1>
         <input
           type="file"
           accept="application/pdf"
@@ -47,13 +52,16 @@ function Homepage() {
           onClick={handleUpload}
           disabled={!file}
           className={`w-full px-4 py-2 font-semibold text-white rounded 
-                      ${
-                        file
-                          ? "bg-blue-500 hover:bg-blue-600"
-                          : "bg-blue-300 cursor-not-allowed"
-                      }`}
+                      ${file ? "bg-blue-500 hover:bg-blue-600" : "bg-blue-300 cursor-not-allowed"}`}
         >
           Upload and View
+        </button>
+        {/* Nút hiển thị các file đã upload */}
+        <button
+          onClick={handleShowUploadedFiles}
+          className="w-full mt-4 px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 rounded"
+        >
+          Show Uploaded Files
         </button>
       </div>
     </div>

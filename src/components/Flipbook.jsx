@@ -166,18 +166,24 @@ function Flipbook() {
     <div className="flipbook-container">
       {showPdfList ? (
         <div className="pdf-list">
-          <h3>Select a PDF to View</h3>
-          <ul>
+          <h3 className="pdf-list-title">Select a PDF to View</h3>
+          <ul className="pdf-list-items">
             {savedPdfFiles.map((pdf) => (
-              <li key={pdf.id}>
-                <button onClick={() => handlePdfSelect(pdf.url)}>
-                  {pdf.name} - Viewed At: {new Date(pdf.viewedAt.seconds * 1000).toLocaleString()}
+              <li key={pdf.id} className="pdf-list-item">
+                <button className="pdf-list-button" onClick={() => handlePdfSelect(pdf.url)}>
+                  <span className="pdf-name">{pdf.name}</span>
+                  <span className="pdf-date">
+                    Viewed At: {new Date(pdf.viewedAt.seconds * 1000).toLocaleString()}
+                  </span>
                 </button>
               </li>
             ))}
           </ul>
-          <button onClick={() => setShowPdfList(false)}>Close List</button>
+          <button className="close-list-button" onClick={() => setShowPdfList(false)}>
+            Close List
+          </button>
         </div>
+
       ) : (
         <>
           {pdfFile ? (
@@ -234,7 +240,7 @@ function Flipbook() {
           )}
         </>
       )}
-      
+
       {/* File Name Modal */}
       <FileNameModal
         isOpen={isModalOpen}
