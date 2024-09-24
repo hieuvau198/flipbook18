@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useLocation, useNavigate } from "react-router-dom"; 
 import { fetchSavedPdfById } from "../utils/firebaseUtils.js";
+import './share.css'; // Import Share.css
 
 function Share() {
   const location = useLocation();
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
 
   const [file, setFile] = useState(null);
   const [pdfFile, setPdfFile] = useState(location?.state?.pdfFile || null);
 
-  // Extract query parameters from the URL
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
   const [showPdf, setShowPdf] = useState(false);
   const [savedPdfFile, setSavedPdfFile] = useState(null);
 
-  // Fetch the PDF data by ID when the component mounts
   useEffect(() => {
     if (id) {
       handleFetchSavedPdfById(id);
@@ -36,42 +35,30 @@ function Share() {
     }
   };
 
-  // Navigate to Flipbook with the selected PDF file URL
   const handleNavigateToFlipbook = () => {
     if (savedPdfFile && savedPdfFile.url) {
       navigate("/flipbook", { state: { pdfFile: savedPdfFile.url } });
     }
   };
 
-  // Function to format the viewedAt timestamp
-  const formatDate = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString("en-US", { timeZoneName: "short" });
-  };
-
   return (
     <div>
-      {/* Conditionally render content based on query param */}
-      {id ? <h1>ID is {id}</h1> : <h1>No ID provided</h1>}
-
-      {/* Conditionally render the PDF information */}
       {showPdf && savedPdfFile ? (
         <div>
-          <h2>PDF Details:</h2>
-          <p>
+          <h1>PDF Details</h1>
+          <h3>
             <strong>Name:</strong> {savedPdfFile.name}
-          </p>
-          <p>
+          </h3>
+          <h3>
             <strong>URL:</strong>{" "}
             <a href={savedPdfFile.url} target="_blank" rel="noopener noreferrer">
               View PDF
             </a>
-          </p>
-          <p>
-            <strong>Viewed At:</strong> {formatDate(savedPdfFile.viewedAt)}
-          </p>
+          </h3>
+          <h3>
+            <strong>Viewed At:</strong> {new Date(savedPdfFile.viewedAt.seconds * 1000).toLocaleString()}
+          </h3>
 
-          {/* Add the button to navigate to /flipbook */}
           <button onClick={handleNavigateToFlipbook}>
             Open in Flipbook
           </button>
