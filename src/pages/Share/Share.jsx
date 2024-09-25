@@ -7,8 +7,6 @@ function Share() {
   const location = useLocation();
   const navigate = useNavigate(); 
 
-  
-
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");
   const [showPdf, setShowPdf] = useState(false);
@@ -40,27 +38,42 @@ function Share() {
     }
   };
 
-  return (
-    <div>
-      {showPdf && savedPdfFile ? (
-        <div>
-          <h1>PDF Details</h1>
-          <h3>
-            <strong>Name:</strong> {savedPdfFile.name}
-          </h3>
-          <h3>
-            <strong>URL:</strong>{" "}
-            <a href={savedPdfFile.url} target="_blank" rel="noopener noreferrer">
-              View PDF
-            </a>
-          </h3>
-          <h3>
-            <strong>Viewed At:</strong> {new Date(savedPdfFile.viewedAt.seconds * 1000).toLocaleString()}
-          </h3>
+  const handleCopyLink = () => {
+    const shareableLink = window.location.href; // Get the current page URL
+    navigator.clipboard.writeText(shareableLink)
+      .then(() => {
+        alert("Link copied to clipboard!"); // Notify the user
+      })
+      .catch((error) => {
+        console.error("Could not copy link: ", error);
+      });
+  };
 
-          <button onClick={handleNavigateToFlipbook}>
-            Open in Flipbook
-          </button>
+  return (
+    <div className="pdf-details-container text-center">
+      {showPdf && savedPdfFile ? (
+        <div className="card mx-auto" style={{ width: '30rem' }}>
+          <div className="card-body">
+            <h1 className="card-title">Share This Flipbook</h1> 
+            <br />
+            
+            <h3 className="card-text">
+              <strong>Download:</strong>{" "}
+              <a href={savedPdfFile.url} target="_blank" rel="noopener noreferrer">
+                View PDF
+              </a>
+            </h3>
+            <h3>
+              <button className="btn btn-primary" onClick={handleNavigateToFlipbook}>
+                Open in Flipbook
+              </button>
+            </h3>
+            <h3>
+              <button className="btn btn-secondary" onClick={handleCopyLink}>
+                Copy Shared Link
+              </button>
+            </h3>
+          </div>
         </div>
       ) : (
         <p>Loading PDF details...</p>

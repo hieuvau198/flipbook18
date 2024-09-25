@@ -32,7 +32,313 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+.custom-button {
+  background: transparent;
+  position: relative;
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid rgb(40, 144, 241);
+  border-radius: 25px;
+  outline: none;
+  overflow: hidden;
+  color: rgb(40, 144, 241);
+  transition: color 0.3s 0.1s ease-out;
+  text-align: center;
+}
+
+.custom-button span {
+  margin: 10px;
+}
+
+.custom-button::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  content: '';
+  border-radius: 50%;
+  display: block;
+  width: 20em;
+  height: 20em;
+  left: -5em;
+  text-align: center;
+  transition: box-shadow 0.5s ease-out;
+  z-index: -1;
+}
+
+.custom-button:hover {
+  color: #fff;
+  border: 1px solid rgb(40, 144, 241);
+}
+
+.custom-button:hover::before {
+  box-shadow: inset 0 0 0 10em rgb(40, 144, 241);
+}
+
+.page-background {
+  background-color: #f0f0f0;
+  /* Màu nền */
+  background-size: cover;
+  /* Đảm bảo ảnh nền bao phủ toàn bộ */
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.flipbook-container {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 15px;
+}
+
+.toolbar button {
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toolbar button:hover {
+  background-color: #574bdb;
+}
+
+.pdf-list {
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 80%;
+}
+
+.pdf-list h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.pdf-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.pdf-list ul li {
+  margin-bottom: 10px;
+}
+
+.pdf-list ul li button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  color: #333;
+}
+
+.pdf-list ul li button:hover {
+  background-color: #ddd;
+}
+
+.pdf-list button {
+  background-color: #ff6f61;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.pdf-list button:hover {
+  background-color: #e65c50;
+}
+
+.page {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Close List Button Style */
+.close-list-button {
+  background: transparent;
+  position: relative;
+  padding: 5px 15px;
+  display: flex;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid rgb(255, 0, 0);
+  border-radius: 25px;
+  outline: none;
+  overflow: hidden;
+  color: rgb(255, 0, 0);
+  transition: color 0.3s 0.1s ease-out;
+  text-align: center;
+}
+
+.close-list-button span {
+  margin: 10px;
+}
+
+.close-list-button::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  content: '';
+  border-radius: 50%;
+  display: block;
+  width: 20em;
+  height: 20em;
+  left: -5em;
+  text-align: center;
+  transition: box-shadow 0.5s ease-out;
+  z-index: -1;
+}
+
+.close-list-button:hover {
+  color: #fff;
+  border: 1px solid rgb(255, 0, 0);
+}
+
+.close-list-button:hover::before {
+  box-shadow: inset 0 0 0 10em rgb(255, 0, 0);
+}
+
+.no-pdf-message {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  /* Hoặc một font chữ dễ thương khác */
+  font-size: 24px;
+  /* Kích thước chữ lớn hơn để dễ đọc */
+  color: #ff6f61;
+  /* Màu sắc tươi sáng */
+  text-align: center;
+  /* Căn giữa */
+  margin: 20px 0;
+  /* Khoảng cách trên và dưới */
+  padding: 10px;
+  /* Padding để tạo không gian */
+  background-color: #fff0f0;
+  /* Nền nhẹ nhàng */
+  border-radius: 12px;
+  /* Bo tròn góc */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Đổ bóng nhẹ */
+  transition: transform 0.3s ease;
+  /* Hiệu ứng chuyển động */
+}
+
+.no-pdf-message:hover {
+  transform: scale(1.05);
+  /* Phóng to một chút khi di chuột */
+}
+
+.page-background {
+  background-image: url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm0yMjItbWluZC0xNl8xLmpwZw.jpg');
+  /* Thêm ảnh nền */
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CSS cho phần upload file */
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(214, 25, 25);
+  /* Nền trắng với độ trong suốt */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(189, 8, 8, 0.938);
+  text-align: center;
+}
+
+.upload-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.upload-input {
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.flipbook-background {
+  background-image: url('https://drexel.edu/~/media/Drexel/Core-Site-Group/Core/Images/admissions/visit-tours/virtual-background-downloads/blue-pattern.jpg');
+  /* Use your background image */
+  background-size: cover;
+  /* Cover the entire background */
+  background-position: center;
+  /* Center the image */
+  min-height: 100vh;
+  /* Ensure it takes full height of the viewport */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* Needed for absolute positioning of children */
+}
+
+.flipbook-container {
+  position: relative;
+  /* Relative positioning for absolute children */
+  z-index: 1;
+  /* Ensures the container appears above the background */
+  padding: 20px;
+  /* Add padding around the content */
+  border-radius: 10px;
+  /* Optional: rounded corners */
+  background-color: rgba(255, 255, 255, 0.9);
+  /* Slightly transparent white background for readability */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  /* Optional: shadow for depth */
 }

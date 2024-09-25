@@ -115,7 +115,8 @@ function Flipbook() {
   };
 
   return (
-    <div className="flipbook-container">
+    <div className="flipbook-background">
+      <div className="flipbook-container">
       {showPdfList ? (
         <div className="pdf-list">
           <h3>Select a PDF to View</h3>
@@ -128,7 +129,9 @@ function Flipbook() {
               </li>
             ))}
           </ul>
-          <button onClick={() => setShowPdfList(false)}>Close List</button>
+          <button className="close-list-button" onClick={() => setShowPdfList(false)}>
+          <span>Close List</span>
+          </button>
         </div>
       ) : (
         <>
@@ -178,7 +181,7 @@ function Flipbook() {
               </div>
             </>
           ) : (
-            <p>No PDF file selected</p>
+            <p className="no-pdf-message">No PDF file selected</p>
           )}
         </>
       )}
@@ -189,6 +192,8 @@ function Flipbook() {
         onSave={handleSavePdf}
       />
     </div>
+    </div>
+    
   );
 }
 

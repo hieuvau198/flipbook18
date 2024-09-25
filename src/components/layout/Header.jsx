@@ -31,10 +31,11 @@ const Header = () => {
   };
 
   const handleRegister = () => {
-    navigate("/register"); // Điều hướng đến trang đăng ký
+    navigate("/register");
   };
 
   return (
+
     <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
       <div className="flex items-center space-x-2">
         <FaBook className="text-2xl text-blue-600" aria-hidden="true" />
@@ -52,10 +53,10 @@ const Header = () => {
             )}
             <button
               onClick={handleLogout}
-              className="text-sm text-blue-600 underline"
+              className="custom-button"
               disabled={loading}
             >
-              {loading ? "Logging out..." : "Logout"}
+              <span>{loading ? "Logging out..." : "Logout"}</span>
             </button>
             {error && (
               <span className="text-sm text-red-500 ml-2">{error}</span>
@@ -63,22 +64,17 @@ const Header = () => {
           </>
         ) : (
           <>
-            <button
-              onClick={handleLogin}
-              className="text-sm text-blue-600 underline"
-            >
-              Login
+            <button onClick={handleLogin} className="custom-button">
+              <span>Login</span>
             </button>
-            <button
-              onClick={handleRegister}
-              className="text-sm text-blue-600 underline"
-            >
-              Register
+            <button onClick={handleRegister} className="custom-button">
+              <span>Register</span>
             </button>
           </>
         )}
       </div>
     </nav>
+
   );
 };
 

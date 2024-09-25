@@ -15,7 +15,7 @@ function Homepage() {
   } = useHomepageLogic();
 
   return (
-    <div className="homepage flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="page-background homepage flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <div className="absolute top-4 right-4">
         {!userLoggedIn && (
           <button
