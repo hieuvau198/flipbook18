@@ -13,8 +13,8 @@ import {
   faSave,
   faFolderOpen,
 } from "@fortawesome/free-solid-svg-icons";
-import FileNameModal from "./FileNameModal"; // Modal Component
-import { fetchSavedPdfs, savePdfToFirestore } from "../utils/firebaseUtils"; // Firebase utilities
+import FileNameModal from "../../components/common/FileNameModal"; // Modal Component
+import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils"; // Firebase utilities
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 

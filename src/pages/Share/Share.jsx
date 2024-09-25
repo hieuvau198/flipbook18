@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom"; 
-import { fetchSavedPdfById } from "../utils/firebaseUtils.js";
-import './share.css'; // Import Share.css
+import { fetchSavedPdfById } from "../../utils/firebaseUtils.js";
+import '../../styles/share.css'; // Import Share.css
 
 function Share() {
   const location = useLocation();
