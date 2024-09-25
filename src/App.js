@@ -1,4 +1,5 @@
 import "./App.css";
+import './index.css';
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/auth/Login.jsx";
@@ -6,6 +7,7 @@ import Register from "./components/auth/Register.jsx";
 import Header from "./components/Header.jsx";
 import Home from "./components/Homepage.jsx";
 import FlipBook from "./components/Flipbook.jsx";
+import Share from "./components/Share"; // Import the Share component
 import { AuthProvider } from "./contexts/authContext.jsx";
 import { PdfProvider } from "./contexts/PdfContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
@@ -36,6 +38,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/share" element={<Share />} />
               <Route
                 path="/"
                 element={
