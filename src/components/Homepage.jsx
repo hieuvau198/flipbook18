@@ -5,8 +5,19 @@ import { useAuth } from "../contexts/authContext.jsx";
 function Homepage() {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Add loading state for Base64 conversion
   const navigate = useNavigate();
   const { userLoggedIn } = useAuth(); // Sử dụng authContext để kiểm tra trạng thái đăng nhập
+
+  // Function to convert file to Base64
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result); // Base64 string
+      reader.onerror = reject;
+      reader.readAsDataURL(file); // Read file as Base64 string
+    });
+  };
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -17,18 +28,36 @@ function Homepage() {
         setFile(null);
       } else {
         setError(null);
-        setFile(URL.createObjectURL(selectedFile));
+        setFile(selectedFile); // Store the file itself, not URL
+        //setFile(URL.createObjectURL(selectedFile));
       }
     }
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (file) {
-      navigate("/flipbook", { state: { pdfFile: file } });
+      try {
+        setLoading(true); // Set loading while converting to Base64
+        const base64Pdf = await fileToBase64(file); // Convert file to Base64
+        localStorage.setItem("pdfFile", base64Pdf); // Store Base64 string in localStorage using the key "pdfFile"
+        navigate("/flipbook"); // Redirect to /flipbook page
+      } catch (error) {
+        setError("Failed to process the file.");
+      } finally {
+        setLoading(false);
+      }
     } else {
       setError("No file selected or invalid file type.");
     }
   };
+
+  // const handleUpload = () => {
+  //   if (file) {
+  //     navigate("/flipbook", { state: { pdfFile: file } });
+  //   } else {
+  //     setError("No file selected or invalid file type.");
+  //   }
+  // };
 
   const handleLogin = () => {
     navigate("/login"); // Điều hướng đến trang đăng nhập

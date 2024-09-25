@@ -22,7 +22,10 @@ function Flipbook() {
   const [numPages, setNumPages] = useState(null);
   const [pdfPages, setPdfPages] = useState([]);
   const location = useLocation();
-  const [pdfFile, setPdfFile] = useState(location?.state?.pdfFile || null);
+
+  // Retrieve the Base64 PDF from localStorage using the key "pdfFile"
+  const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
+
   const flipBookRef = useRef();
   const [zoom, setZoom] = useState(1.0);
   const [savedPdfFiles, setSavedPdfFiles] = useState([]);
@@ -33,6 +36,7 @@ function Flipbook() {
     if (pdfFile) {
       setNumPages(null);
       setPdfPages([]);
+      localStorage.setItem('pdfFile', pdfFile); // Save PDF to local storage
     }
   }, [pdfFile]);
 
