@@ -7,8 +7,7 @@ function Share() {
   const location = useLocation();
   const navigate = useNavigate(); 
 
-  const [file, setFile] = useState(null);
-  const [pdfFile, setPdfFile] = useState(location?.state?.pdfFile || null);
+  
 
   const searchParams = new URLSearchParams(location.search);
   const id = searchParams.get("id");

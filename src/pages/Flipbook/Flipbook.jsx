@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Document, Page, pdfjs } from "react-pdf/dist/esm/entry.webpack";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -15,6 +15,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "../../components/common/FileNameModal"; // Modal Component
 import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils"; // Firebase utilities
+import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -22,6 +23,7 @@ function Flipbook() {
   const [numPages, setNumPages] = useState(null);
   const [pdfPages, setPdfPages] = useState([]);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Retrieve the Base64 PDF from localStorage using the key "pdfFile"
   const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
@@ -101,6 +103,17 @@ function Flipbook() {
     }
   };
 
+  // Share function to save PDF and navigate to Share page
+  const handleShare = async () => {
+    const fileName = "Shared_PDF"; // Set a default file name
+    try {
+      const savedPdfId = await savePdfToFirestore(pdfFile, fileName);
+      navigate(`/share?id=${savedPdfId}`); // Navigate to Share page with saved PDF ID
+    } catch (error) {
+      console.error("Error sharing PDF: ", error);
+    }
+  };
+
   return (
     <div className="flipbook-container">
       {showPdfList ? (
@@ -158,6 +171,9 @@ function Flipbook() {
                 </button>
                 <button onClick={() => setIsModalOpen(true)}>
                   <FontAwesomeIcon icon={faSave} /> Save PDF
+                </button>
+                <button onClick={handleShare}>
+                  <FontAwesomeIcon icon={faShare} />
                 </button>
               </div>
             </>
