@@ -31,12 +31,16 @@ export const fetchSavedPdfById = async (id) => {
   }
 };
 
-// Save PDF to Firestore and Firebase Storage
-export const savePdfToFirestore = async (pdfFile, fileName) => {
+export const savePdfToFirestore = async (pdfFile, fileName, currentUser) => {
   if (!pdfFile) throw new Error("No PDF file to save.");
+  if (!currentUser || !(currentUser.displayName || currentUser.email)) {
+    throw new Error("Current user name is not available.");
+  }
+
+  const userName = currentUser.displayName || currentUser.email; // Use either displayName or email
 
   const storage = getStorage();
-  const storageRef = ref(storage, `pdfFiles/${fileName}`);
+  const storageRef = ref(storage, `pdfFiles/${userName}/${fileName}`);
 
   // Convert blob to a file and upload
   const response = await fetch(pdfFile);
@@ -46,8 +50,8 @@ export const savePdfToFirestore = async (pdfFile, fileName) => {
     const snapshot = await uploadBytes(storageRef, blob);
     const downloadURL = await getDownloadURL(snapshot.ref);
 
-    // Save the URL and name to Firestore
-    await addDoc(collection(db, "pdfFiles"), {
+    // Save the URL and name to a subcollection within "pdfFiles" collection
+    await addDoc(collection(db, `pdfFiles/${userName}/userPdfs`), {
       name: fileName,
       url: downloadURL,
       viewedAt: Timestamp.now(),
@@ -58,4 +62,5 @@ export const savePdfToFirestore = async (pdfFile, fileName) => {
     console.error("Error saving PDF: ", error);
     throw error;
   }
+
 };

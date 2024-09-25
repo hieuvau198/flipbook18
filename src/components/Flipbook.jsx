@@ -15,6 +15,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "./FileNameModal"; // Modal Component
 import { fetchSavedPdfs, savePdfToFirestore } from "../utils/firebaseUtils"; // Firebase utilities
+import { useAuth } from "../contexts/authContext.jsx"; // Sử dụng context để quản lý người dùng
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -28,6 +29,13 @@ function Flipbook() {
   const [savedPdfFiles, setSavedPdfFiles] = useState([]);
   const [showPdfList, setShowPdfList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { currentUser } = useAuth();
+
+
+  // Kiểm tra currentAccount khi component được render
+  useEffect(() => {
+    console.log("Current account:", currentUser);
+  }, [currentUser]);
 
   useEffect(() => {
     if (pdfFile) {
@@ -89,8 +97,13 @@ function Flipbook() {
   };
 
   const handleSavePdf = async (fileName) => {
+    if (!currentUser) {
+      console.error("No current account available.");
+      return;
+    }
+
     try {
-      await savePdfToFirestore(pdfFile, fileName);
+      await savePdfToFirestore(pdfFile, fileName, currentUser); // Truyền currentAccount vào đây
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
