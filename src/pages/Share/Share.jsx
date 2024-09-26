@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom"; 
-import { fetchSavedPdfById } from "../../utils/firebaseUtils.js";
+import { fetchSavedPdfById, fetchSavedPdfByIdAndCollection } from "../../utils/firebaseUtils.js";
 import '../../styles/share.css'; // Import Share.css
 
 function Share() {
@@ -20,7 +20,7 @@ function Share() {
 
   const handleFetchSavedPdfById = async (id) => {
     try {
-      const pdfFile = await fetchSavedPdfById(id);
+      const pdfFile = await fetchSavedPdfByIdAndCollection(id, "shares");
       if (pdfFile) {
         setSavedPdfFile(pdfFile);
         setShowPdf(true);

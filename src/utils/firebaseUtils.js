@@ -31,6 +31,36 @@ export const fetchSavedPdfById = async (id) => {
   }
 };
 
+export const fetchSavedPdfByIdAndCollection = async (id, collection) => {
+  try {
+    const pdfDoc = await getDoc(doc(db, collection, id));
+    if (pdfDoc.exists()) {
+      return { id: pdfDoc.id, ...pdfDoc.data() };
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching PDF by ID: ", error);
+    throw error;
+  }
+};
+
+export const fetchSavedPdfByICReturnUrl = async (id, collection) => {
+  try {
+    const pdfDoc = await getDoc(doc(db, collection, id));
+    if (pdfDoc.exists()) {
+      return { url: pdfDoc.url, ...pdfDoc.data() };
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching PDF by ID: ", error);
+    throw error;
+  }
+};
+
 export const fetchSavedPdfByUrl = async (url) => {
   try {
     const pdfDoc = await getDoc(doc(db, "pdfFiles", url));
@@ -47,31 +77,58 @@ export const fetchSavedPdfByUrl = async (url) => {
 };
 
 // Save PDF to Firestore and Firebase Storage
-export const savePdfToFirestore = async (pdfFile, fileName) => {
+export const savePdfToFirestore = async (pdfFile, fileName, collectionName) => {
   if (!pdfFile) throw new Error("No PDF file to save.");
-
+  
   const storage = getStorage();
-  const storageRef = ref(storage, `pdfFiles/${fileName}`);
-
-  // Convert blob to a file and upload
+  const storageRef = ref(storage, `${collectionName}/${fileName}`);
+  
   const response = await fetch(pdfFile);
   const blob = await response.blob();
 
   try {
     const snapshot = await uploadBytes(storageRef, blob);
     const downloadURL = await getDownloadURL(snapshot.ref);
-
-    // Save the URL and name to Firestore
-    const docRef = addDoc(collection(db, "pdfFiles"), {
+    
+    const docRef = addDoc(collection(db, collectionName), {
       name: fileName,
       url: downloadURL,
       viewedAt: Timestamp.now(),
     });
 
-    // return { success: true, message: "PDF file saved to Firestore!" };
-    return (await docRef).id; // Return the ID
+    return (await docRef).id;
   } catch (error) {
     console.error("Error saving PDF: ", error);
     throw error;
   }
 };
+
+export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) => {
+  if (!pdfFile) throw new Error("No PDF file to save.");
+  
+  const storage = getStorage();
+  const storageRef = ref(storage, `${collectionName}/${fileName}`);
+  
+  const response = await fetch(pdfFile);
+  const blob = await response.blob();
+
+  try {
+    const snapshot = await uploadBytes(storageRef, blob);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    const expiryDate = Timestamp.now().toMillis() + 60 * 1000;
+
+    
+    const docRef = addDoc(collection(db, collectionName), {
+      name: fileName,
+      url: downloadURL,
+      viewedAt: Timestamp.now(),
+      expiryDate: expiryDate // Add expiry date
+    });
+
+    return (await docRef).id;
+  } catch (error) {
+    console.error("Error saving PDF: ", error);
+    throw error;
+  }
+};
+
