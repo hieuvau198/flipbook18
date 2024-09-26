@@ -1,32 +1,76 @@
-.btn {
-    font-size: 1.2rem;
-    padding: 1rem 2.5rem;
-    border: none;
-    outline: none;
-    border-radius: 0.4rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    background-color: rgb(14, 14, 26);
-    color: rgb(234, 234, 234);
+.c-button {
+    color: #000;
     font-weight: 700;
-    transition: 0.6s;
-    box-shadow: 0px 0px 60px #1f4c65;
-    -webkit-box-reflect: below 10px linear-gradient(to bottom, rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.4));
+    font-size: 16px;
+    text-decoration: none;
+    padding: 0.9em 1.6em;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    z-index: 1;
+    background: none;
+    border: none;
 }
 
-.btn:active {
-    transform: scale(0.92);
+.c-button--gooey {
+    color: #06c8d9;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 4px solid #06c8d9;
+    border-radius: 0;
+    position: relative;
+    transition: all 700ms ease;
 }
 
-.btn:hover {
-    background: linear-gradient(270deg, rgba(2, 29, 78, 0.681) 0%, rgba(31, 215, 232, 0.873) 60%);
-    color: rgb(4, 4, 38);
+.c-button--gooey .c-button__blobs {
+    height: 100%;
+    filter: url(#goo);
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: -3px;
+    right: -1px;
+    z-index: -1;
 }
 
-.btn.disabled {
-    background-color: rgb(107, 107, 107);
-    cursor: not-allowed;
-    box-shadow: none;
+.c-button--gooey .c-button__blobs div {
+    background-color: #06c8d9;
+    width: 34%;
+    height: 100%;
+    border-radius: 100%;
+    position: absolute;
+    transform: scale(1.4) translateY(125%) translateZ(0);
+    transition: all 700ms ease;
+}
+
+.c-button--gooey .c-button__blobs div:nth-child(1) {
+    left: -5%;
+}
+
+.c-button--gooey .c-button__blobs div:nth-child(2) {
+    left: 30%;
+    transition-delay: 60ms;
+}
+
+.c-button--gooey .c-button__blobs div:nth-child(3) {
+    left: 66%;
+    transition-delay: 25ms;
+}
+
+.c-button--gooey:hover {
+    color: #fff;
+}
+
+.c-button--gooey:hover .c-button__blobs div {
+    transform: scale(1.4) translateY(0) translateZ(0);
+}
+
+/* Disabled State */
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 /* From Uiverse.io by doniaskima */
