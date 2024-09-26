@@ -16,7 +16,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "../../components/common/FileNameModal";
 import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils";
-
+import "../../styles/UploadButton.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function Flipbook() {
@@ -141,9 +141,11 @@ function Flipbook() {
                 </li>
               ))}
             </ul>
-            <button className="close-list-button" onClick={() => setShowPdfList(false)}>
-              <span>Close List</span>
+            <button className="btn-23 close-list-button" onClick={() => setShowPdfList(false)}>
+              <span className="text">Close List</span>
+              <span className="marquee">Close List</span>
             </button>
+
           </div>
         ) : (
           <>
