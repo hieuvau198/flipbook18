@@ -73,115 +73,93 @@
     pointer-events: none;
 }
 
-/* From Uiverse.io by doniaskima */
-.btn-23,
-.btn-23 *,
-.btn-23 :after,
-.btn-23 :before,
-.btn-23:after,
-.btn-23:before {
-    border: 0 solid;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
+.pdf-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Căn giữa danh sách và nút */
 }
 
-.btn-23 {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-appearance: button;
-    background-color: #000;
-    background-image: none;
-    color: #fff;
-    cursor: pointer;
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-        Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
-        Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-    font-size: 100%;
-    font-weight: 900;
-    line-height: 1.5;
-    margin: 0;
-    -webkit-mask-image: -webkit-radial-gradient(#000, #fff);
-    padding: 0;
-    text-transform: uppercase;
-}
-
-.btn-23:disabled {
-    cursor: default;
-}
-
-.btn-23:-moz-focusring {
-    outline: auto;
-}
-
-.btn-23 svg {
-    display: block;
-    vertical-align: middle;
-}
-
-.btn-23 [hidden] {
-    display: none;
-}
-
-.btn-23 {
-    border-radius: 99rem;
-    border-width: 2px;
-    overflow: hidden;
-    padding: 0.8rem 3rem;
-    position: relative;
-}
-
-.btn-23 span {
+.pdf-grid {
     display: grid;
-    inset: 0;
-    place-items: center;
-    position: absolute;
-    -webkit-transition: opacity 0.2s ease;
-    transition: opacity 0.2s ease;
+    grid-template-columns: repeat(4, 1fr);
+    /* Chia thành 4 cột */
+    gap: 20px;
+    /* Khoảng cách giữa các mục */
+    margin-bottom: 20px;
+    /* Khoảng cách phía dưới danh sách */
 }
 
-.btn-23 .marquee {
-    --spacing: 5em;
-    --start: 0em;
-    --end: 5em;
-    -webkit-animation: marquee 1s linear infinite;
-    animation: marquee 1s linear infinite;
-    -webkit-animation-play-state: paused;
-    animation-play-state: paused;
-    opacity: 0;
-    position: relative;
-    text-shadow: #fff var(--spacing) 0, #fff calc(var(--spacing) * -1) 0,
-        #fff calc(var(--spacing) * -2) 0;
+.pdf-item {
+    list-style: none;
+    text-align: center;
+    cursor: pointer;
 }
 
-.btn-23:hover .marquee {
-    -webkit-animation-play-state: running;
-    animation-play-state: running;
-    opacity: 1;
+.pdf-cover {
+    margin-bottom: 10px;
+    /* Khoảng cách giữa ảnh bìa và tên */
 }
 
-.btn-23:hover .text {
-    opacity: 0;
+.close-list-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
-@-webkit-keyframes marquee {
-    0% {
-        -webkit-transform: translateX(var(--start));
-        transform: translateX(var(--start));
-    }
-
-    to {
-        -webkit-transform: translateX(var(--end));
-        transform: translateX(var(--end));
-    }
+.close-list-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
 }
 
-@keyframes marquee {
-    0% {
-        -webkit-transform: translateX(var(--start));
-        transform: translateX(var(--start));
-    }
 
-    to {
-        -webkit-transform: translateX(var(--end));
-        transform: translateX(var(--end));
-    }
+.pdf-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 cột với kích thước bằng nhau */
+    gap: 20px;
+    /* Khoảng cách giữa các mục */
+}
+
+.pdf-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pdf-item:hover {
+    transform: scale(1.05);
+    /* Hiệu ứng phóng to khi hover */
+}
+
+.pdf-cover {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.pdf-name {
+    font-size: 14px;
+    color: #333;
+}
+
+.pdf-list-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    /* Khoảng cách giữa tiêu đề và danh sách PDF */
 }
