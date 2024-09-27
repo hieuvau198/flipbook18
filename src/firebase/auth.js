@@ -10,7 +10,7 @@ import {
 export const signUp = async (email, password, userData) => {
   try {
     const user = await createUserWithEmailAndPassword(auth, email, password);
-    await setDoc(doc(db, "users", user.user.uid), {
+    await setDoc(doc(db, "users", ), {
       ...userData,
       uid: user.user.uid,
       email: email,
@@ -45,6 +45,7 @@ export const doSignInWithGoogle = async () => {
       email: user.email,
       photoURL: user.photoURL,
       uid: user.uid,
+      role: 'customer',
       provider: "google",
     };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext.jsx";
 
@@ -7,7 +7,13 @@ function Homepage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { userLoggedIn } = useAuth(); // Sử dụng authContext để kiểm tra trạng thái đăng nhập
+  const { currentUser } = useAuth();
 
+
+  // Kiểm tra currentAccount khi component được render
+  useEffect(() => {
+    console.log("Current account:", currentUser);
+  }, [currentUser]);
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
