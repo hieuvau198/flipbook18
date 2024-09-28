@@ -12,11 +12,11 @@ import {
   faDownload,
   faSave,
   faFolderOpen,
+  faShare,
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "../../components/common/FileNameModal"; // Modal Component
 import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils"; // Firebase utilities
-import { faShare } from "@fortawesome/free-solid-svg-icons/faShare";
-
+import "../../styles/UploadButton.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function Flipbook() {
@@ -33,6 +33,7 @@ function Flipbook() {
   const [savedPdfFiles, setSavedPdfFiles] = useState([]);
   const [showPdfList, setShowPdfList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [coverPages, setCoverPages] = useState({}); // Added missing coverPages state
 
   useEffect(() => {
     if (pdfFile) {
@@ -84,6 +85,17 @@ function Flipbook() {
       const pdfFiles = await fetchSavedPdfs();
       setSavedPdfFiles(pdfFiles);
       setShowPdfList(true);
+
+      // Assuming you want to create preview images for each PDF cover page
+      const covers = {};
+      pdfFiles.forEach((pdf) => {
+        covers[pdf.url] = (
+          <Document file={pdf.url}>
+            <Page pageNumber={1} width={100} />
+          </Document>
+        );
+      });
+      setCoverPages(covers); // Save preview images
     } catch (error) {
       console.error("Error fetching PDFs: ", error);
     }
@@ -96,21 +108,18 @@ function Flipbook() {
 
   const handleSavePdf = async (fileName) => {
     try {
-      await savePdfToFirestore(pdfFile, fileName);
+      await savePdfToFirestore(pdfFile, fileName, "pdfFiles");
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
     }
   };
-<<<<<<< Updated upstream
 
-  // Share function to save PDF and navigate to Share page
-=======
   const handleBackToList = () => {
-    setIsModalOpen(false); // Đóng modal
-    setShowPdfList(true);  // Hiển thị danh sách PDF
+    setIsModalOpen(false); // Close modal
+    setShowPdfList(true);  // Show PDF list
   };
->>>>>>> Stashed changes
+
   const handleShare = async () => {
     const fileName = "Shared_PDF"; // Set a default file name
     try {
@@ -124,43 +133,9 @@ function Flipbook() {
   return (
     <div className="flipbook-background">
       <div className="flipbook-container">
-<<<<<<< Updated upstream
-      {showPdfList ? (
-        <div className="pdf-list">
-          <h3>Select a PDF to View</h3>
-          <ul>
-            {savedPdfFiles.map((pdf) => (
-              <li key={pdf.id}>
-                <button onClick={() => handlePdfSelect(pdf.url)}>
-                  {pdf.name} - Viewed At: {new Date(pdf.viewedAt.seconds * 1000).toLocaleString()}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <button className="close-list-button" onClick={() => setShowPdfList(false)}>
-          <span>Close List</span>
-          </button>
-        </div>
-      ) : (
-        <>
-          {pdfFile ? (
-            <>
-              <Document
-                file={pdfFile}
-                onLoadSuccess={onDocumentLoadSuccess}
-              >
-                <HTMLFlipBook width={450} height={550} ref={flipBookRef}>
-                  {pdfPages.map((pageNumber) => (
-                    <div key={pageNumber} className="page">
-                      <Page width={450 * zoom} pageNumber={pageNumber} />
-                    </div>
-                  ))}
-                </HTMLFlipBook>
-              </Document>
-=======
         {showPdfList ? (
           <div className="pdf-list">
-            {/* Tiêu đề ở trên đầu */}
+            {/* Title */}
             <h2 className="pdf-list-title">Select a PDF to View</h2>
             <ul className="pdf-grid">
               {savedPdfFiles.map((pdf) => (
@@ -179,52 +154,6 @@ function Flipbook() {
               Close List
             </button>
           </div>
->>>>>>> Stashed changes
-
-              <div className="toolbar">
-                <button onClick={goToPreviousPage} disabled={numPages <= 1}>
-                  <FontAwesomeIcon icon={faArrowLeft} />
-                </button>
-                <button onClick={goToNextPage} disabled={numPages <= 1}>
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </button>
-                <button onClick={handleZoomOut} disabled={zoom <= 0.5}>
-                  <FontAwesomeIcon icon={faSearchMinus} />
-                </button>
-                <button onClick={handleZoomIn}>
-                  <FontAwesomeIcon icon={faSearchPlus} />
-                </button>
-                <button onClick={handleFullscreen}>
-                  <FontAwesomeIcon icon={faExpand} />
-                </button>
-                <button onClick={downloadPDF}>
-                  <FontAwesomeIcon icon={faDownload} />
-                </button>
-                <button onClick={handleFetchSavedPdfs}>
-                  <FontAwesomeIcon icon={faFolderOpen} /> View Saved PDFs
-                </button>
-                <button onClick={() => setIsModalOpen(true)}>
-                  <FontAwesomeIcon icon={faSave} /> Save PDF
-                </button>
-                <button onClick={handleShare}>
-                  <FontAwesomeIcon icon={faShare} />
-                </button>
-              </div>
-            </>
-          ) : (
-            <p className="no-pdf-message">No PDF file selected</p>
-          )}
-        </>
-      )}
-
-<<<<<<< Updated upstream
-      <FileNameModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSavePdf}
-      />
-=======
-
         ) : (
           <>
             {pdfFile ? (
@@ -279,13 +208,10 @@ function Flipbook() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           onSave={handleSavePdf}
-          onBack={handleBackToList} // Truyền hàm quay lại
+          onBack={handleBackToList} // Pass back functionality to the modal
         />
       </div>
->>>>>>> Stashed changes
     </div>
-    </div>
-    
   );
 }
 
