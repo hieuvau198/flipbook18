@@ -102,8 +102,15 @@ function Flipbook() {
       console.error("Error saving PDF: ", error);
     }
   };
+<<<<<<< Updated upstream
 
   // Share function to save PDF and navigate to Share page
+=======
+  const handleBackToList = () => {
+    setIsModalOpen(false); // Đóng modal
+    setShowPdfList(true);  // Hiển thị danh sách PDF
+  };
+>>>>>>> Stashed changes
   const handleShare = async () => {
     const fileName = "Shared_PDF"; // Set a default file name
     try {
@@ -117,6 +124,7 @@ function Flipbook() {
   return (
     <div className="flipbook-background">
       <div className="flipbook-container">
+<<<<<<< Updated upstream
       {showPdfList ? (
         <div className="pdf-list">
           <h3>Select a PDF to View</h3>
@@ -149,6 +157,29 @@ function Flipbook() {
                   ))}
                 </HTMLFlipBook>
               </Document>
+=======
+        {showPdfList ? (
+          <div className="pdf-list">
+            {/* Tiêu đề ở trên đầu */}
+            <h2 className="pdf-list-title">Select a PDF to View</h2>
+            <ul className="pdf-grid">
+              {savedPdfFiles.map((pdf) => (
+                <li key={pdf.id} className="pdf-item" onClick={() => handlePdfSelect(pdf.url)}>
+                  <div className="pdf-cover">
+                    {coverPages[pdf.url]}
+                  </div>
+                  <div className="pdf-name">
+                    {pdf.name} - Viewed At: {new Date(pdf.viewedAt.seconds * 1000).toLocaleString()}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <button className="close-list-button" onClick={() => setShowPdfList(false)}>
+              Close List
+            </button>
+          </div>
+>>>>>>> Stashed changes
 
               <div className="toolbar">
                 <button onClick={goToPreviousPage} disabled={numPages <= 1}>
@@ -186,11 +217,72 @@ function Flipbook() {
         </>
       )}
 
+<<<<<<< Updated upstream
       <FileNameModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSavePdf}
       />
+=======
+
+        ) : (
+          <>
+            {pdfFile ? (
+              <>
+                <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess}>
+                  <HTMLFlipBook width={450} height={550} ref={flipBookRef}>
+                    {pdfPages.map((pageNumber) => (
+                      <div key={pageNumber} className="page">
+                        <Page width={450 * zoom} pageNumber={pageNumber} />
+                      </div>
+                    ))}
+                  </HTMLFlipBook>
+                </Document>
+
+                <div className="toolbar">
+                  <button onClick={goToPreviousPage} disabled={numPages <= 1}>
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                  </button>
+                  <button onClick={goToNextPage} disabled={numPages <= 1}>
+                    <FontAwesomeIcon icon={faArrowRight} />
+                  </button>
+                  <button onClick={handleZoomOut} disabled={zoom <= 0.5}>
+                    <FontAwesomeIcon icon={faSearchMinus} />
+                  </button>
+                  <button onClick={handleZoomIn}>
+                    <FontAwesomeIcon icon={faSearchPlus} />
+                  </button>
+                  <button onClick={handleFullscreen}>
+                    <FontAwesomeIcon icon={faExpand} />
+                  </button>
+                  <button onClick={downloadPDF}>
+                    <FontAwesomeIcon icon={faDownload} />
+                  </button>
+                  <button onClick={handleFetchSavedPdfs}>
+                    <FontAwesomeIcon icon={faFolderOpen} /> View Saved PDFs
+                  </button>
+                  <button onClick={() => setIsModalOpen(true)}>
+                    <FontAwesomeIcon icon={faSave} /> Save PDF
+                  </button>
+                  <button onClick={handleShare}>
+                    <FontAwesomeIcon icon={faShare} />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p className="no-pdf-message">No PDF file selected</p>
+            )}
+          </>
+        )}
+
+        <FileNameModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSavePdf}
+          onBack={handleBackToList} // Truyền hàm quay lại
+        />
+      </div>
+>>>>>>> Stashed changes
     </div>
     </div>
     

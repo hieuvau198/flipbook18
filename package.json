@@ -17,7 +17,11 @@
     "react-pageflip": "^2.0.3",
     "react-pdf": "^5.7.1",
     "react-router-dom": "^6.26.2",
+<<<<<<< Updated upstream
     "react-scripts": "5.0.0",
+=======
+    "react-scripts": "^5.0.1",
+>>>>>>> Stashed changes
     "web-vitals": "^2.1.4"
   },
   "scripts": {

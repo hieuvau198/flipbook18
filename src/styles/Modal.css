@@ -96,6 +96,7 @@
   align-items: center;
   z-index: 1000;
 }
+
 .modal-content {
   background: #fff;
   /* Nền trắng cho modal */
@@ -151,4 +152,10 @@
   /* Màu nền cho nút bị vô hiệu hóa */
   cursor: not-allowed;
   /* Con trỏ chuột khi vô hiệu hóa */
+}
+
+.success-message {
+  margin-top: 10px;
+  color: green;
+  font-weight: bold;
 }
