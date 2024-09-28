@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext.jsx";
+import { fetchSavedPdfByIdAndCollection, savePdfToFirestore, savePdfToFirestoreTemp } from "../utils/firebaseUtils.js";
 
 export const useHomepageLogic = () => {
   const [file, setFile] = useState(null);
@@ -9,10 +10,11 @@ export const useHomepageLogic = () => {
   const navigate = useNavigate();
   const { userLoggedIn } = useAuth();
 
+  // Convert the file to a Base64 URL (data URL) before uploading
   const fileToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result); 
+      reader.onloadend = () => resolve(reader.result); // This result is a base64 URL
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
@@ -35,11 +37,22 @@ export const useHomepageLogic = () => {
     if (file) {
       try {
         setLoading(true);
-        const base64Pdf = await fileToBase64(file);
-        localStorage.setItem("pdfFile", base64Pdf);
-        navigate("/flipbook");
+        const fileName = "temp_PDF"; // Set a default file name
+        const fileCollection = "temps"; // Set a default collection to store
+
+        // Convert the file to a Base64 URL before passing it to the savePdfToFirestore function
+        const base64File = await fileToBase64(file);
+
+        // Save the base64 file and get its ID from Firestore
+        const pdfFileId = await savePdfToFirestoreTemp(base64File, fileName, fileCollection);
+
+        // Fetch the saved PDF by ID and get its download URL
+        const pdfFileUrl = await fetchSavedPdfByIdAndCollection(pdfFileId, fileCollection);
+
+        // Navigate to Flipbook and pass the file URL
+        navigate("/flipbook", { state: { pdfFileUrl } });
       } catch (error) {
-        setError("Failed to process the file.");
+        setError("Failed to process the file because of oversize.");
       } finally {
         setLoading(false);
       }

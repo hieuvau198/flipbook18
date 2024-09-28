@@ -73,61 +73,71 @@
     pointer-events: none;
 }
 
-
-
 .pdf-list {
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* Căn giữa danh sách và nút */
 }
 
 .pdf-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    list-style: none;
-    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* Chia thành 4 cột */
+    gap: 20px;
+    /* Khoảng cách giữa các mục */
+    margin-bottom: 20px;
+    /* Khoảng cách phía dưới danh sách */
 }
 
 .pdf-item {
-    flex: 1 1 30%;
-    /* Mỗi item chiếm khoảng 30% chiều rộng */
-    margin: 10px;
-    max-width: 30%;
-    /* Đảm bảo item không vượt quá 30% chiều rộng */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    list-style: none;
     text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
+    cursor: pointer;
 }
 
 .pdf-cover {
     margin-bottom: 10px;
-}
-
-.pdf-name {
-    font-size: 14px;
-    color: #333;
+    /* Khoảng cách giữa ảnh bìa và tên */
 }
 
 .close-list-button {
-    margin-top: 20px;
-    padding: 10px 20px;
     background-color: #007bff;
-    color: #fff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 .close-list-button:hover {
     background-color: #0056b3;
+    transform: scale(1.05);
 }
 
+
+.pdf-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 cột với kích thước bằng nhau */
+    gap: 20px;
+    /* Khoảng cách giữa các mục */
+}
+
+.pdf-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
 
 .pdf-item:hover {
     transform: scale(1.05);
