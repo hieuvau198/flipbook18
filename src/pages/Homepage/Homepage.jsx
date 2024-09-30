@@ -5,6 +5,7 @@ import UploadButton from "../../components/forms/UploadButton";
 import { useHomepageLogic } from "../../hooks/useHomepageLogic";
 import { useAuth } from "../../contexts/authContext";
 import Admin from "./Admin.jsx";
+import User from "./User.jsx";
 
 function Homepage() {
   const {
@@ -20,6 +21,8 @@ function Homepage() {
 
   if (role === "admin") {
     return <Admin />; // Render the Admin component if user is admin
+  } else if (role === "customer"){
+    return <User />;
   }
 
   return (
