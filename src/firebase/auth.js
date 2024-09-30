@@ -1,4 +1,4 @@
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
@@ -39,7 +39,7 @@ export const doSignInWithGoogle = async () => {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // Prepare userData to store in Firestore
+    // Tạo userData để lưu vào Firestore
     const userData = {
       displayName: user.displayName,
       email: user.email,
@@ -49,8 +49,14 @@ export const doSignInWithGoogle = async () => {
       provider: "google",
     };
 
-    // Save user data to Firestore
-    await setDoc(doc(db, "users", user.uid), userData, { merge: true });
+    // Kiểm tra xem người dùng đã tồn tại trong Firestore chưa
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    // Nếu người dùng chưa tồn tại thì lưu vào Firestore
+    if (!userDoc.exists()) {
+      await setDoc(userDocRef, userData);
+    }
 
     return user;
   } catch (error) {

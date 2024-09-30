@@ -47,7 +47,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/home"/>
+              <Route path="/home" element={<User />} />
+
               <Route path="/share" element={<Share />} />
               <Route
                 path="/"
