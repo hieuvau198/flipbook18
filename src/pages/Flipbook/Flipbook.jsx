@@ -29,7 +29,7 @@ function Flipbook() {
   const navigate = useNavigate();
   const [showPdfList, setShowPdfList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { currentUser } = useAuth();
+  const { currentUser, role } = useAuth();
 
   useEffect(() => {
     if (location.state?.pdfFileUrl) {
@@ -93,9 +93,11 @@ function Flipbook() {
                   <button onClick={() => setShowPdfList(true)}>
                     <FontAwesomeIcon icon={faFolderOpen} /> View Saved PDFs
                   </button>
-                  <button onClick={() => setIsModalOpen(true)}>
-                    <FontAwesomeIcon icon={faSave} /> Save PDF
-                  </button>
+                  {role === "admin" && ( // Show Save PDF button only for admin
+                    <button onClick={() => setIsModalOpen(true)}>
+                      <FontAwesomeIcon icon={faSave} /> Save PDF
+                    </button>
+                  )}
                   <button onClick={handleShare}>
                     <FontAwesomeIcon icon={faShare} /> Share PDF
                   </button>
