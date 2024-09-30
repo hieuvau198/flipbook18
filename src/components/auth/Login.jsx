@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { signIn, doSignInWithGoogle } from "../../firebase/auth"; // Correct function imports
 import { useAuth } from "../../contexts/authContext";
@@ -9,6 +9,16 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Ref to track if the component is mounted
+  const isMountedRef = useRef(true);
+
+  // Cleanup function to set isMountedRef to false when unmounted
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Handle sign-in with email and password
   const onSubmit = async (e) => {
@@ -24,9 +34,13 @@ const Login = () => {
       setIsSigningIn(true);
       await signIn(email, password);
     } catch (error) {
-      setErrorMessage(error.message || "Failed to sign in. Please try again.");
+      if (isMountedRef.current) { // Check if the component is mounted before updating state
+        setErrorMessage(error.message || "Failed to sign in. Please try again.");
+      }
     } finally {
-      setIsSigningIn(false);
+      if (isMountedRef.current) {
+        setIsSigningIn(false);
+      }
     }
   };
 
@@ -39,9 +53,13 @@ const Login = () => {
       setIsSigningIn(true);
       await doSignInWithGoogle();
     } catch (error) {
-      setErrorMessage(error.message || "Google sign-in failed. Please try again.");
+      if (isMountedRef.current) { // Check if the component is mounted before updating state
+        setErrorMessage(error.message || "Google sign-in failed. Please try again.");
+      }
     } finally {
-      setIsSigningIn(false);
+      if (isMountedRef.current) {
+        setIsSigningIn(false);
+      }
     }
   };
 

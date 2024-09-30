@@ -1,14 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext.jsx";
-import { fetchSavedPdfByIdAndCollection, savePdfToFirestore, savePdfToFirestoreTemp } from "../utils/firebaseUtils.js";
+import { fetchSavedPdfByIdAndCollection, savePdfToFirestoreTemp } from "../utils/firebaseUtils.js";
 
 export const useHomepageLogic = () => {
   const [file, setFile] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { userLoggedIn } = useAuth();
+  const { userLoggedIn, currentUser } = useAuth();
+
+  // Log currentUser whenever it changes
+  useEffect(() => {
+    console.log("Current User: ", currentUser);
+  }, [currentUser]);
 
   // Convert the file to a Base64 URL (data URL) before uploading
   const fileToBase64 = (file) => {
