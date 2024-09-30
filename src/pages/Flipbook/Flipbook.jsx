@@ -52,7 +52,7 @@ function Flipbook() {
     }
 
     try {
-      await savePdfToFirestore(pdfFile, fileName, currentUser);
+      await savePdfToFirestore(pdfFile, fileName, "pdfFiles");
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
@@ -91,20 +91,20 @@ function Flipbook() {
 
                 <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>
-                    <FontAwesomeIcon icon={faFolderOpen} /> View Saved PDFs
+                    <FontAwesomeIcon icon={faFolderOpen} /> View List
                   </button>
                   {role === "admin" && ( // Show Save PDF button only for admin
                     <button onClick={() => setIsModalOpen(true)}>
-                      <FontAwesomeIcon icon={faSave} /> Save PDF
+                      <FontAwesomeIcon icon={faSave} /> Save Book
                     </button>
                   )}
                   <button onClick={handleShare}>
-                    <FontAwesomeIcon icon={faShare} /> Share PDF
+                    <FontAwesomeIcon icon={faShare} /> Share Book
                   </button>
                 </div>
               </>
             ) : (
-              <p className="no-pdf-message">No PDF file selected</p>
+              <p className="no-pdf-message">No Book selected</p>
             )}
           </>
         )}
