@@ -4,7 +4,7 @@ import ErrorMessage from "../../components/common/ErrorMessage";
 import UploadButton from "../../components/forms/UploadButton";
 import { useHomepageLogic } from "../../hooks/useHomepageLogic";
 
-function Homepage() {
+function Admin() {
   const {
     file,
     error,
@@ -38,4 +38,4 @@ function Homepage() {
   );
 }
 
-export default Homepage;
+export default Admin;

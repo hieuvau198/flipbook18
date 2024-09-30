@@ -1,25 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
-import { doCreateUserWithEmailAndPassword } from "../../firebase/auth";
+import { signUp } from "../../firebase/auth";
 
 const Register = () => {
   const navigate = useNavigate();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setconfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const { userLoggedIn } = useAuth();
 
+  useEffect(() => {
+    // This cleanup function will be triggered when the component unmounts
+    return () => {
+      // Reset the state or prevent further updates here
+      setIsRegistering(false);
+    };
+  }, []);
+
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!isRegistering) {
-      setIsRegistering(true);
-      await doCreateUserWithEmailAndPassword(email, password);
+
+    // Reset error message
+    setErrorMessage("");
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
     }
+
+    // Check if name is empty
+    if (!name.trim()) {
+      setErrorMessage("Name is required.");
+      return;
+    }
+
+    setIsRegistering(true);
+
+    let isMounted = true; // Flag to check if the component is still mounted
+
+    try {
+      const userCredential = await signUp(email, password, { name });
+
+      if (isMounted && userCredential) {
+        // If component is still mounted, update state and navigate
+        navigate("/home");
+      }
+    } catch (error) {
+      if (isMounted) {
+        console.error("Error during registration: ", error);
+        setErrorMessage(error.message || "Registration failed.");
+      }
+    } finally {
+      if (isMounted) {
+        setIsRegistering(false);
+      }
+    }
+
+    // Cleanup function to prevent state update after unmount
+    return () => {
+      isMounted = false; // Prevent updates if the component is unmounted
+    };
   };
 
   return (
@@ -37,49 +84,50 @@ const Register = () => {
           </div>
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
+              <label className="text-sm text-gray-600 font-bold">Name</label>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:indigo-600 shadow-sm rounded-lg transition duration-300"
+              />
+            </div>
+
+            <div>
               <label className="text-sm text-gray-600 font-bold">Email</label>
               <input
                 type="email"
                 autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:indigo-600 shadow-sm rounded-lg transition duration-300"
               />
             </div>
 
             <div>
-              <label className="text-sm text-gray-600 font-bold">
-                Password
-              </label>
+              <label className="text-sm text-gray-600 font-bold">Password</label>
               <input
                 disabled={isRegistering}
                 type="password"
                 autoComplete="new-password"
                 required
                 value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg transition duration-300"
               />
             </div>
 
             <div>
-              <label className="text-sm text-gray-600 font-bold">
-                Confirm Password
-              </label>
+              <label className="text-sm text-gray-600 font-bold">Confirm Password</label>
               <input
                 disabled={isRegistering}
                 type="password"
                 autoComplete="off"
                 required
                 value={confirmPassword}
-                onChange={(e) => {
-                  setconfirmPassword(e.target.value);
-                }}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg transition duration-300"
               />
             </div>
@@ -99,8 +147,9 @@ const Register = () => {
             >
               {isRegistering ? "Signing Up..." : "Sign Up"}
             </button>
+
             <div className="text-sm text-center">
-              Already have an account? {"   "}
+              Already have an account?{" "}
               <Link
                 to={"/login"}
                 className="text-center text-sm hover:underline font-bold"
