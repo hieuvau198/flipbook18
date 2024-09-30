@@ -3,23 +3,46 @@ import { auth, db } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  updatePassword,
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
 
+export const doCreateUserWithEmailAndPassword = async (email, password) => {
+  return createUserWithEmailAndPassword(auth, email, password);
+};
+
+export const doSignInWithEmailAndPassword = (email, password) => {
+  return signInWithEmailAndPassword(auth, email, password);
+};
+
 export const signUp = async (email, password, userData) => {
   try {
-    const user = await createUserWithEmailAndPassword(auth, email, password);
-    await setDoc(doc(db, "users", ), {
+    // Create the user with email and password
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Set the document reference using user.uid
+    const userDocRef = doc(db, "users", user.uid);
+    
+    // Prepare user data to store in Firestore
+    const dataToStore = {
       ...userData,
-      uid: user.user.uid,
+      uid: user.uid,
       email: email,
-      password: password,
       role: "customer",
-    });
-    return user.user;
+      password: password,
+    };
+
+    // Save user data to Firestore
+    await setDoc(userDocRef, dataToStore);
+
+    return user; // Return the user object
   } catch (error) {
-    return error;
+    console.error("Error during sign up:", error);
+    throw error; // Rethrow the error for further handling if necessary
   }
 };
 
@@ -59,6 +82,9 @@ export const doSignInWithGoogle = async () => {
   }
 };
 
+export const doSignOut = () => {
+  return auth.signOut();
+};
 
 export const logout = async () => {
   try {
@@ -67,3 +93,16 @@ export const logout = async () => {
     return error;
   }
 };
+// export const doPasswordReset = (email) => {
+//   return sendPasswordResetEmail(auth, email);
+// };
+
+// export const doPasswordChange = (password) => {
+//   return updatePassword(auth.currentUser, password);
+// };
+
+// export const doSendEmailVerification = () => {
+//   return sendEmailVerification(auth.currentUser, {
+//     url: `${window.location.origin}/home`,
+//   });
+// };

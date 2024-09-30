@@ -18,13 +18,17 @@ export function AuthProvider({ children }) {
   const [isEmailUser, setIsEmailUser] = useState(false);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authCallback, setAuthCallback] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       await initializeUser(user);
+      if (authCallback) {
+        authCallback(user);
+      }
     });
     return unsubscribe;
-  }, []);
+  }, [authCallback]);
 
   async function initializeUser(user) {
     if (user) {
@@ -68,6 +72,9 @@ export function AuthProvider({ children }) {
     // Set loading state to false after processing user data
     setLoading(false);
   }
+  const setAuthCallbackHandler = (callback) => {
+    setAuthCallback(() => callback);
+  };
 
   const value = {
     userLoggedIn,
@@ -75,6 +82,7 @@ export function AuthProvider({ children }) {
     isGoogleUser,
     currentUser,
     setCurrentUser,
+    setAuthCallback: setAuthCallbackHandler,
   };
 
   return (
