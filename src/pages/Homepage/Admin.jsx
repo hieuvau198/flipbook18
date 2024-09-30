@@ -28,7 +28,7 @@ function Admin() {
       </div>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">
-          Upload your PDF file
+          Upload your PDF file - This is Admin
         </h1>
         <FileInput onFileChange={handleFileChange} />
         <ErrorMessage error={error} />

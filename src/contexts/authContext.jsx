@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
   const [isGoogleUser, setIsGoogleUser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [authCallback, setAuthCallback] = useState(null);
+  const [role, setRole] = useState(null); // Track user role (admin/customer/etc.)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -52,10 +53,12 @@ export function AuthProvider({ children }) {
         const userData = userDocSnap.data();
         const userRole = userData.role || "customer"; // Default role is 'customer' if not found
 
-        // Set currentUser state with user info and role
+        // Set role and currentUser state with user info and role
+        setRole(userRole);
         setCurrentUser({ ...user, role: userRole });
       } else {
         // If no Firestore record, set default role as 'customer'
+        setRole("customer");
         setCurrentUser({ ...user, role: "customer" });
       }
 
@@ -67,11 +70,13 @@ export function AuthProvider({ children }) {
       setUserLoggedIn(false);
       setIsEmailUser(false);
       setIsGoogleUser(false);
+      setRole(null); // Reset role when logged out
     }
 
     // Set loading state to false after processing user data
     setLoading(false);
   }
+
   const setAuthCallbackHandler = (callback) => {
     setAuthCallback(() => callback);
   };
@@ -81,6 +86,7 @@ export function AuthProvider({ children }) {
     isEmailUser,
     isGoogleUser,
     currentUser,
+    role, // Expose the role in context
     setCurrentUser,
     setAuthCallback: setAuthCallbackHandler,
   };

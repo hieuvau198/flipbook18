@@ -1,4 +1,4 @@
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
@@ -48,34 +48,40 @@ export const signUp = async (email, password, userData) => {
 
 export const signIn = async (email, password) => {
   try {
-    const user = await signInWithEmailAndPassword(email, password);
-    return user;
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Fetch user data from Firestore
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      return { user, role: userData.role };
+    } else {
+      throw new Error("No such user document!");
+    }
   } catch (error) {
     console.error("Error signing in: ", error);
     throw error;
   }
 };
-
 export const doSignInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // Prepare userData to store in Firestore
-    const userData = {
-      displayName: user.displayName,
-      email: user.email,
-      photoURL: user.photoURL,
-      uid: user.uid,
-      role: 'customer',
-      provider: "google",
-    };
+    // Fetch user data from Firestore
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
 
-    // Save user data to Firestore
-    await setDoc(doc(db, "users", user.uid), userData, { merge: true });
-
-    return user;
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      return { user, role: userData.role };
+    } else {
+      throw new Error("No such user document!");
+    }
   } catch (error) {
     console.error("Error during Google sign-in:", error);
     throw error;
@@ -93,16 +99,3 @@ export const logout = async () => {
     return error;
   }
 };
-// export const doPasswordReset = (email) => {
-//   return sendPasswordResetEmail(auth, email);
-// };
-
-// export const doPasswordChange = (password) => {
-//   return updatePassword(auth.currentUser, password);
-// };
-
-// export const doSendEmailVerification = () => {
-//   return sendEmailVerification(auth.currentUser, {
-//     url: `${window.location.origin}/home`,
-//   });
-// };
