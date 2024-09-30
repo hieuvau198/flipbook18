@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
-import { doSignOut } from "../../firebase/auth";
+import { logout } from "../../firebase/auth";
 import { FaBook } from "react-icons/fa";
 
 const Header = () => {
@@ -16,7 +16,7 @@ const Header = () => {
 
     setLoading(true);
     try {
-      await doSignOut();
+      await logout();
       navigate("/login");
     } catch (err) {
       console.error("Logout failed:", err);
@@ -31,12 +31,11 @@ const Header = () => {
   };
 
   const handleRegister = () => {
-    navigate("/register");
+    navigate("/register"); // Điều hướng đến trang đăng ký
   };
 
   return (
-
-    <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
+    <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200 shadow">
       <div className="flex items-center space-x-2">
         <FaBook className="text-2xl text-blue-600" aria-hidden="true" />
         <Link to="/home" className="text-xl font-bold text-blue-600">
@@ -47,16 +46,26 @@ const Header = () => {
         {userLoggedIn ? (
           <>
             {currentUser && (
-              <span className="text-sm text-gray-700">
-                Welcome, {currentUser.displayName || currentUser.email}
-              </span>
+              <div className="flex items-center space-x-2">
+                {currentUser.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    alt="User Avatar"
+                    className="w-8 h-8 rounded-full"
+                  />
+                ) : (
+                  <span className="text-sm text-gray-700">
+                    Welcome, {currentUser.displayName || currentUser.email}
+                  </span>
+                )}
+              </div>
             )}
             <button
               onClick={handleLogout}
-              className="custom-button"
+              className="text-sm text-blue-600 underline"
               disabled={loading}
             >
-              <span>{loading ? "Logging out..." : "Logout"}</span>
+              {loading ? "Logging out..." : "Logout"}
             </button>
             {error && (
               <span className="text-sm text-red-500 ml-2">{error}</span>
@@ -64,17 +73,22 @@ const Header = () => {
           </>
         ) : (
           <>
-            <button onClick={handleLogin} className="custom-button">
-              <span>Login</span>
+            <button
+              onClick={handleLogin}
+              className="text-sm text-blue-600 underline"
+            >
+              Login
             </button>
-            <button onClick={handleRegister} className="custom-button">
-              <span>Register</span>
+            <button
+              onClick={handleRegister}
+              className="text-sm text-blue-600 underline"
+            >
+              Register
             </button>
           </>
         )}
       </div>
     </nav>
-
   );
 };
 
