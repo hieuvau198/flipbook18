@@ -1,0 +1,165 @@
+.c-button {
+    color: #000;
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 0.9em 1.6em;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    z-index: 1;
+    background: none;
+    border: none;
+}
+
+.c-button--gooey {
+    color: #06c8d9;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 4px solid #06c8d9;
+    border-radius: 0;
+    position: relative;
+    transition: all 700ms ease;
+}
+
+.c-button--gooey .c-button__blobs {
+    height: 100%;
+    filter: url(#goo);
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: -3px;
+    right: -1px;
+    z-index: -1;
+}
+
+.c-button--gooey .c-button__blobs div {
+    background-color: #06c8d9;
+    width: 34%;
+    height: 100%;
+    border-radius: 100%;
+    position: absolute;
+    transform: scale(1.4) translateY(125%) translateZ(0);
+    transition: all 700ms ease;
+}
+
+.c-button--gooey .c-button__blobs div:nth-child(1) {
+    left: -5%;
+}
+
+.c-button--gooey .c-button__blobs div:nth-child(2) {
+    left: 30%;
+    transition-delay: 60ms;
+}
+
+.c-button--gooey .c-button__blobs div:nth-child(3) {
+    left: 66%;
+    transition-delay: 25ms;
+}
+
+.c-button--gooey:hover {
+    color: #fff;
+}
+
+.c-button--gooey:hover .c-button__blobs div {
+    transform: scale(1.4) translateY(0) translateZ(0);
+}
+
+/* Disabled State */
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.pdf-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Căn giữa danh sách và nút */
+}
+
+.pdf-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* Chia thành 4 cột */
+    gap: 20px;
+    /* Khoảng cách giữa các mục */
+    margin-bottom: 20px;
+    /* Khoảng cách phía dưới danh sách */
+}
+
+.pdf-item {
+    list-style: none;
+    text-align: center;
+    cursor: pointer;
+}
+
+.pdf-cover {
+    margin-bottom: 10px;
+    /* Khoảng cách giữa ảnh bìa và tên */
+}
+
+.close-list-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.close-list-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+
+.pdf-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 cột với kích thước bằng nhau */
+    gap: 20px;
+    /* Khoảng cách giữa các mục */
+}
+
+.pdf-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pdf-item:hover {
+    transform: scale(1.05);
+    /* Hiệu ứng phóng to khi hover */
+}
+
+.pdf-cover {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.pdf-name {
+    font-size: 14px;
+    color: #333;
+}
+
+.pdf-list-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    /* Khoảng cách giữa tiêu đề và danh sách PDF */
+}

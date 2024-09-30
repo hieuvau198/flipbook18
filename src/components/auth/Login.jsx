@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
 import {
+  signIn,
   doSignInWithEmailAndPassword,
   doSignInWithGoogle,
 } from "../../firebase/auth";
 import { useAuth } from "../../contexts/authContext";
-
+import "../../styles/App.css";
 const Login = () => {
   const { userLoggedIn } = useAuth();
   const [email, setEmail] = useState("");
@@ -15,20 +16,34 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!isSigningIn) {
+    setErrorMessage(""); // Reset error message
+
+    if (!email || !password) {
+      setErrorMessage("Please enter both email and password.");
+      return;
+    }
+
+    try {
       setIsSigningIn(true);
-      await doSignInWithEmailAndPassword(email, password);
-      // doSendEmailVerification()
+      await signIn(email, password);
+    } catch (error) {
+      setErrorMessage(error.message || "Failed to sign in. Please try again.");
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
-  const onGoogleSignIn = (e) => {
+  const onGoogleSignIn = async (e) => {
     e.preventDefault();
-    if (!isSigningIn) {
+    setErrorMessage(""); // Reset error message
+
+    try {
       setIsSigningIn(true);
-      doSignInWithGoogle().catch((err) => {
-        setIsSigningIn(false);
-      });
+      await doSignInWithGoogle();
+    } catch (error) {
+      setErrorMessage(error.message || "Google sign-in failed. Please try again.");
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
@@ -36,7 +51,10 @@ const Login = () => {
     <div>
       {userLoggedIn && <Navigate to={"/home"} replace={true} />}
 
-      <main className="w-full h-screen flex self-center place-content-center place-items-center">
+      <main
+        className="w-full h-screen flex self-center place-content-center place-items-center bg-cover bg-center"
+        style={{ backgroundImage: `url('https://i.pinimg.com/originals/76/37/69/76376914ee404e1a4478c1f2df886c63.jpg')` }}
+      >
         <div className="w-96 text-gray-600 space-y-5 p-4 shadow-xl border rounded-xl">
           <div className="text-center">
             <div className="mt-2">
@@ -83,11 +101,10 @@ const Login = () => {
             <button
               type="submit"
               disabled={isSigningIn}
-              className={`w-full px-4 py-2 text-white font-medium rounded-lg ${
-                isSigningIn
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-xl transition duration-300"
-              }`}
+              className={`w-full px-4 py-2 text-white font-medium rounded-lg ${isSigningIn
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-xl transition duration-300"
+                }`}
             >
               {isSigningIn ? "Signing In..." : "Sign In"}
             </button>
@@ -105,9 +122,7 @@ const Login = () => {
           </div>
           <button
             disabled={isSigningIn}
-            onClick={(e) => {
-              onGoogleSignIn(e);
-            }}
+            onClick={onGoogleSignIn}
             className={`w-full flex items-center justify-center gap-x-3 py-2.5 border rounded-lg text-sm font-medium  ${
               isSigningIn
                 ? "cursor-not-allowed"

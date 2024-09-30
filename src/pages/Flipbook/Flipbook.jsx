@@ -16,7 +16,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "../../components/common/FileNameModal";
 import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils";
-
+import "../../styles/UploadButton.css";
+import { useAuth } from "../../contexts/authContext.jsx"; 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function Flipbook() {
@@ -25,32 +26,31 @@ function Flipbook() {
   const location = useLocation();
   const navigate = useNavigate();
   const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
+  const [coverPages, setCoverPages] = useState({}); // Lưu trữ ảnh bìa của mỗi PDF
 
   const flipBookRef = useRef();
   const [zoom, setZoom] = useState(1.0);
   const [savedPdfFiles, setSavedPdfFiles] = useState([]);
   const [showPdfList, setShowPdfList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { currentUser } = useAuth();
 
   useEffect(() => {
-    // Retrieve the pdfFileUrl from navigation state or localStorage
     if (location.state?.pdfFileUrl) {
       setPdfFile(location.state.pdfFileUrl);
-      localStorage.setItem("pdfFile", location.state.pdfFileUrl); // Persist the file URL
+      localStorage.setItem("pdfFile", location.state.pdfFileUrl);
     } else if (!pdfFile) {
-      // If no file found, redirect or show an error
       navigate("/homepage");
     }
   }, [location.state, pdfFile, navigate]);
 
   useEffect(() => {
     if (pdfFile) {
-      setNumPages(null);  // Reset number of pages
-      setPdfPages([]);    // Reset the array of PDF pages
+      setNumPages(null);
+      setPdfPages([]);
     }
   }, [pdfFile]);
 
-  // When the document is loaded, set the number of pages
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
     const pages = Array.from({ length: numPages }, (_, i) => i + 1);
@@ -66,11 +66,11 @@ function Flipbook() {
   };
 
   const handleZoomIn = () => {
-    setZoom((prevZoom) => Math.min(prevZoom + 0.1, 2.0));  // Limit max zoom to 2.0
+    setZoom((prevZoom) => Math.min(prevZoom + 0.1, 2.0));
   };
 
   const handleZoomOut = () => {
-    setZoom((prevZoom) => Math.max(prevZoom - 0.1, 0.5));  // Limit min zoom to 0.5
+    setZoom((prevZoom) => Math.max(prevZoom - 0.1, 0.5));
   };
 
   const handleFullscreen = () => {
@@ -83,16 +83,27 @@ function Flipbook() {
 
   const downloadPDF = () => {
     const link = document.createElement("a");
-    link.href = pdfFile;  // Use the URL of the PDF
-    link.download = "Document";  // Default download name
+    link.href = pdfFile;
+    link.download = "Document";
     link.click();
   };
 
   const handleFetchSavedPdfs = async () => {
     try {
-      const pdfFiles = await fetchSavedPdfs();  // Fetch saved PDFs
+      const pdfFiles = await fetchSavedPdfs();
       setSavedPdfFiles(pdfFiles);
       setShowPdfList(true);
+
+      // Tạo đối tượng coverPages với ảnh bìa của mỗi PDF
+      const covers = {};
+      pdfFiles.forEach((pdf) => {
+        covers[pdf.url] = (
+          <Document file={pdf.url}>
+            <Page pageNumber={1} width={100} /> {/* Trang bìa, kích thước nhỏ */}
+          </Document>
+        );
+      });
+      setCoverPages(covers); // Lưu trữ trang bìa
     } catch (error) {
       console.error("Error fetching PDFs: ", error);
     }
@@ -101,26 +112,28 @@ function Flipbook() {
   const handlePdfSelect = (url) => {
     setPdfFile(url);
     setShowPdfList(false);
-    localStorage.setItem("pdfFile", url); // Persist the file URL
+    localStorage.setItem("pdfFile", url);
     location.state.pdfFileUrl = url;
-
   };
 
   const handleSavePdf = async (fileName) => {
+    if (!currentUser) {
+      return;
+    }
+
     try {
-      await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles");
-      setIsModalOpen(false);  // Close modal after saving
+      await savePdfToFirestore(pdfFile.url, fileName, currentUser);
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
     }
   };
 
-  // Share function to save PDF and navigate to Share page
   const handleShare = async () => {
-    const fileName = "Shared_PDF";  // Set a default file name
+    const fileName = "Shared_PDF";
     try {
       const savedPdfId = await savePdfToFirestore(pdfFile, fileName, "shares");
-      navigate(`/share?id=${savedPdfId}`);  // Navigate to Share page with saved PDF ID
+      navigate(`/share?id=${savedPdfId}`);
     } catch (error) {
       console.error("Error sharing PDF: ", error);
     }
@@ -131,20 +144,27 @@ function Flipbook() {
       <div className="flipbook-container">
         {showPdfList ? (
           <div className="pdf-list">
-            <h3>Select a PDF to View</h3>
-            <ul>
+            {/* Tiêu đề ở trên đầu */}
+            <h2 className="pdf-list-title">Select a PDF to View</h2>
+            <ul className="pdf-grid">
               {savedPdfFiles.map((pdf) => (
-                <li key={pdf.id}>
-                  <button onClick={() => handlePdfSelect(pdf.url)}>
+                <li key={pdf.id} className="pdf-item" onClick={() => handlePdfSelect(pdf.url)}>
+                  <div className="pdf-cover">
+                    {coverPages[pdf.url]}
+                  </div>
+                  <div className="pdf-name">
                     {pdf.name} - Viewed At: {new Date(pdf.viewedAt.seconds * 1000).toLocaleString()}
-                  </button>
+                  </div>
                 </li>
               ))}
             </ul>
             <button className="close-list-button" onClick={() => setShowPdfList(false)}>
-              <span>Close List</span>
+              Close List
             </button>
           </div>
+
+
+
         ) : (
           <>
             {pdfFile ? (

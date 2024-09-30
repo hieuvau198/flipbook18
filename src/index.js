@@ -4,13 +4,15 @@ import './styles/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css';
+import { AuthProvider } from './contexts/authContext';
+
 // Put any other imports below so that CSS from your
 // components takes precedence over default styles.
 
 ReactDOM.render(
-  <React.StrictMode>
+  <AuthProvider>
     <App />
-  </React.StrictMode>,
+  </AuthProvider>,
   document.getElementById('root')
 );
 
