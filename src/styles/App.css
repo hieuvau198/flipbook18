@@ -12,7 +12,10 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
+.card img {
+  width: 100%; /* Ensure the canvas is responsive */
+  height: auto;
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;

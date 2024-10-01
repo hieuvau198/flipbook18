@@ -17,50 +17,60 @@ export function AuthProvider({ children }) {
   const [isEmailUser, setIsEmailUser] = useState(false);
   const [isGoogleUser, setIsGoogleUser] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [authCallback, setAuthCallback] = useState(null);
+  const [role, setRole] = useState(null); // Track user role (admin/customer/etc.)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       await initializeUser(user);
+      if (authCallback) {
+        authCallback(user);
+      }
     });
 
     return unsubscribe;
-  }, []); // No dependencies needed here
+  }, [authCallback]);
 
   async function initializeUser(user) {
-    try {
-      if (user) {
-        const isEmail = user.providerData.some(
-          (provider) => provider.providerId === "password"
-        );
-        setIsEmailUser(isEmail);
-  
-        const isGoogle = user.providerData.some(
-          (provider) => provider.providerId === GoogleAuthProvider.PROVIDER_ID
-        );
-        setIsGoogleUser(isGoogle);
-  
-        const userDocRef = doc(db, "users", user.uid);
-        const userDocSnap = await getDoc(userDocRef);
-  
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          const userRole = userData.role || "customer"; 
-          setCurrentUser({ ...user, role: userRole });
-        } else {
-          setCurrentUser({ ...user, role: "customer" });
-        }
-  
-        setUserLoggedIn(true);
+    if (user) {
+      // Determine if the user signed in using email/password
+      const isEmail = user.providerData.some(
+        (provider) => provider.providerId === "password"
+      );
+      setIsEmailUser(isEmail);
+
+      // Determine if the user signed in using Google
+      const isGoogle = user.providerData.some(
+        (provider) => provider.providerId === GoogleAuthProvider.PROVIDER_ID
+      );
+      setIsGoogleUser(isGoogle);
+
+      // Fetch user role from Firestore
+      const userDocRef = doc(db, "users", user.uid); // Reference to Firestore document
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        const userRole = userData.role || "customer"; // Default role is 'customer' if not found
+
+        // Set role and currentUser state with user info and role
+        setRole(userRole);
+        setCurrentUser({ ...user, role: userRole });
       } else {
-        setCurrentUser(null);
-        setUserLoggedIn(false);
-        setIsEmailUser(false);
-        setIsGoogleUser(false);
+        // If no Firestore record, set default role as 'customer'
+        setRole("customer");
+        setCurrentUser({ ...user, role: "customer" });
       }
-    } catch (error) {
-      console.error("Error initializing user: ", error);
-    } finally {
-      setLoading(false);
+
+      // Set user as logged in
+      setUserLoggedIn(true);
+    } else {
+      // Reset all states if no user is authenticated
+      setCurrentUser(null);
+      setUserLoggedIn(false);
+      setIsEmailUser(false);
+      setIsGoogleUser(false);
+      setRole(null); // Reset role when logged out
     }
   }
   
@@ -69,11 +79,18 @@ export function AuthProvider({ children }) {
     console.log("Current User: ", currentUser);
   }, [currentUser]);
 
+  const setAuthCallbackHandler = (callback) => {
+    setAuthCallback(() => callback);
+  };
+
   const value = {
     userLoggedIn,
     isEmailUser,
     isGoogleUser,
     currentUser,
+    role, // Expose the role in context
+    setCurrentUser,
+    setAuthCallback: setAuthCallbackHandler,
   };
 
   return (

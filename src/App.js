@@ -5,8 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/auth/Login.jsx";
 import Register from "./components/auth/Register.jsx";
 import Header from "./components/layout/Header.jsx";
-import User from "./pages/Homepage/User.jsx";
-import Admin from "./pages/Homepage/Admin.jsx";
+import Home from "./pages/Homepage/Homepage.jsx";
 import FlipBook from "./pages/Flipbook/Flipbook.jsx";
 import Share from "./pages/Share/Share.jsx"; // Import the Share component
 import { AuthProvider } from "./contexts/authContext.jsx";
@@ -27,15 +26,7 @@ function App() {
                 path="/home"
                 element={
                   <ProtectedRoute>
-                    <User />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute>
-                    <Admin />
+                    <Home />
                   </ProtectedRoute>
                 }
               />

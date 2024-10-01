@@ -1,24 +1,29 @@
-import React, { useEffect } from 'react';
-import { useAuth } from '../../contexts/authContext';
+import React from "react";
+import { useNavigate } from "react-router-dom"; 
+import SavedPdfList from "../../components/common/SavedPdfList.jsx"; 
+import UploadBox from "../../components/common/UploadBox.jsx";
 
-const UserDashboard = () => {
-  const { currentUser } = useAuth();
+function User() {
+  const navigate = useNavigate(); 
 
-  useEffect(() => {
-    console.log("Current User in Dashboard: ", currentUser);
-  }, [currentUser]);
+  const handlePdfSelect = (url) => {
+    navigate("/flipbook", { state: { pdfFileUrl: url } });
+  };
 
   return (
-    <div>
-      {currentUser ? (
-        <>
-          <h1>Welcome, {currentUser.displayName || "User"}</h1>
-        </>
-      ) : (
-        <p>Please log in to access your dashboard.</p>
-      )}
+    <div className="page-background homepage ">
+      <UploadBox /> {/* Add the upload box here */}
+      <div className="row">
+      </div>
+      <div>
+        <h1 className="text-center mb-4">Popular Books</h1>
+        <SavedPdfList
+          onSelectPdf={handlePdfSelect} 
+          onCloseList={() => {}}
+        />
+      </div>
     </div>
   );
-};
+}
 
-export default UserDashboard;
+export default User;

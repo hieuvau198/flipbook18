@@ -3,8 +3,11 @@ import FileInput from "../../components/forms/FileInput";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import UploadButton from "../../components/forms/UploadButton";
 import { useHomepageLogic } from "../../hooks/useHomepageLogic";
+import { useAuth } from "../../contexts/authContext";
+import Admin from "./Admin.jsx";
+import User from "./User.jsx";
 
-function Admin() {
+function Homepage() {
   const {
     file,
     error,
@@ -13,6 +16,14 @@ function Admin() {
     handleUpload,
     handleLogin,
   } = useHomepageLogic();
+
+  const { role } = useAuth(); // Get the role from auth context
+
+  if (role === "admin") {
+    return <Admin />; // Render the Admin component if user is admin
+  } else if (role === "customer"){
+    return <User />;
+  }
 
   return (
     <div className="page-background homepage flex flex-col items-center justify-center min-h-screen bg-gray-100">
@@ -28,7 +39,7 @@ function Admin() {
       </div>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">
-          Upload your PDF file - This is Admin
+          Upload your PDF file
         </h1>
         <FileInput onFileChange={handleFileChange} />
         <ErrorMessage error={error} />
@@ -38,4 +49,4 @@ function Admin() {
   );
 }
 
-export default Admin;
+export default Homepage;
