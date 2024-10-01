@@ -9,6 +9,8 @@ export const fetchSavedPdfs = async () => {
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
+      // Ensure imageUrl is included in the fetched data
+      imageUrl: doc.data().imageUrl || '', // Default to empty string if not set
     }));
   } catch (error) {
     console.error("Error fetching PDFs: ", error);

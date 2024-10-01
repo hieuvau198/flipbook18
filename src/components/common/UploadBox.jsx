@@ -1,21 +1,25 @@
+// src/components/UploadBox.jsx
 import React from "react";
 import FileInput from "../../components/forms/FileInput";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import UploadButton from "../../components/forms/UploadButton";
 import { useHomepageLogic } from "../../hooks/useHomepageLogic";
+import { useAuth } from "../../contexts/authContext";
 
-function Admin() {
+const UploadBox = () => {
   const {
     file,
     error,
-    userLoggedIn,
     handleFileChange,
     handleUpload,
     handleLogin,
+    userLoggedIn,
   } = useHomepageLogic();
 
+  const { role } = useAuth(); // Get the role from auth context
+
   return (
-    <div className="page-background homepage flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md mx-auto mb-4 mt-4">
       <div className="absolute top-4 right-4">
         {!userLoggedIn && (
           <button
@@ -26,16 +30,11 @@ function Admin() {
           </button>
         )}
       </div>
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          Upload your PDF file - This is Admin
-        </h1>
-        <FileInput onFileChange={handleFileChange} />
-        <ErrorMessage error={error} />
-        <UploadButton onUpload={handleUpload} disabled={!file} />
-      </div>
+      <FileInput onFileChange={handleFileChange} />
+      <ErrorMessage error={error} />
+      <UploadButton onUpload={handleUpload} disabled={!file} />
     </div>
   );
-}
+};
 
-export default Admin;
+export default UploadBox;

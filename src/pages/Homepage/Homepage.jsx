@@ -3,6 +3,9 @@ import FileInput from "../../components/forms/FileInput";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import UploadButton from "../../components/forms/UploadButton";
 import { useHomepageLogic } from "../../hooks/useHomepageLogic";
+import { useAuth } from "../../contexts/authContext";
+import Admin from "./Admin.jsx";
+import User from "./User.jsx";
 
 function Homepage() {
   const {
@@ -13,6 +16,14 @@ function Homepage() {
     handleUpload,
     handleLogin,
   } = useHomepageLogic();
+
+  const { role } = useAuth(); // Get the role from auth context
+
+  if (role === "admin") {
+    return <Admin />; // Render the Admin component if user is admin
+  } else if (role === "customer"){
+    return <User />;
+  }
 
   return (
     <div className="page-background homepage flex flex-col items-center justify-center min-h-screen bg-gray-100">

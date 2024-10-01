@@ -1,39 +1,33 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Document, Page, pdfjs } from "react-pdf/dist/esm/entry.webpack";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowLeft,
-  faArrowRight,
-  faSearchPlus,
-  faSearchMinus,
-  faExpand,
-  faDownload,
-  faSave,
   faFolderOpen,
+  faSave,
   faShare,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "../../components/common/FileNameModal";
-import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils";
+import { savePdfToFirestore } from "../../utils/firebaseUtils";
+import { useAuth } from "../../contexts/authContext.jsx";
+import PdfViewer from "../../components/common/PdfViewer.jsx";
+import SavedPdfList from "../../components/common/SavedPdfList.jsx";
 import "../../styles/UploadButton.css";
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function Flipbook() {
-  const [numPages, setNumPages] = useState(null);
-  const [pdfPages, setPdfPages] = useState([]);
+  const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
   const location = useLocation();
   const navigate = useNavigate();
-  const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
-  const [coverPages, setCoverPages] = useState({}); // Lưu trữ ảnh bìa của mỗi PDF
-
-  const flipBookRef = useRef();
-  const [zoom, setZoom] = useState(1.0);
-  const [savedPdfFiles, setSavedPdfFiles] = useState([]);
   const [showPdfList, setShowPdfList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { currentUser, role } = useAuth();
 
   useEffect(() => {
+    // Check if there is a PDF file URL in the location state
     if (location.state?.pdfFileUrl) {
       setPdfFile(location.state.pdfFileUrl);
       localStorage.setItem("pdfFile", location.state.pdfFileUrl);
@@ -42,81 +36,17 @@ function Flipbook() {
     }
   }, [location.state, pdfFile, navigate]);
 
-  useEffect(() => {
-    if (pdfFile) {
-      setNumPages(null);
-      setPdfPages([]);
-    }
-  }, [pdfFile]);
-
-  const onDocumentLoadSuccess = ({ numPages }) => {
-    setNumPages(numPages);
-    const pages = Array.from({ length: numPages }, (_, i) => i + 1);
-    setPdfPages(pages);
-  };
-
-  const goToNextPage = () => {
-    flipBookRef.current.pageFlip().flipNext();
-  };
-
-  const goToPreviousPage = () => {
-    flipBookRef.current.pageFlip().flipPrev();
-  };
-
-  const handleZoomIn = () => {
-    setZoom((prevZoom) => Math.min(prevZoom + 0.1, 2.0));
-  };
-
-  const handleZoomOut = () => {
-    setZoom((prevZoom) => Math.max(prevZoom - 0.1, 0.5));
-  };
-
-  const handleFullscreen = () => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      document.documentElement.requestFullscreen();
-    }
-  };
-
-  const downloadPDF = () => {
-    const link = document.createElement("a");
-    link.href = pdfFile;
-    link.download = "Document";
-    link.click();
-  };
-
-  const handleFetchSavedPdfs = async () => {
-    try {
-      const pdfFiles = await fetchSavedPdfs();
-      setSavedPdfFiles(pdfFiles);
-      setShowPdfList(true);
-
-      // Tạo đối tượng coverPages với ảnh bìa của mỗi PDF
-      const covers = {};
-      pdfFiles.forEach((pdf) => {
-        covers[pdf.url] = (
-          <Document file={pdf.url}>
-            <Page pageNumber={1} width={100} /> {/* Trang bìa, kích thước nhỏ */}
-          </Document>
-        );
-      });
-      setCoverPages(covers); // Lưu trữ trang bìa
-    } catch (error) {
-      console.error("Error fetching PDFs: ", error);
-    }
-  };
-
   const handlePdfSelect = (url) => {
     setPdfFile(url);
     setShowPdfList(false);
     localStorage.setItem("pdfFile", url);
-    location.state.pdfFileUrl = url;
   };
 
   const handleSavePdf = async (fileName) => {
+    if (!currentUser) return;
+
     try {
-      await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles");
+      await savePdfToFirestore(pdfFile, fileName, "pdfFiles");
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
@@ -137,78 +67,41 @@ function Flipbook() {
     <div className="flipbook-background">
       <div className="flipbook-container">
         {showPdfList ? (
-          <div className="pdf-list">
-            {/* Tiêu đề ở trên đầu */}
-            <h2 className="pdf-list-title">Select a PDF to View</h2>
-            <ul className="pdf-grid">
-              {savedPdfFiles.map((pdf) => (
-                <li key={pdf.id} className="pdf-item" onClick={() => handlePdfSelect(pdf.url)}>
-                  <div className="pdf-cover">
-                    {coverPages[pdf.url]}
-                  </div>
-                  <div className="pdf-name">
-                    {pdf.name} - Viewed At: {new Date(pdf.viewedAt.seconds * 1000).toLocaleString()}
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <button className="close-list-button" onClick={() => setShowPdfList(false)}>
-              Close List
+          <>
+            {/* Show the SavedPdfList */}
+            <SavedPdfList onSelectPdf={handlePdfSelect} />
+            {/* Close List button */}
+            <button
+              onClick={() => setShowPdfList(false)}
+              className="close-list-button"
+            >
+              <FontAwesomeIcon icon={faTimes} /> Close List
             </button>
-          </div>
-
-
-
+          </>
         ) : (
           <>
             {pdfFile ? (
               <>
-                <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess}>
-                  <HTMLFlipBook width={450} height={550} ref={flipBookRef}>
-                    {pdfPages.map((pageNumber) => (
-                      <div key={pageNumber} className="page">
-                        <Page width={450 * zoom} pageNumber={pageNumber} />
-                      </div>
-                    ))}
-                  </HTMLFlipBook>
-                </Document>
-
+                <PdfViewer pdfFile={pdfFile} />
                 <div className="toolbar">
-                  <button onClick={goToPreviousPage} disabled={numPages <= 1}>
-                    <FontAwesomeIcon icon={faArrowLeft} />
+                  <button onClick={() => setShowPdfList(true)}>
+                    <FontAwesomeIcon icon={faFolderOpen} /> View List
                   </button>
-                  <button onClick={goToNextPage} disabled={numPages <= 1}>
-                    <FontAwesomeIcon icon={faArrowRight} />
-                  </button>
-                  <button onClick={handleZoomOut} disabled={zoom <= 0.5}>
-                    <FontAwesomeIcon icon={faSearchMinus} />
-                  </button>
-                  <button onClick={handleZoomIn}>
-                    <FontAwesomeIcon icon={faSearchPlus} />
-                  </button>
-                  <button onClick={handleFullscreen}>
-                    <FontAwesomeIcon icon={faExpand} />
-                  </button>
-                  <button onClick={downloadPDF}>
-                    <FontAwesomeIcon icon={faDownload} />
-                  </button>
-                  <button onClick={handleFetchSavedPdfs}>
-                    <FontAwesomeIcon icon={faFolderOpen} /> View Saved PDFs
-                  </button>
-                  <button onClick={() => setIsModalOpen(true)}>
-                    <FontAwesomeIcon icon={faSave} /> Save PDF
-                  </button>
+                  {role === "admin" && (
+                    <button onClick={() => setIsModalOpen(true)}>
+                      <FontAwesomeIcon icon={faSave} /> Save Book
+                    </button>
+                  )}
                   <button onClick={handleShare}>
-                    <FontAwesomeIcon icon={faShare} />
+                    <FontAwesomeIcon icon={faShare} /> Share Book
                   </button>
                 </div>
               </>
             ) : (
-              <p className="no-pdf-message">No PDF file selected</p>
+              <p className="no-pdf-message">No Book selected</p>
             )}
           </>
         )}
-
         <FileNameModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

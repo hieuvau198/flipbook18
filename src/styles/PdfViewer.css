@@ -1,0 +1,33 @@
+body {
+  font-family: "Poppin", sans-serif;
+  background-color: #2e3537;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flipbook-wrapper {
+  width: 100%; /* Chiếm toàn bộ chiều rộng */
+  max-width: 1000px; /* Giới hạn chiều rộng tối đa */
+  height: auto; /* Tự động điều chỉnh chiều cao */
+  max-height: 550px; /* Thay đổi chiều cao tối đa thành 600px */
+  overflow: hidden; /* Ẩn phần nội dung tràn */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.book {
+  width: 350px;
+  height: 450px;
+  position: relative;
+  border-radius: 15px; /* Bo tròn các cạnh ngoài của sách */
+  overflow: hidden; /* Ẩn phần tràn nếu có */
+}
+
+.cover,
+.back-cover,
+.page {
+  border-radius: 15px; /* Bo tròn các cạnh ngoài của các trang và bìa */
+}

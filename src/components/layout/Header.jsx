@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
-import { doSignOut } from "../../firebase/auth";
+import { logout } from "../../firebase/auth";
 import { FaBook } from "react-icons/fa";
 
 const Header = () => {
@@ -16,7 +16,7 @@ const Header = () => {
 
     setLoading(true);
     try {
-      await doSignOut();
+      await logout();
       navigate("/login");
     } catch (err) {
       console.error("Logout failed:", err);
@@ -47,9 +47,19 @@ const Header = () => {
         {userLoggedIn ? (
           <>
             {currentUser && (
-              <span className="text-sm text-gray-700">
-                Welcome, {currentUser.displayName || currentUser.email}
-              </span>
+              <div className="flex items-center space-x-2">
+                {currentUser.photoURL ? (
+                  <img
+                    src={currentUser.photoURL}
+                    alt="User Avatar"
+                    className="w-8 h-8 rounded-full"
+                  />
+                ) : (
+                  <span className="text-sm text-gray-700">
+                    Welcome, {currentUser.displayName || currentUser.email}
+                  </span>
+                )}
+              </div>
             )}
             <button
               onClick={handleLogout}

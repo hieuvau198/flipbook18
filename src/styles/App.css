@@ -12,7 +12,10 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
+.card img {
+  width: 100%; /* Ensure the canvas is responsive */
+  height: auto;
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -68,7 +71,7 @@
   right: 0;
   bottom: 0;
   margin: auto;
-  content: '';
+  content: "";
   border-radius: 50%;
   display: block;
   width: 20em;
@@ -102,7 +105,7 @@
 }
 
 .flipbook-container {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 15px;
@@ -225,7 +228,7 @@
   right: 0;
   bottom: 0;
   margin: auto;
-  content: '';
+  content: "";
   border-radius: 50%;
   display: block;
   width: 20em;
@@ -246,7 +249,7 @@
 }
 
 .no-pdf-message {
-  font-family: 'Comic Sans MS', cursive, sans-serif;
+  font-family: "Comic Sans MS", cursive, sans-serif;
   /* Hoặc một font chữ dễ thương khác */
   font-size: 24px;
   /* Kích thước chữ lớn hơn để dễ đọc */
@@ -274,7 +277,7 @@
 }
 
 .page-background {
-  background-image: url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm0yMjItbWluZC0xNl8xLmpwZw.jpg');
+  background-image: url("https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm0yMjItbWluZC0xNl8xLmpwZw.jpg");
   /* Thêm ảnh nền */
   background-size: cover;
   background-position: center;
@@ -313,7 +316,7 @@
 }
 
 .flipbook-background {
-  background-image: url('https://drexel.edu/~/media/Drexel/Core-Site-Group/Core/Images/admissions/visit-tours/virtual-background-downloads/blue-pattern.jpg');
+  background-image: url("https://drexel.edu/~/media/Drexel/Core-Site-Group/Core/Images/admissions/visit-tours/virtual-background-downloads/blue-pattern.jpg");
   /* Use your background image */
   background-size: cover;
   /* Cover the entire background */
@@ -344,7 +347,6 @@
 }
 
 .main-background {
-
   background-size: cover;
   background-position: center;
 }

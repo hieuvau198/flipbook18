@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Navigate, Link } from "react-router-dom";
 import {
+  signIn,
   doSignInWithEmailAndPassword,
   doSignInWithGoogle,
 } from "../../firebase/auth";
@@ -15,20 +16,34 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!isSigningIn) {
+    setErrorMessage(""); // Reset error message
+
+    if (!email || !password) {
+      setErrorMessage("Please enter both email and password.");
+      return;
+    }
+
+    try {
       setIsSigningIn(true);
-      await doSignInWithEmailAndPassword(email, password);
-      // doSendEmailVerification()
+      await signIn(email, password);
+    } catch (error) {
+      setErrorMessage(error.message || "Failed to sign in. Please try again.");
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
-  const onGoogleSignIn = (e) => {
+  const onGoogleSignIn = async (e) => {
     e.preventDefault();
-    if (!isSigningIn) {
+    setErrorMessage(""); // Reset error message
+
+    try {
       setIsSigningIn(true);
-      doSignInWithGoogle().catch((err) => {
-        setIsSigningIn(false);
-      });
+      await doSignInWithGoogle();
+    } catch (error) {
+      setErrorMessage(error.message || "Google sign-in failed. Please try again.");
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
@@ -107,13 +122,12 @@ const Login = () => {
           </div>
           <button
             disabled={isSigningIn}
-            onClick={(e) => {
-              onGoogleSignIn(e);
-            }}
-            className={`w-full flex items-center justify-center gap-x-3 py-2.5 border rounded-lg text-sm font-medium  ${isSigningIn
-              ? "cursor-not-allowed"
-              : "hover:bg-gray-100 transition duration-300 active:bg-gray-100"
-              }`}
+            onClick={onGoogleSignIn}
+            className={`w-full flex items-center justify-center gap-x-3 py-2.5 border rounded-lg text-sm font-medium  ${
+              isSigningIn
+                ? "cursor-not-allowed"
+                : "hover:bg-gray-100 transition duration-300 active:bg-gray-100"
+            }`}
           >
             <svg
               className="w-5 h-5"
