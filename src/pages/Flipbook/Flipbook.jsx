@@ -88,7 +88,7 @@ function Flipbook() {
           <>
             {pdfFile ? (
               <>
-                <PdfViewer pdfFile={pdfFile} />
+                <PdfViewer key={pdfFile} pdfFile={pdfFile} />
 
                 <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>
