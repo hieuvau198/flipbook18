@@ -106,8 +106,6 @@
 
 .flipbook-container {
   font-family: 'Poppins', sans-serif;
-  background-color: #f8f9fa;
-  padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -336,11 +334,9 @@
   /* Relative positioning for absolute children */
   z-index: 1;
   /* Ensures the container appears above the background */
-  padding: 20px;
   /* Add padding around the content */
   border-radius: 10px;
   /* Optional: rounded corners */
-  background-color: rgba(255, 255, 255, 0.9);
   /* Slightly transparent white background for readability */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   /* Optional: shadow for depth */
