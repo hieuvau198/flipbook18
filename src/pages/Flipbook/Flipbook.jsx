@@ -41,7 +41,6 @@ function Flipbook() {
   }, [location.state, pdfFile, navigate]);
 
   const handlePdfSelect = (url) => {
-    console.log("Selected PDF URL:", url); // Check if the URL is correct
     setPdfFile(url);
     setShowPdfList(false);
     localStorage.setItem("pdfFile", url);
@@ -53,9 +52,8 @@ function Flipbook() {
     if (!currentUser) {
       return;
     }
-
     try {
-      await savePdfToFirestore(pdfFile, fileName, "pdfFiles");
+      await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles");
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
@@ -90,7 +88,7 @@ function Flipbook() {
           <>
             {pdfFile ? (
               <>
-                <PdfViewer key={pdfFile} pdfFile={pdfFile} />
+                <PdfViewer pdfFile={pdfFile} />
 
                 <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>
