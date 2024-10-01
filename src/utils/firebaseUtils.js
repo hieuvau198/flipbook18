@@ -133,4 +133,3 @@ export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) 
     throw error;
   }
 };
-

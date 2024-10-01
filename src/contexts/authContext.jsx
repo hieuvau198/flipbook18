@@ -1,12 +1,13 @@
 // src/contexts/authContext.js
 import React, { useContext, useState, useEffect } from "react";
-import { auth } from "../firebase/firebase";
+import { auth } from "../firebase/firebase"; // Ensure this path is correct
 import { onAuthStateChanged, GoogleAuthProvider } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore"; 
-import { db } from "../firebase/firebase"; 
+import { doc, getDoc } from "firebase/firestore"; // Import Firestore
+import { db } from "../firebase/firebase"; // Import Firestore instance
 
-export const AuthContext = React.createContext();
+const AuthContext = React.createContext();
 
+// Custom hook to use the AuthContext
 export function useAuth() {
   return useContext(AuthContext);
 }
@@ -27,7 +28,6 @@ export function AuthProvider({ children }) {
         authCallback(user);
       }
     });
-
     return unsubscribe;
   }, [authCallback]);
 
@@ -72,12 +72,10 @@ export function AuthProvider({ children }) {
       setIsGoogleUser(false);
       setRole(null); // Reset role when logged out
     }
+
+    // Set loading state to false after processing user data
+    setLoading(false);
   }
-  
-  // Log currentUser whenever it changes
-  useEffect(() => {
-    console.log("Current User: ", currentUser);
-  }, [currentUser]);
 
   const setAuthCallbackHandler = (callback) => {
     setAuthCallback(() => callback);
