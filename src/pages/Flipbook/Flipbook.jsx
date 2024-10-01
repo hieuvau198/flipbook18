@@ -44,15 +44,16 @@ function Flipbook() {
     setPdfFile(url);
     setShowPdfList(false);
     localStorage.setItem("pdfFile", url);
+    navigate('/flipbook', { state: { pdfFileUrl: url } });
   };
+  
 
   const handleSavePdf = async (fileName) => {
     if (!currentUser) {
       return;
     }
-
     try {
-      await savePdfToFirestore(pdfFile, fileName, "pdfFiles");
+      await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles");
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
