@@ -41,10 +41,13 @@ function Flipbook() {
   }, [location.state, pdfFile, navigate]);
 
   const handlePdfSelect = (url) => {
+    console.log("Selected PDF URL:", url); // Check if the URL is correct
     setPdfFile(url);
     setShowPdfList(false);
     localStorage.setItem("pdfFile", url);
+    navigate('/flipbook', { state: { pdfFileUrl: url } });
   };
+  
 
   const handleSavePdf = async (fileName) => {
     if (!currentUser) {
@@ -87,7 +90,7 @@ function Flipbook() {
           <>
             {pdfFile ? (
               <>
-                <PdfViewer pdfFile={pdfFile} />
+                <PdfViewer key={pdfFile} pdfFile={pdfFile} />
 
                 <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>
