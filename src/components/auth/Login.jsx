@@ -25,7 +25,7 @@ const Login = () => {
 
     try {
       setIsSigningIn(true);
-      await signIn(email, password);
+      await signIn(email, password, setErrorMessage); // Truyền setErrorMessage vào đây
     } catch (error) {
       setErrorMessage(error.message || "Failed to sign in. Please try again.");
     } finally {
