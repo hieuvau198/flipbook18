@@ -16,7 +16,7 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Reset error message
+    setErrorMessage(""); 
 
     if (!email || !password) {
       setErrorMessage("Please enter both email and password.");
@@ -25,7 +25,7 @@ const Login = () => {
 
     try {
       setIsSigningIn(true);
-      await signIn(email, password, setErrorMessage); // Truyền setErrorMessage vào đây
+      await signIn(email, password, setErrorMessage);
     } catch (error) {
       setErrorMessage(error.message || "Failed to sign in. Please try again.");
     } finally {
@@ -35,7 +35,7 @@ const Login = () => {
 
   const onGoogleSignIn = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Reset error message
+    setErrorMessage("");
 
     try {
       setIsSigningIn(true);

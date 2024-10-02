@@ -1,6 +1,6 @@
 import { db } from "../firebase/firebase";
-import { getFirestore, query, where, collection, getDoc, getDocs , doc, addDoc, Timestamp } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getFirestore, query, where, collection, getDoc, getDocs , doc, addDoc, Timestamp, deleteDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import * as pdfjsLib from "pdfjs-dist/webpack"; // Importing pdfjs library
 
 // Fetch saved PDFs from Firestore
@@ -107,6 +107,22 @@ export const fetchImageByPdfId = async (pdfId) => {
   }
 };
 
+export const getPdfByUrl = async (pdfUrl) => {
+  try {
+    const q = query(collection(db, "pdfFiles"), where("url", "==", pdfUrl));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      console.log("No PDF found with the given URL.");
+      return null; 
+    }
+    const pdfDoc = querySnapshot.docs[0];
+    return { id: pdfDoc.id, ...pdfDoc.data() };
+  } catch (error) {
+    console.error("Error fetching PDF by URL: ", error);
+    throw error;
+  }
+};
+
 export const savePdfFirstPageAsImage = async (pdfFileUrl, pdfId) => {
   try {
     // Load the PDF from the URL
@@ -191,6 +207,8 @@ export const savePdfToFirestore = async (pdfFileUrl, fileName, collectionName) =
 export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) => {
   if (!pdfFile) throw new Error("No PDF file to save.");
   
+  //await clearStorage();
+
   const storage = getStorage();
   const storageRef = ref(storage, `${collectionName}/${fileName}`);
   
@@ -200,7 +218,7 @@ export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) 
   try {
     const snapshot = await uploadBytes(storageRef, blob);
     const downloadURL = await getDownloadURL(snapshot.ref);
-    const expiryDate = Timestamp.now().toMillis() + 60 * 1000;
+    const expiryDate = Timestamp.now().toMillis();
 
     
     const docRef = addDoc(collection(db, collectionName), {
@@ -217,3 +235,39 @@ export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) 
   }
 };
 
+export const clearStorage = async () => {
+  const twoHoursAgo = Timestamp.now().toMillis() - 2 * 60 * 60 * 1000; // 2 hours ago in milliseconds
+  const collectionName = "temps";
+
+  try {
+    // Query documents where viewedAt is older than two hours
+    const q = query(collection(db, collectionName), where("viewedAt", "<", Timestamp.fromMillis(twoHoursAgo)));
+    const querySnapshot = await getDocs(q);
+
+    const storage = getStorage();
+
+    // Loop through each document and delete the corresponding storage file and document
+    querySnapshot.forEach(async (doc) => {
+      const docData = doc.data();
+      const fileName = docData.name;
+      const fileRef = ref(storage, `${collectionName}/${doc.id}`);
+
+      try {
+        // Delete the file from Firebase Storage
+        //await deleteObject(fileRef);
+
+        // Delete the document from Firestore
+        await deleteDoc(doc.ref);
+
+        console.log(`Deleted file: ${fileName} and document: ${doc.id}`);
+      } catch (error) {
+        console.error(`Error deleting file ${fileName} or document ${doc.id}: `, error);
+      }
+    });
+
+    console.log("Storage and collection cleared for expired files.");
+  } catch (error) {
+    console.error("Error clearing storage and Firestore collection: ", error);
+    throw error;
+  }
+};
