@@ -1,33 +1,36 @@
-// src/components/PdfThumbnail.jsx
-import React, { useEffect, useRef } from 'react';
-import { getDocument } from 'pdfjs-dist/build/pdf';
-import 'pdfjs-dist/web/pdf_viewer.css'; // Optional, for viewer styles
-const PdfThumbnail = ({ pdfUrl }) => {
-  const canvasRef = useRef(null);
+import React, { useState, useEffect } from "react";
+import { fetchImageByPdfId } from "../../utils/firebaseUtils"; // Ensure the path is correct
+
+const PdfThumbnail = ({ pdfId, pdfName }) => {
+  const [imageUrl, setImageUrl] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const renderPdf = async () => {
-      const pdf = await getDocument(pdfUrl).promise;
-      const page = await pdf.getPage(1); // Get the first page
-
-      const scale = 0.5; // Adjust scale as needed
-      const viewport = page.getViewport({ scale });
-      const canvas = canvasRef.current;
-      const context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      const renderContext = {
-        canvasContext: context,
-        viewport: viewport,
-      };
-      await page.render(renderContext).promise;
+    const fetchThumbnail = async () => {
+      try {
+        const imageUrl = await fetchImageByPdfId(pdfId);
+        setImageUrl(imageUrl);
+      } catch (error) {
+        console.error(`Error fetching image for PDF ID ${pdfId}:`, error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    renderPdf();
-  }, [pdfUrl]);
+    fetchThumbnail();
+  }, [pdfId]);
 
-  return <canvas ref={canvasRef} style={{ maxWidth: '100%' }} />;
+  return (
+    <div>
+      {isLoading ? (
+        <p>Loading thumbnail...</p>
+      ) : imageUrl ? (
+        <img src={imageUrl} alt={`${pdfName} thumbnail`} className="img-fluid mb-2" />
+      ) : (
+        <div className="placeholder-thumbnail mb-2">No Thumbnail Available</div>
+      )}
+    </div>
+  );
 };
 
 export default PdfThumbnail;
