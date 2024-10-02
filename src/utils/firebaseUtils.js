@@ -1,5 +1,5 @@
 import { db } from "../firebase/firebase";
-import { collection, getDoc, getDocs , doc, addDoc, Timestamp } from "firebase/firestore";
+import { collection, getDoc, query, where, getDocs , doc, addDoc, Timestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 // Fetch saved PDFs from Firestore
@@ -137,6 +137,28 @@ export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) 
     return (await docRef).id;
   } catch (error) {
     console.error("Error saving PDF: ", error);
+    throw error;
+  }
+};
+// Hàm để lấy tài liệu PDF từ Firestore dựa trên URL
+export const getPdfByUrl = async (pdfUrl) => {
+  try {
+    // Tạo truy vấn để tìm tài liệu có trường "url" khớp với pdfUrl
+    const q = query(collection(db, "pdfFiles"), where("url", "==", pdfUrl));
+    
+    // Lấy kết quả truy vấn
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      console.log("No PDF found with the given URL.");
+      return null; // Không tìm thấy tài liệu với URL này
+    }
+
+    // Nếu tìm thấy, trả về dữ liệu của PDF đầu tiên khớp với URL
+    const pdfDoc = querySnapshot.docs[0];
+    return { id: pdfDoc.id, ...pdfDoc.data() };
+  } catch (error) {
+    console.error("Error fetching PDF by URL: ", error);
     throw error;
   }
 };
