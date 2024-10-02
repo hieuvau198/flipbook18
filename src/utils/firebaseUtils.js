@@ -1,6 +1,7 @@
 import { db } from "../firebase/firebase";
-import { collection, getDoc, query, where, getDocs , doc, addDoc, Timestamp } from "firebase/firestore";
+import { getFirestore, query, where, collection, getDoc, getDocs , doc, addDoc, Timestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import * as pdfjsLib from "pdfjs-dist/webpack"; // Importing pdfjs library
 
 // Fetch saved PDFs from Firestore
 export const fetchSavedPdfs = async () => {
@@ -78,10 +79,82 @@ export const fetchSavedPdfByUrl = async (url) => {
   }
 };
 
-// Save PDF to Firestore and Firebase Storage
+export const fetchImageByPdfId = async (pdfId) => {
+  try {
+    // Reference to the 'images' collection in Firestore
+    const imagesCollectionRef = collection(db, "images");
+
+    // Create a query to find the image document with the matching pdfId
+    const q = query(imagesCollectionRef, where("pdfId", "==", pdfId));
+
+    // Execute the query and get the documents
+    const querySnapshot = await getDocs(q);
+
+    // Check if we got any results
+    if (querySnapshot.empty) {
+      throw new Error(`No image found for pdfId: ${pdfId}`);
+    }
+
+    // Assuming only one image corresponds to each pdfId, get the first result
+    const imageDoc = querySnapshot.docs[0];
+    const imageData = imageDoc.data();
+
+    // Return the image URL
+    return imageData.imageUrl;
+  } catch (error) {
+    console.error("Error fetching image: ", error);
+    throw error;
+  }
+};
+
+export const savePdfFirstPageAsImage = async (pdfFileUrl, pdfId) => {
+  try {
+    // Load the PDF from the URL
+    const pdf = await pdfjsLib.getDocument(pdfFileUrl).promise;
+
+    // Get the first page
+    const page = await pdf.getPage(1);
+
+    // Set up a canvas to render the page
+    const viewport = page.getViewport({ scale: 1.5 });
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Render the page onto the canvas
+    await page.render({ canvasContext: context, viewport }).promise;
+
+    // Convert the canvas to a Blob (image format)
+    const imageBlob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", 0.8); // Convert to JPEG format
+    });
+
+    // Upload the image to Firebase Storage
+    const storage = getStorage();
+    const imageStorageRef = ref(storage, `images/${pdfId}.jpg`);
+    const snapshot = await uploadBytes(imageStorageRef, imageBlob);
+
+    // Get the download URL of the uploaded image
+    const imageUrl = await getDownloadURL(snapshot.ref);
+
+    // Save the image metadata to Firestore
+    await addDoc(collection(db, "images"), {
+      pdfId: pdfId, // Link the image to the saved PDF
+      imageUrl: imageUrl,
+      uploadedAt: Timestamp.now(),
+    });
+
+    console.log("First page image saved successfully.");
+  } catch (error) {
+    console.error("Error extracting or saving first page as image: ", error);
+    throw error;
+  }
+};
+
 export const savePdfToFirestore = async (pdfFileUrl, fileName, collectionName) => {
   if (!pdfFileUrl) throw new Error("No PDF file URL to save.");
-  
+
   // Initialize Firebase Storage
   const storage = getStorage();
   const storageRef = ref(storage, `${collectionName}/${fileName}`);
@@ -103,6 +176,9 @@ export const savePdfToFirestore = async (pdfFileUrl, fileName, collectionName) =
       url: downloadURL,
       viewedAt: Timestamp.now(),
     });
+
+    // Extract and save the first page of the PDF as an image
+    await savePdfFirstPageAsImage(downloadURL, docRef.id);
 
     // Return the document ID of the saved Firestore record
     return docRef.id;
