@@ -16,7 +16,6 @@ function User() {
       <div className="row">
       </div>
       <div>
-        <h1 className="text-center mb-4">Popular Books</h1>
         <SavedPdfList
           onSelectPdf={handlePdfSelect} 
           onCloseList={() => {}}
