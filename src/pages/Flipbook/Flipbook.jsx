@@ -14,10 +14,9 @@ import {
   faFolderOpen,
   faShare,
   faTimes,
-  faBookBookmark,
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "../../components/common/FileNameModal";
-import { fetchSavedPdfs, savePdfToFirestore, getPdfByUrl } from "../../utils/firebaseUtils";
+import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils";
 import "../../styles/UploadButton.css";
 import { useAuth } from "../../contexts/authContext.jsx"; 
 import PdfViewer from "../../components/common/PdfViewer.jsx";
@@ -25,8 +24,7 @@ import SavedPdfList from "../../components/common/SavedPdfList.jsx";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function Flipbook() {
-  //const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
-  const [pdfFile, setPdfFile] = useState(() => ({ url: localStorage.getItem("pdfFile") }));
+  const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
   const location = useLocation();
   const navigate = useNavigate();
   const [showPdfList, setShowPdfList] = useState(false);
@@ -35,16 +33,15 @@ function Flipbook() {
 
   useEffect(() => {
     if (location.state?.pdfFileUrl) {
-      const url = location.state.pdfFileUrl;
-      setPdfFile({ url });
-      localStorage.setItem("pdfFile", url);
-    } else if (!pdfFile.url) {
+      setPdfFile(location.state.pdfFileUrl);
+      localStorage.setItem("pdfFile", location.state.pdfFileUrl);
+    } else if (!pdfFile) {
       navigate("/homepage");
     }
-  }, [location.state, pdfFile.url, navigate]);
+  }, [location.state, pdfFile, navigate]);
 
   const handlePdfSelect = (url) => {
-    setPdfFile({ url });
+    setPdfFile(url);
     setShowPdfList(false);
     localStorage.setItem("pdfFile", url);
     navigate('/flipbook', { state: { pdfFileUrl: url } });
@@ -66,35 +63,10 @@ function Flipbook() {
   const handleShare = async () => {
     const fileName = "Shared_PDF";
     try {
-      const savedPdfId = await savePdfToFirestore(pdfFile.url, fileName, "shares");
+      const savedPdfId = await savePdfToFirestore(pdfFile, fileName, "shares");
       navigate(`/share?id=${savedPdfId}`);
     } catch (error) {
       console.error("Error sharing PDF: ", error);
-    }
-  };
-
-  const handleBookmark = async () => {
-    if (!currentUser) {
-      alert("You need to be logged in to bookmark this PDF.");
-      return;
-    }
-
-    try {
-      const userName = currentUser.displayName || "Unknown User";
-      console.log("PDF URL being passed:", pdfFile.url);
-      const pdfData = await getPdfByUrl(pdfFile.url);
-
-      if (!pdfData) {
-        alert("PDF not found with the given URL.");
-        return;
-      }
-
-      const fileName = pdfData.name || "Unnamed PDF";
-      await savePdfToFirestore(pdfFile.url, fileName, userName);
-      alert("PDF has been bookmarked successfully.");
-    } catch (error) {
-      console.error("Error bookmarking PDF: ", error);
-      alert("An error occurred while bookmarking the PDF.");
     }
   };
 
@@ -103,30 +75,28 @@ function Flipbook() {
       <div className="flipbook-container">
         {showPdfList ? (
           <>
+            {/* Show the SavedPdfList */}
             <SavedPdfList
               onSelectPdf={handlePdfSelect} // Pass the PDF selection handler
             />
+            {/* Close List button */}
             <button onClick={() => setShowPdfList(false)} className="close-list-button">
               <FontAwesomeIcon icon={faTimes} /> Close List
             </button>
           </>
         ) : (
           <>
-            {pdfFile.url ? (
+            {pdfFile ? (
               <>
-                <PdfViewer key={pdfFile.url} pdfFile={pdfFile.url} />
+                <PdfViewer key={pdfFile} pdfFile={pdfFile} />
 
                 <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>
                     <FontAwesomeIcon icon={faFolderOpen} /> View List
                   </button>
-                  {role === "admin" ? (
+                  {role === "admin" && ( // Show Save PDF button only for admin
                     <button onClick={() => setIsModalOpen(true)}>
                       <FontAwesomeIcon icon={faSave} /> Save Book
-                    </button>
-                  ) : (
-                    <button onClick={handleBookmark}>
-                      <FontAwesomeIcon icon={faBookBookmark} /> Bookmark
                     </button>
                   )}
                   <button onClick={handleShare}>

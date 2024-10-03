@@ -36,13 +36,11 @@ const Header = () => {
 
   return (
 
-    <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200 bg-opacity-80">
-
-
+    <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
       <div className="flex items-center space-x-2">
         <FaBook className="text-2xl text-blue-600" aria-hidden="true" />
         <Link to="/home" className="text-xl font-bold text-blue-600">
-          Flippin
+          FlipBook App
         </Link>
       </div>
       <div className="flex items-center space-x-4">

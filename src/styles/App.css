@@ -275,7 +275,7 @@
 }
 
 .page-background {
-  background-image: url('../assets/img/pexels-rafael-cosquiere-1059286-2041540.jpg');
+  background-image: url('https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm0yMjItbWluZC0xNl8xLmpwZw.jpg');
   /* Thêm ảnh nền */
   background-size: cover;
   background-position: center;
@@ -314,7 +314,7 @@
 }
 
 .flipbook-background {
-  background-image:  url('../assets/img/pexels-rafael-cosquiere-1059286-2041540.jpg');
+  background-image: url('https://drexel.edu/~/media/Drexel/Core-Site-Group/Core/Images/admissions/visit-tours/virtual-background-downloads/blue-pattern.jpg');
   /* Use your background image */
   background-size: cover;
   /* Cover the entire background */
