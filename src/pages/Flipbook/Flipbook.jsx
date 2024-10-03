@@ -19,7 +19,7 @@ import {
 import FileNameModal from "../../components/common/FileNameModal";
 import { fetchSavedPdfs, savePdfToFirestore, getPdfByUrl } from "../../utils/firebaseUtils";
 import "../../styles/UploadButton.css";
-import { useAuth } from "../../contexts/authContext.jsx";
+import { useAuth } from "../../contexts/authContext.jsx"; 
 import PdfViewer from "../../components/common/PdfViewer.jsx";
 import SavedPdfList from "../../components/common/SavedPdfList.jsx";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -32,8 +32,6 @@ function Flipbook() {
   const [showPdfList, setShowPdfList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentUser, role } = useAuth();
-  const [searchKeyword, setSearchKeyword] = useState("");
-
 
   useEffect(() => {
     if (location.state?.pdfFileUrl) {
@@ -51,7 +49,7 @@ function Flipbook() {
     localStorage.setItem("pdfFile", url);
     navigate('/flipbook', { state: { pdfFileUrl: url } });
   };
-
+  
 
   const handleSavePdf = async (fileName) => {
     if (!currentUser) {
@@ -105,19 +103,8 @@ function Flipbook() {
       <div className="flipbook-container">
         {showPdfList ? (
           <>
-            <input
-              type="text"
-              placeholder="Search for PDFs"
-              value={searchKeyword}
-              onChange={(e) => {
-                setSearchKeyword(e.target.value);
-                console.log(e.target.value); // In giá trị từ khóa tìm kiếm
-              }}
-              className="search-bar"
-            />
             <SavedPdfList
               onSelectPdf={handlePdfSelect} // Pass the PDF selection handler
-              searchKeyword={searchKeyword}
             />
             <button onClick={() => setShowPdfList(false)} className="close-list-button">
               <FontAwesomeIcon icon={faTimes} /> Close List
@@ -148,7 +135,7 @@ function Flipbook() {
                 </div>
               </>
             ) : (
-              <p className="no-pdf-message text-white text-2xl text-center">No Book selected</p>
+              <p className="no-pdf-message">No Book selected</p>
             )}
           </>
         )}
