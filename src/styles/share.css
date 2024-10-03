@@ -4,8 +4,8 @@
 	align-items: center; /* Center vertically */
 	height: 100vh; /* Full viewport height */
 	
-	background-image: url('https://storage.googleapis.com/pod_public/1300/167870.jpg');
-  }
+	background-image:  url('../assets/img/pexels-rafael-cosquiere-1059286-2041540.jpg');
+}
   
   .card {
 	border-radius: 10px; /* Rounded corners for the card */
@@ -14,7 +14,6 @@
   }
   
 header {
-	background: url('http://www.autodatz.com/wp-content/uploads/2017/05/Old-Car-Wallpapers-Hd-36-with-Old-Car-Wallpapers-Hd.jpg');
 	text-align: center;
 	width: 100%;
 	height: auto;

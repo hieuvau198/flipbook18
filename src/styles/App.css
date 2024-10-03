@@ -71,7 +71,7 @@
   right: 0;
   bottom: 0;
   margin: auto;
-  content: "";
+  content: '';
   border-radius: 50%;
   display: block;
   width: 20em;
@@ -105,9 +105,7 @@
 }
 
 .flipbook-container {
-  font-family: "Poppins", sans-serif;
-  background-color: #f8f9fa;
-  padding: 20px;
+  font-family: 'Poppins', sans-serif;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
@@ -228,7 +226,7 @@
   right: 0;
   bottom: 0;
   margin: auto;
-  content: "";
+  content: '';
   border-radius: 50%;
   display: block;
   width: 20em;
@@ -249,7 +247,7 @@
 }
 
 .no-pdf-message {
-  font-family: "Comic Sans MS", cursive, sans-serif;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
   /* Hoặc một font chữ dễ thương khác */
   font-size: 24px;
   /* Kích thước chữ lớn hơn để dễ đọc */
@@ -277,7 +275,7 @@
 }
 
 .page-background {
-  background-image: url("https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvcm0yMjItbWluZC0xNl8xLmpwZw.jpg");
+  background-image: url('../assets/img/pexels-rafael-cosquiere-1059286-2041540.jpg');
   /* Thêm ảnh nền */
   background-size: cover;
   background-position: center;
@@ -316,7 +314,7 @@
 }
 
 .flipbook-background {
-  background-image: url("https://drexel.edu/~/media/Drexel/Core-Site-Group/Core/Images/admissions/visit-tours/virtual-background-downloads/blue-pattern.jpg");
+  background-image:  url('../assets/img/pexels-rafael-cosquiere-1059286-2041540.jpg');
   /* Use your background image */
   background-size: cover;
   /* Cover the entire background */
@@ -336,17 +334,16 @@
   /* Relative positioning for absolute children */
   z-index: 1;
   /* Ensures the container appears above the background */
-  padding: 20px;
   /* Add padding around the content */
   border-radius: 10px;
   /* Optional: rounded corners */
-  background-color: rgba(255, 255, 255, 0.9);
   /* Slightly transparent white background for readability */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   /* Optional: shadow for depth */
 }
 
 .main-background {
+
   background-size: cover;
   background-position: center;
 }

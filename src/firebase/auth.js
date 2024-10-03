@@ -3,9 +3,6 @@ import { auth, db } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  sendEmailVerification,
-  updatePassword,
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
@@ -20,33 +17,28 @@ export const doSignInWithEmailAndPassword = (email, password) => {
 
 export const signUp = async (email, password, userData) => {
   try {
-    // Create the user with email and password
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Set the document reference using user.uid
     const userDocRef = doc(db, "users", user.uid);
-    
-    // Prepare user data to store in Firestore
+
     const dataToStore = {
       ...userData,
       uid: user.uid,
       email: email,
       role: "customer",
-      password: password,
     };
 
-    // Save user data to Firestore
     await setDoc(userDocRef, dataToStore);
 
-    return user; // Return the user object
+    return user;
   } catch (error) {
     console.error("Error during sign up:", error);
-    throw error; // Rethrow the error for further handling if necessary
+    throw error;
   }
 };
 
-export const signIn = async (email, password) => {
+export const signIn = async (email, password, setErrorMessage) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -62,17 +54,28 @@ export const signIn = async (email, password) => {
       throw new Error("No such user document!");
     }
   } catch (error) {
+    if (error.code === 'auth/invalid-credential') {
+      setErrorMessage("Credential không hợp lệ. Vui lòng kiểm tra và thử lại.");
+    } else if (error.code === 'auth/user-not-found') {
+      setErrorMessage("Người dùng không tồn tại.");
+    } else if (error.code === 'auth/wrong-password') {
+      setErrorMessage("Mật khẩu không đúng.");
+    } else {
+      setErrorMessage("Lỗi: " + error.message);
+    }
     console.error("Error signing in: ", error);
     throw error;
   }
 };
+
+
+
 export const doSignInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // Fetch user data from Firestore
     const userDocRef = doc(db, "users", user.uid);
     const userDoc = await getDoc(userDocRef);
 

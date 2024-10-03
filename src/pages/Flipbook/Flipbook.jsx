@@ -17,7 +17,11 @@ import {
   faBookBookmark,
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "../../components/common/FileNameModal";
-import { fetchSavedPdfs, savePdfToFirestore, getPdfByUrl } from "../../utils/firebaseUtils";
+import {
+  fetchSavedPdfs,
+  savePdfToFirestore,
+  getPdfByUrl,
+} from "../../utils/firebaseUtils";
 import "../../styles/UploadButton.css";
 import { useAuth } from "../../contexts/authContext.jsx";
 import PdfViewer from "../../components/common/PdfViewer.jsx";
@@ -26,14 +30,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 function Flipbook() {
   //const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
-  const [pdfFile, setPdfFile] = useState(() => ({ url: localStorage.getItem("pdfFile") }));
+  const [pdfFile, setPdfFile] = useState(() => ({
+    url: localStorage.getItem("pdfFile"),
+  }));
   const location = useLocation();
   const navigate = useNavigate();
   const [showPdfList, setShowPdfList] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentUser, role } = useAuth();
   const [searchKeyword, setSearchKeyword] = useState("");
-
 
   useEffect(() => {
     if (location.state?.pdfFileUrl) {
@@ -49,9 +54,8 @@ function Flipbook() {
     setPdfFile({ url });
     setShowPdfList(false);
     localStorage.setItem("pdfFile", url);
-    navigate('/flipbook', { state: { pdfFileUrl: url } });
+    navigate("/flipbook", { state: { pdfFileUrl: url } });
   };
-
 
   const handleSavePdf = async (fileName) => {
     if (!currentUser) {
@@ -68,7 +72,11 @@ function Flipbook() {
   const handleShare = async () => {
     const fileName = "Shared_PDF";
     try {
-      const savedPdfId = await savePdfToFirestore(pdfFile.url, fileName, "shares");
+      const savedPdfId = await savePdfToFirestore(
+        pdfFile.url,
+        fileName,
+        "shares"
+      );
       navigate(`/share?id=${savedPdfId}`);
     } catch (error) {
       console.error("Error sharing PDF: ", error);
@@ -119,7 +127,10 @@ function Flipbook() {
               onSelectPdf={handlePdfSelect} // Pass the PDF selection handler
               searchKeyword={searchKeyword}
             />
-            <button onClick={() => setShowPdfList(false)} className="close-list-button">
+            <button
+              onClick={() => setShowPdfList(false)}
+              className="close-list-button"
+            >
               <FontAwesomeIcon icon={faTimes} /> Close List
             </button>
           </>
@@ -148,7 +159,9 @@ function Flipbook() {
                 </div>
               </>
             ) : (
-              <p className="no-pdf-message text-white text-2xl text-center">No Book selected</p>
+              <p className="no-pdf-message text-white text-2xl text-center">
+                No Book selected
+              </p>
             )}
           </>
         )}

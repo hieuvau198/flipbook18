@@ -11,32 +11,21 @@ function Homepage() {
   const {
     file,
     error,
-    userLoggedIn,
+
     handleFileChange,
     handleUpload,
-    handleLogin,
   } = useHomepageLogic();
 
   const { role } = useAuth(); // Get the role from auth context
 
   if (role === "admin") {
     return <Admin />; // Render the Admin component if user is admin
-  } else {
+  } else if (role === "customer") {
     return <User />;
   }
 
   return (
     <div className="page-background homepage flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <div className="absolute top-4 right-4">
-        {!userLoggedIn && (
-          <button
-            onClick={handleLogin}
-            className="px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 rounded"
-          >
-            Login
-          </button>
-        )}
-      </div>
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">
           Upload your PDF file
