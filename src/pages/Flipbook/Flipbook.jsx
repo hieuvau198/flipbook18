@@ -1,21 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import HTMLFlipBook from "react-pageflip";
+import { Document, Page, pdfjs } from "react-pdf/dist/esm/entry.webpack";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faFolderOpen,
+  faArrowLeft,
+  faArrowRight,
+  faSearchPlus,
+  faSearchMinus,
+  faExpand,
+  faDownload,
   faSave,
+  faFolderOpen,
   faShare,
   faTimes,
   faBookBookmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { useAuth } from "../../contexts/authContext.jsx";
+import FileNameModal from "../../components/common/FileNameModal";
 import { fetchSavedPdfs, savePdfToFirestore, getPdfByUrl } from "../../utils/firebaseUtils";
+import "../../styles/UploadButton.css";
+import { useAuth } from "../../contexts/authContext.jsx"; 
 import PdfViewer from "../../components/common/PdfViewer.jsx";
 import SavedPdfList from "../../components/common/SavedPdfList.jsx";
-import FileNameModal from "../../components/common/FileNameModal";
-import "../../styles/UploadButton.css";
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function Flipbook() {
+  //const [pdfFile, setPdfFile] = useState(() => localStorage.getItem("pdfFile"));
   const [pdfFile, setPdfFile] = useState(() => ({ url: localStorage.getItem("pdfFile") }));
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,15 +49,27 @@ function Flipbook() {
     localStorage.setItem("pdfFile", url);
     navigate('/flipbook', { state: { pdfFileUrl: url } });
   };
+  
 
   const handleSavePdf = async (fileName) => {
-    if (!currentUser) return;
-
+    if (!currentUser) {
+      return;
+    }
     try {
       await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles");
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
+    }
+  };
+
+  const handleShare = async () => {
+    const fileName = "Shared_PDF";
+    try {
+      const savedPdfId = await savePdfToFirestore(pdfFile.url, fileName, "shares");
+      navigate(`/share?id=${savedPdfId}`);
+    } catch (error) {
+      console.error("Error sharing PDF: ", error);
     }
   };
 
@@ -76,22 +98,14 @@ function Flipbook() {
     }
   };
 
-  const handleShare = async () => {
-    const fileName = "Shared_PDF";
-    try {
-      const savedPdfId = await savePdfToFirestore(pdfFile.url, fileName, "shares");
-      navigate(`/share?id=${savedPdfId}`);
-    } catch (error) {
-      console.error("Error sharing PDF: ", error);
-    }
-  };
-
   return (
     <div className="flipbook-background">
       <div className="flipbook-container">
         {showPdfList ? (
           <>
-            <SavedPdfList onSelectPdf={handlePdfSelect} />
+            <SavedPdfList
+              onSelectPdf={handlePdfSelect} // Pass the PDF selection handler
+            />
             <button onClick={() => setShowPdfList(false)} className="close-list-button">
               <FontAwesomeIcon icon={faTimes} /> Close List
             </button>
@@ -101,6 +115,7 @@ function Flipbook() {
             {pdfFile.url ? (
               <>
                 <PdfViewer key={pdfFile.url} pdfFile={pdfFile.url} />
+
                 <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>
                     <FontAwesomeIcon icon={faFolderOpen} /> View List

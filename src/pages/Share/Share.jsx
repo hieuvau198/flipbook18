@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom"; 
 import { fetchSavedPdfById, fetchSavedPdfByIdAndCollection } from "../../utils/firebaseUtils.js";
 import '../../styles/share.css'; // Import Share.css
+import '../../styles/App.css';
 
 function Share() {
   const location = useLocation();
@@ -50,7 +51,7 @@ function Share() {
   };
 
   return (
-    <div className="pdf-details-container text-center">
+    <div className="flipbook-background text-center">
       {showPdf && savedPdfFile ? (
         <div className="card mx-auto" style={{ width: '30rem' }}>
           <div className="card-body">
