@@ -80,7 +80,7 @@ function Flipbook() {
     }
 
     try {
-      const userName = currentUser.email || "Unknown User";
+      const userName = currentUser.displayName || "Unknown User";
       console.log("PDF URL being passed:", pdfFile.url);
       const pdfData = await getPdfByUrl(pdfFile.url);
 

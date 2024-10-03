@@ -67,6 +67,9 @@ export const signIn = async (email, password, setErrorMessage) => {
     throw error;
   }
 };
+
+
+
 export const doSignInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
@@ -80,16 +83,7 @@ export const doSignInWithGoogle = async () => {
       const userData = userDoc.data();
       return { user, role: userData.role };
     } else {
-      // Người dùng chưa tồn tại trong Firestore, ghi dữ liệu mới vào Firestore
-      const dataToStore = {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        role: "customer",  // Mặc định vai trò là "customer", bạn có thể thay đổi nếu cần
-      };
-
-      await setDoc(userDocRef, dataToStore);
-      return { user, role: dataToStore.role };
+      throw new Error("No such user document!");
     }
   } catch (error) {
     console.error("Error during Google sign-in:", error);
