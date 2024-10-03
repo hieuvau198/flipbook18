@@ -21,7 +21,7 @@ function Homepage() {
 
   if (role === "admin") {
     return <Admin />; // Render the Admin component if user is admin
-  } else if (role === "customer"){
+  } else {
     return <User />;
   }
 

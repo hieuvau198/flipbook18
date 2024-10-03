@@ -163,7 +163,26 @@
     margin-bottom: 20px;
     /* Khoảng cách giữa tiêu đề và danh sách PDF */
 }
+
 .card img {
-    width: 100%; /* Ensure the canvas is responsive */
+    width: 100%;
+    /* Ensure the canvas is responsive */
     height: auto;
-  }
+}
+
+.search-bar {
+    margin-bottom: 10px;
+    padding: 8px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.no-pdf-message {
+    font-size: 24px;
+    /* Cỡ chữ lớn hơn */
+    color: aqua;
+    /* Màu trắng */
+    text-align: center;
+    /* Canh giữa nội dung nếu cần */
+}
