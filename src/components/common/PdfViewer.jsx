@@ -3,71 +3,63 @@ import HTMLFlipBook from "react-pageflip";
 import { Document, Page } from "react-pdf";
 import "../../styles/PdfViewer.css";
 
+const Pages = React.forwardRef((props, ref) => {
+  return (
+    <div className="Page" ref={ref}>
+      {props.children}
+    </div>
+  );
+});
+
+Pages.displayName = 'Pages';
+
 function PdfViewer({ pdfFile }) {
   const [numPages, setNumPages] = useState(0);
+  const [pageHeight, setPageHeight] = useState(600); // Dynamic page height
+  const [pageWidth, setPageWidth] = useState(445);   // Dynamic page width
   const flipBookRef = useRef(null);
-  const [containerHeight, setContainerHeight] = useState(600);
-  const [pageHeight, setPageHeight] = useState(600);
-  const [containerWidth, setContainerWidth] = useState(1000);
 
   const calculateHeight = (pdfWidth, pdfHeight) => {
+    // Tính tỷ lệ của PDF và điều chỉnh chiều cao trang dựa trên chiều rộng cố định
     const ratio = pdfHeight / pdfWidth;
-    const newHeight = containerHeight * ratio;
+    const newHeight = pageWidth * ratio;
     setPageHeight(newHeight);
   };
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
-    
   };
 
-  // Function to render each page of the PDF
+  const onPageLoadSuccess = (pdfPage) => {
+    const { width, height } = pdfPage; // Sửa chỗ này để tránh lỗi
+    calculateHeight(width, height);    // Tính chiều cao trang
+  };
+
   const renderPages = () => {
-    const pages = [];
+    if (numPages <= 0) return null; // Không có trang nào để render
 
-    // Render cover page (page 1)
-    pages.push(
-      <div
-        key={0}
-        className="page cover"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100%",
-          width: "70%",
-          border: "2px solid #ccc",
-          backgroundColor: "#f0f0f0",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        }}
-      >
-        <Page pageNumber={1} width={450} />
-      </div>
-    );
-
-    // Render the rest of the pages
-    for (let i = 2; i <= numPages; i++) {
-      pages.push(
-        <div key={i} className="page">
-          <div className="front-page">
-            <Page pageNumber={i} width={450} />
-          </div>
-          {i + 1 <= numPages && (
-            <div className="back-page">
-              <Page pageNumber={i + 1} width={450} />
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    return pages;
+    return [...Array(numPages).keys()].map((pNum) => (
+      <Pages key={pNum} number={pNum + 1}>
+        <Page
+          pageNumber={pNum + 1}
+          width={pageWidth - 5} 
+          height={pageHeight -5} 
+          renderAnnotationLayer={false}
+          renderTextLayer={false}
+          onLoadSuccess={onPageLoadSuccess} // Gọi khi trang PDF tải thành công
+        />
+      </Pages>
+    ));
   };
 
-  // Function to render the flipbook
+  // Hàm render flipbook
   const renderFlipBook = () => {
     return (
-      <HTMLFlipBook width={450} height={600} ref={flipBookRef}>
+      <HTMLFlipBook
+        width={pageWidth}
+        height={pageHeight}
+        ref={flipBookRef}
+      >
         {renderPages()}
       </HTMLFlipBook>
     );
@@ -76,9 +68,13 @@ function PdfViewer({ pdfFile }) {
   return (
     <div className="pdf-viewer-container">
       {pdfFile ? (
-        <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess} className="modal-90w">
+        <Document
+          file={pdfFile}
+          onLoadSuccess={onDocumentLoadSuccess}
+          className="modal-90w"
+        >
           <div className="flipbook-wrapper">
-            {/* Render the entire flipbook */}
+            {/* Render toàn bộ cuốn sách lật */}
             {renderFlipBook()}
           </div>
         </Document>
