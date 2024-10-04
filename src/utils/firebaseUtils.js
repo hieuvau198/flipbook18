@@ -1,6 +1,6 @@
 import { getDocument } from 'pdfjs-dist';
 import { db } from "../firebase/firebase";
-import { getFirestore, query, where, collection, getDoc, getDocs , doc, addDoc, deleteDoc, Timestamp } from "firebase/firestore";
+import { getFirestore, query, where, collection, getDoc, getDocs , doc, addDoc, deleteDoc, updateDoc, Timestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import * as pdfjsLib from "pdfjs-dist/webpack"; // Importing pdfjs library
 
@@ -10,9 +10,15 @@ export const fetchSavedPdfs = async () => {
     const querySnapshot = await getDocs(collection(db, "pdfFiles"));
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
-      // Ensure imageUrl is included in the fetched data
-      imageUrl: doc.data().imageUrl || '', // Default to empty string if not set
+      url: doc.data().url || 'url error',
+      name: doc.data().name || 'Unnamed', // Fetch 'name' field
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : 'Unknown', // Fetch 'viewedAt' field
+      author: doc.data().author || 'Unknown Author',
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || 'Active',
+      uploader: doc.data().uploader || 'Spiderman Upload',
+      views: doc.data().views || 0,
+      imageUrl: doc.data().imageUrl || '', // Fetch 'imageUrl' if available
     }));
   } catch (error) {
     console.error("Error fetching PDFs: ", error);
@@ -22,21 +28,26 @@ export const fetchSavedPdfs = async () => {
 
 export const fetchSavedPdfByCollection = async (collectionName) => {
   try {
-    // Get the documents from the specified collection
     const querySnapshot = await getDocs(collection(db, collectionName));
 
-    // Map through the documents and return their data along with the document ID
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
-      // Ensure imageUrl is included in the fetched data
-      imageUrl: doc.data().imageUrl || '', // Default to empty string if not set
+      url: doc.data().url || 'url error',
+      name: doc.data().name || 'Unnamed', // Fetch 'name' field
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : 'Unknown', // Fetch 'viewedAt' field
+      author: doc.data().author || 'Unknown Author',
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || 'Active',
+      uploader: doc.data().uploader || 'Spiderman Upload',
+      views: doc.data().views || 0,
+      imageUrl: doc.data().imageUrl || '', // Fetch 'imageUrl' if available
     }));
   } catch (error) {
     console.error(`Error fetching PDFs from collection: ${collectionName}`, error);
     throw error;
   }
 };
+
 
 export const fetchSavedPdfById = async (id) => {
   try {
@@ -175,7 +186,7 @@ export const savePdfFirstPageAsImage = async (pdfFileUrl, pdfId) => {
   }
 };
 
-export const savePdfToFirestore = async (pdfFileUrl, fileName, collectionName) => {
+export const savePdfToFirestore = async (pdfFileUrl, fileName, collectionName, author = "unknown", uploader = "unknown", views = 0, favorites = 0, status = "active") => {
   if (!pdfFileUrl) throw new Error("No PDF file URL to save.");
 
   // Initialize Firebase Storage
@@ -198,6 +209,11 @@ export const savePdfToFirestore = async (pdfFileUrl, fileName, collectionName) =
       name: fileName,
       url: downloadURL,
       viewedAt: Timestamp.now(),
+      author: author || "unknown",     // Default to "unknown" if not provided
+      uploader: uploader || "unknown", // Default to "unknown" if not provided
+      views: views || 0,               // Default to 0 if not provided
+      favorites: favorites || 0,       // Default to 0 if not provided
+      status: status || "active",      // Default to "active" if not provided
     });
 
     // Extract and save the first page of the PDF as an image
@@ -238,6 +254,29 @@ export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) 
     return (await docRef).id;
   } catch (error) {
     console.error("Error saving PDF: ", error);
+    throw error;
+  }
+};
+
+export const updatePdfByIdAndCollection = async (pdfId, collectionName, newName, newAuthor, newStatus) => {
+  if (!pdfId || !collectionName) {
+    throw new Error("pdfId and collectionName are required to update the document.");
+  }
+
+  try {
+    // Get a reference to the document in the specified collection
+    const pdfDocRef = doc(db, collectionName, pdfId);
+
+    // Update the document with the new values
+    await updateDoc(pdfDocRef, {
+      name: newName || null,        // Only update if newName is provided
+      author: newAuthor || null,    // Only update if newAuthor is provided
+      status: newStatus || null     // Only update if newStatus is provided
+    });
+
+    console.log(`Document with ID ${pdfId} successfully updated in the ${collectionName} collection.`);
+  } catch (error) {
+    console.error("Error updating the document: ", error);
     throw error;
   }
 };

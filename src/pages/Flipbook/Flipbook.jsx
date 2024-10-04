@@ -35,7 +35,7 @@ function Flipbook() {
     if (location.state?.pdfFileUrl) {
       setPdfFile(location.state.pdfFileUrl);
       localStorage.setItem("pdfFile", location.state.pdfFileUrl);
-    } else if (!pdfFile) {
+    } else {
       navigate("/homepage");
     }
   }, [location.state, pdfFile, navigate]);
@@ -48,12 +48,12 @@ function Flipbook() {
   };
   
 
-  const handleSavePdf = async (fileName) => {
+  const handleSavePdf = async (fileName, author, status) => {
     if (!currentUser) {
       return;
     }
     try {
-      await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles");
+      await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles", author, "uploader", 0, 0, status);
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);

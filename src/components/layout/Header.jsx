@@ -10,6 +10,8 @@ const Header = () => {
   const [error, setError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
 
+  const { role } = useAuth();
+
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
     if (!confirmLogout) return;
@@ -34,8 +36,11 @@ const Header = () => {
     navigate("/register");
   };
 
-  return (
+  const handleNavigateToLibrary = () => {
+    navigate("/library");
+  };
 
+  return (
     <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
       <div className="flex items-center space-x-2">
         <FaBook className="text-2xl text-blue-600" aria-hidden="true" />
@@ -46,6 +51,21 @@ const Header = () => {
       <div className="flex items-center space-x-4">
         {userLoggedIn ? (
           <>
+            {role === "admin" && (
+              <button
+                className="btn btn-secondary"
+                onClick={handleNavigateToLibrary}
+              >
+                Library
+              </button>
+            )}
+            <button
+              onClick={handleLogout}
+              className="btn btn-secondary"
+              disabled={loading}
+            >
+              <span>{loading ? "Logging out..." : "Logout"}</span>
+            </button>
             {currentUser && (
               <div className="flex items-center space-x-2">
                 {currentUser.photoURL ? (
@@ -61,30 +81,23 @@ const Header = () => {
                 )}
               </div>
             )}
-            <button
-              onClick={handleLogout}
-              className="custom-button"
-              disabled={loading}
-            >
-              <span>{loading ? "Logging out..." : "Logout"}</span>
-            </button>
+
             {error && (
               <span className="text-sm text-red-500 ml-2">{error}</span>
             )}
           </>
         ) : (
           <>
-            <button onClick={handleLogin} className="custom-button">
+            <button onClick={handleLogin} className="btn btn-secondary">
               <span>Login</span>
             </button>
-            <button onClick={handleRegister} className="custom-button">
+            <button onClick={handleRegister} className="btn btn-secondary">
               <span>Register</span>
             </button>
           </>
         )}
       </div>
     </nav>
-
   );
 };
 
