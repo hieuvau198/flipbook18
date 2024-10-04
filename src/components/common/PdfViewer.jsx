@@ -6,9 +6,19 @@ import "../../styles/PdfViewer.css";
 function PdfViewer({ pdfFile }) {
   const [numPages, setNumPages] = useState(0);
   const flipBookRef = useRef(null);
+  const [containerHeight, setContainerHeight] = useState(600);
+  const [pageHeight, setPageHeight] = useState(600);
+  const [containerWidth, setContainerWidth] = useState(1000);
+
+  const calculateHeight = (pdfWidth, pdfHeight) => {
+    const ratio = pdfHeight / pdfWidth;
+    const newHeight = containerHeight * ratio;
+    setPageHeight(newHeight);
+  };
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
+    
   };
 
   // Function to render each page of the PDF
@@ -24,13 +34,14 @@ function PdfViewer({ pdfFile }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: "600px",
+          height: "100%",
+          width: "70%",
           border: "2px solid #ccc",
           backgroundColor: "#f0f0f0",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <Page pageNumber={1} width={500} />
+        <Page pageNumber={1} width={450} />
       </div>
     );
 
@@ -39,11 +50,11 @@ function PdfViewer({ pdfFile }) {
       pages.push(
         <div key={i} className="page">
           <div className="front-page">
-            <Page pageNumber={i} width={500} />
+            <Page pageNumber={i} width={450} />
           </div>
           {i + 1 <= numPages && (
             <div className="back-page">
-              <Page pageNumber={i + 1} width={500} />
+              <Page pageNumber={i + 1} width={450} />
             </div>
           )}
         </div>
@@ -56,7 +67,7 @@ function PdfViewer({ pdfFile }) {
   // Function to render the flipbook
   const renderFlipBook = () => {
     return (
-      <HTMLFlipBook width={500} height={600} ref={flipBookRef}>
+      <HTMLFlipBook width={450} height={600} ref={flipBookRef}>
         {renderPages()}
       </HTMLFlipBook>
     );
