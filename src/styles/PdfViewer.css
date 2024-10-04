@@ -9,6 +9,15 @@
     justify-content: center;
     align-items: center;
   }
+
+  /* Thêm CSS cho chế độ single page */
+.single-page-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
   
   .book {
     width: 450px;
