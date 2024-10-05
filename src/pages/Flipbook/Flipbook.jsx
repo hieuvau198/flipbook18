@@ -20,6 +20,7 @@ import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils";
 import "../../styles/UploadButton.css";
 import { useAuth } from "../../contexts/authContext.jsx"; 
 import PdfViewer from "../../components/common/PdfViewer.jsx";
+import JqueryPdfViewer from "../../components/common/JqueryPdfViewer.jsx";
 import SavedPdfList from "../../components/common/SavedPdfList.jsx";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -35,7 +36,7 @@ function Flipbook() {
     if (location.state?.pdfFileUrl) {
       setPdfFile(location.state.pdfFileUrl);
       localStorage.setItem("pdfFile", location.state.pdfFileUrl);
-    } else if (!pdfFile) {
+    } else {
       navigate("/homepage");
     }
   }, [location.state, pdfFile, navigate]);
@@ -48,12 +49,12 @@ function Flipbook() {
   };
   
 
-  const handleSavePdf = async (fileName) => {
+  const handleSavePdf = async (fileName, author, status) => {
     if (!currentUser) {
       return;
     }
     try {
-      await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles");
+      await savePdfToFirestore(pdfFile.url, fileName, "pdfFiles", author, "uploader", 0, 0, status);
       setIsModalOpen(false);
     } catch (error) {
       console.error("Error saving PDF: ", error);
@@ -88,7 +89,7 @@ function Flipbook() {
           <>
             {pdfFile ? (
               <>
-                <PdfViewer key={pdfFile} pdfFile={pdfFile} />
+                <JqueryPdfViewer key={pdfFile} pdfFile={pdfFile} />
 
                 <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>

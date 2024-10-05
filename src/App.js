@@ -8,9 +8,16 @@ import Header from "./components/layout/Header.jsx";
 import Home from "./pages/Homepage/Homepage.jsx";
 import FlipBook from "./pages/Flipbook/Flipbook.jsx";
 import Share from "./pages/Share/Share.jsx"; // Import the Share component
+import BookManagement from "./pages/Management/BookManagement.jsx";
 import { AuthProvider } from "./contexts/authContext.jsx";
 import { PdfProvider } from "./contexts/PdfContext.jsx";
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+import { useAuth } from "./contexts/authContext.jsx";
+
+function AdminRoute({ children }) {
+  const { role } = useAuth(); // Fetch the user info
+  return role === 'admin' ? children : <Navigate to="/home" replace />;
+}
 
 function App() {
   return (
@@ -39,6 +46,18 @@ function App() {
                 }
               />
               <Route path="/share" element={<Share />} />
+              <Route
+                path="/library"
+                element={
+                  <ProtectedRoute>
+                    <AdminRoute>
+                      <BookManagement />
+                    </AdminRoute>
+                      
+                    
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/"
                 element={
