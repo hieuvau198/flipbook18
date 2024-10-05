@@ -267,11 +267,20 @@ export const updatePdfByIdAndCollection = async (pdfId, collectionName, newName,
     // Get a reference to the document in the specified collection
     const pdfDocRef = doc(db, collectionName, pdfId);
 
-    // Update the document with the new values
+    // Fetch the current document to retrieve existing values
+    const pdfDocSnapshot = await getDoc(pdfDocRef);
+
+    if (!pdfDocSnapshot.exists()) {
+      throw new Error(`Document with ID ${pdfId} does not exist in the ${collectionName} collection.`);
+    }
+
+    const currentData = pdfDocSnapshot.data(); // Get the current data
+
+    // Update the document with new values, keeping old ones if new values are not provided
     await updateDoc(pdfDocRef, {
-      name: newName || null,        // Only update if newName is provided
-      author: newAuthor || null,    // Only update if newAuthor is provided
-      status: newStatus || null     // Only update if newStatus is provided
+      name: newName || currentData.name,         // Use current name if newName is not provided
+      author: newAuthor || currentData.author,   // Use current author if newAuthor is not provided
+      status: newStatus || currentData.status    // Use current status if newStatus is not provided
     });
 
     console.log(`Document with ID ${pdfId} successfully updated in the ${collectionName} collection.`);
@@ -280,6 +289,7 @@ export const updatePdfByIdAndCollection = async (pdfId, collectionName, newName,
     throw error;
   }
 };
+
 
 export const deleteCoverPageByPdfFileId = async (pdfFileId) => {
   if (!pdfFileId) {
