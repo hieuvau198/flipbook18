@@ -1,35 +1,35 @@
-
-  
-  .flipbook-wrapper {
-    width: 100%; /* Chiếm toàn bộ chiều rộng */
-    max-width: 1000px; /* Giới hạn chiều rộng tối đa */
-    height: auto; /* Tự động điều chỉnh chiều cao */
-    overflow: hidden; /* Ẩn phần nội dung tràn */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  /* Thêm CSS cho chế độ single page */
-.single-page-wrapper {
+.flipbook-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  height: auto;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
 }
 
-  
-  .book {
-    width: 450px;
-    height: 600px;
-    position: relative;
-    border-radius: 15px; /* Bo tròn các cạnh ngoài của sách */
-    overflow: hidden; /* Ẩn phần tràn nếu có */
-  }
-  
-  .cover,
-  .back-cover,
-  .page {
-    border-radius: 15px; /* Bo tròn các cạnh ngoài của các trang và bìa */
-  }
-  
+.jquery-pdf-viewer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+}
+
+.book {
+  width: 450px;
+  height: 600px;
+  position: relative;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.cover,
+.back-cover,
+
+.page {
+  width: 445; /* Đảm bảo mỗi trang chiếm toàn bộ chiều rộng của container */
+  height: 580; /* Chiều cao tự động để điều chỉnh nội dung */
+  display: flex;
+  border: 1px solid; /* Thêm đường viền để phân biệt các trang */
+}
+

@@ -9,10 +9,13 @@ function JqueryPdfViewer({ pdfFile }) {
   const [numPages, setNumPages] = useState(0);
   const [loadedPages, setLoadedPages] = useState([]);
   const [containerHeight, setContainerHeight] = useState(600);
+  const isMounted = useRef(true); // Track if component is mounted
 
   const onDocumentLoadSuccess = ({ numPages }) => {
-    setNumPages(numPages);
-    console.log("Document loaded successfully. Number of pages:", numPages);
+    if (isMounted.current) {
+      setNumPages(numPages);
+      console.log("Document loaded successfully. Number of pages:", numPages);
+    }
   };
 
   const loadPages = async () => {
@@ -24,8 +27,10 @@ function JqueryPdfViewer({ pdfFile }) {
         </div>
       );
     }
-    setLoadedPages(pages);
-    console.log("Pages loaded:", pages.length);
+    if (isMounted.current) {
+      setLoadedPages(pages);
+      console.log("Pages loaded:", pages.length);
+    }
   };
 
   useEffect(() => {
@@ -89,7 +94,7 @@ function JqueryPdfViewer({ pdfFile }) {
     <div className="jquery-pdf-viewer">
       {pdfFile ? (
         <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess}>
-          <div className="flipbook-container" ref={flipbookRef}>
+          <div className="flipbook-wrapper" ref={flipbookRef}>
             {loadedPages.map((page) => page)}
           </div>
         </Document>

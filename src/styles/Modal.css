@@ -13,17 +13,6 @@
   width: 100%;
 }
 
-/* src/Modal.css */
-/* src/Modal.css */
-.flipbook-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  /* Ensure space is distributed */
-  align-items: center;
-  height: 90vh;
-}
-
 .modal-90w {
   width: 90%;
   height: 90%;
