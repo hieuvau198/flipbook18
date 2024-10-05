@@ -14,6 +14,7 @@ const Login = () => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage(""); // Reset error message
@@ -27,7 +28,7 @@ const Login = () => {
       setIsSigningIn(true);
       await signIn(email, password);
     } catch (error) {
-      setErrorMessage(error.message || "Failed to sign in. Please try again.");
+      handleFirebaseError(error);  // Thay vì setErrorMessage(error.message)
     } finally {
       setIsSigningIn(false);
     }
@@ -41,12 +42,26 @@ const Login = () => {
       setIsSigningIn(true);
       await doSignInWithGoogle();
     } catch (error) {
-      setErrorMessage(error.message || "Google sign-in failed. Please try again.");
+      handleFirebaseError(error);
     } finally {
       setIsSigningIn(false);
     }
   };
+  const handleFirebaseError = (error) => {
+    let message = "Đăng nhập thất bại. Vui lòng thử lại.";
 
+    if (error.code === "auth/invalid-credential") {
+      message = "Thông tin xác thực không hợp lệ.";
+    } else if (error.code === "auth/user-not-found") {
+      message = "Không tìm thấy người dùng với email này.";
+    } else if (error.code === "auth/wrong-password") {
+      message = "Mật khẩu không đúng.";
+    } else if (error.code === "auth/network-request-failed") {
+      message = "Kết nối mạng thất bại. Vui lòng kiểm tra lại.";
+    }
+
+    setErrorMessage(message);
+  };
   return (
 
     <div >
@@ -95,9 +110,8 @@ const Login = () => {
               />
             </div>
 
-            {errorMessage && (
-              <span className="text-red-600 font-bold">{errorMessage}</span>
-            )}
+            {errorMessage && <p className="error">{errorMessage}</p>}
+
 
             <button
               type="submit"
