@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { fetchSavedPdfByCollection, deletePdfByIdAndCollection, updatePdfByIdAndCollection } from "../../utils/firebaseUtils"; // Adjust the path as needed
+import {
+  fetchSavedPdfByCollection,
+  deletePdfByIdAndCollection,
+  updatePdfByIdAndCollection,
+  fetchSavedPdfByIdAndCollection, // Add this import for the handleAccess function
+} from "../../utils/firebaseUtils"; // Adjust the path as needed
 import "../../styles/App.css";
 
 const BookManagement = () => {
@@ -25,11 +30,15 @@ const BookManagement = () => {
     fetchData();
   }, []);
 
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
   // Function to handle update
   const handleUpdate = async (pdf) => {
     setSelectedPdf(pdf); // Set the selected PDF to state for updating
     setNewName(pdf.name || ""); // Pre-fill form with current values
-    setNewAuthor(pdf.author || ""); 
+    setNewAuthor(pdf.author || "");
     setNewStatus(pdf.status || "");
   };
 
@@ -41,8 +50,7 @@ const BookManagement = () => {
           selectedPdf.id,
           "pdfFiles", // Collection name
           newName,
-          newAuthor,
-          newStatus
+          newAuthor
         );
         setPdfFiles((prevFiles) =>
           prevFiles.map((pdf) =>
@@ -59,7 +67,9 @@ const BookManagement = () => {
   };
 
   const handleDelete = async (pdfId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this PDF?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this PDF?"
+    );
     if (!confirmed) return;
 
     try {
@@ -70,12 +80,43 @@ const BookManagement = () => {
     }
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  // Function to handle access (Enable/Disable)
+  const handleAccess = async (pdfId, collectionName) => {
+    try {
+      // Fetch the current PDF document by its ID and collection
+      const pdfData = await fetchSavedPdfByIdAndCollection(pdfId, collectionName);
+
+      if (!pdfData) {
+        console.error("No PDF data found for the given ID and collection.");
+        return;
+      }
+
+      // Check the current status and toggle it
+      const currentStatus = pdfData.status;
+      const newStatus = currentStatus === "Enable" ? "Disable" : "Enable";
+
+      // Update the PDF status in Firestore
+      await updatePdfByIdAndCollection(
+        pdfId,
+        collectionName,
+        pdfData.name,
+        pdfData.author,
+        newStatus
+      );
+
+      // Update the UI with the new status
+      setPdfFiles((prevFiles) =>
+        prevFiles.map((pdf) =>
+          pdf.id === pdfId ? { ...pdf, status: newStatus } : pdf
+        )
+      );
+    } catch (error) {
+      console.error("Error handling access:", error);
+    }
+  };
 
   return (
-    <div className="min-vh-100"> {/* Ensures full page height */}
+    <div className="min-vh-100">
       <div className="management-container">
         <div className="row mt-4">
           <div className="col-lg-4"></div>
@@ -87,7 +128,9 @@ const BookManagement = () => {
                   <th scope="col">Name</th>
                   <th scope="col">Date</th>
                   <th scope="col">Author</th>
-                  <th scope="col">Actions</th>
+                  <th scope="col">Update</th>
+                  <th scope="col">Remove</th>
+                  <th scope="col">Access</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,14 +145,28 @@ const BookManagement = () => {
                     </td>
                     <td>{pdf.author || "Unknown"}</td>
                     <td>
-                      <button className="btn btn-secondary" onClick={() => handleDelete(pdf.id)}>
-                        Delete
-                      </button>
-                      <button className="btn btn-primary" onClick={() => handleUpdate(pdf)}>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => handleUpdate(pdf)}
+                      >
                         Update
                       </button>
-                      <button className="btn btn-secondary">
-                        Disable
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => handleDelete(pdf.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        id={`toggleButton-${pdf.id}`} // Unique ID for each button
+                        className="btn btn-secondary"
+                        onClick={() => handleAccess(pdf.id, "pdfFiles")}
+                      >
+                        {pdf.status}
                       </button>
                     </td>
                   </tr>
@@ -136,15 +193,6 @@ const BookManagement = () => {
                     type="text"
                     value={newAuthor}
                     onChange={(e) => setNewAuthor(e.target.value)}
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Status</label>
-                  <input
-                    type="text"
-                    value={newStatus}
-                    onChange={(e) => setNewStatus(e.target.value)}
                     className="form-control"
                   />
                 </div>
