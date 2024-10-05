@@ -105,10 +105,8 @@
 }
 
 .flipbook-container {
-  font-family: 'Poppins', sans-serif;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  
+  
 }
 
 .toolbar {
@@ -189,10 +187,7 @@
 }
 
 .page {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
 }
 
 /* Close List Button Style */

@@ -20,6 +20,7 @@ import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils";
 import "../../styles/UploadButton.css";
 import { useAuth } from "../../contexts/authContext.jsx"; 
 import PdfViewer from "../../components/common/PdfViewer.jsx";
+import JqueryPdfViewer from "../../components/common/JqueryPdfViewer.jsx";
 import SavedPdfList from "../../components/common/SavedPdfList.jsx";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
@@ -88,7 +89,7 @@ function Flipbook() {
           <>
             {pdfFile ? (
               <>
-                <PdfViewer key={pdfFile} pdfFile={pdfFile} />
+                <JqueryPdfViewer key={pdfFile} pdfFile={pdfFile} />
 
                 <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>
