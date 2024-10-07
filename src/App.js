@@ -8,6 +8,7 @@ import Header from "./components/layout/Header.jsx";
 import Home from "./pages/Homepage/Homepage.jsx";
 import FlipBook from "./pages/Flipbook/Flipbook.jsx";
 import Share from "./pages/Share/Share.jsx"; // Import the Share component
+import Demo from "./pages/Demo/Demo.jsx";
 import BookManagement from "./pages/Management/BookManagement.jsx";
 import { AuthProvider } from "./contexts/authContext.jsx";
 import { PdfProvider } from "./contexts/PdfContext.jsx";
@@ -29,6 +30,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/demo" element={<Demo />} />
               <Route
                 path="/home"
                 element={
