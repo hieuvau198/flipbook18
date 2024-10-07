@@ -38,7 +38,7 @@ const SavedPdfList = ({ onSelectPdf }) => {
                   <p className="card-text">Author: {pdf.author}</p>
                   <button
                     className="btn btn-primary"
-                    onClick={() => onSelectPdf(pdf.url)}
+                    onClick={() => onSelectPdf(pdf)}
                   >
                     View
                   </button>

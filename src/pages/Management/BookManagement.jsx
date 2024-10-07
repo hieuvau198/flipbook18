@@ -5,6 +5,7 @@ import {
   updatePdfByIdAndCollection,
   fetchSavedPdfByIdAndCollection, // Add this import for the handleAccess function
 } from "../../utils/firebaseUtils"; // Adjust the path as needed
+import PdfViewsChart from "../../components/common/PdfViewsChart";
 import "../../styles/App.css";
 
 const BookManagement = () => {
@@ -119,7 +120,9 @@ const BookManagement = () => {
     <div className="min-vh-100">
       <div className="management-container">
         <div className="row mt-4">
-          <div className="col-lg-4"></div>
+          <div className="col-lg-4">
+            <PdfViewsChart />
+          </div>
           <div className="col-lg-7">
             <table className="table border border-light">
               <thead className="thead-dark">

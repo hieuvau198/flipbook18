@@ -1,6 +1,6 @@
 import { getDocument } from 'pdfjs-dist';
 import { db } from "../firebase/firebase";
-import { getFirestore, query, where, collection, getDoc, getDocs , doc, addDoc, deleteDoc, updateDoc, Timestamp } from "firebase/firestore";
+import { getFirestore, query, where, collection, getDoc, getDocs , doc, addDoc, deleteDoc, updateDoc, increment, Timestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import * as pdfjsLib from "pdfjs-dist/webpack"; // Importing pdfjs library
 
@@ -258,6 +258,19 @@ export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) 
   }
 };
 
+export const incrementPdfViews = async (pdfDocId, collectionName) => {
+  try {
+    const pdfDocRef = doc(db, collectionName, pdfDocId);
+    // Increment the views field in Firestore
+    await updateDoc(pdfDocRef, {
+      views: increment(1), // Increment views by 1
+    });
+  } catch (error) {
+    console.error("Error updating views: ", error);
+    throw error;
+  }
+};
+
 export const updatePdfByIdAndCollection = async (pdfId, collectionName, newName, newAuthor, newStatus) => {
   if (!pdfId || !collectionName) {
     throw new Error("pdfId and collectionName are required to update the document.");
@@ -289,7 +302,6 @@ export const updatePdfByIdAndCollection = async (pdfId, collectionName, newName,
     throw error;
   }
 };
-
 
 export const deleteCoverPageByPdfFileId = async (pdfFileId) => {
   if (!pdfFileId) {

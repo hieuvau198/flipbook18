@@ -6,8 +6,8 @@ import UploadBox from "../../components/common/UploadBox.jsx";
 function User() {
   const navigate = useNavigate(); 
 
-  const handlePdfSelect = (url) => {
-    navigate("/flipbook", { state: { pdfFileUrl: url } });
+  const handlePdfSelect = (pdf) => {
+    navigate("/flipbook", { state: { pdfFileUrl: pdf.url, pdfDocId: pdf.id } });
   };
 
   return (
