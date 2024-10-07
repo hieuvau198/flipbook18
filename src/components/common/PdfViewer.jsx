@@ -6,28 +6,26 @@ import "../../styles/PdfViewer.css";
 function PdfViewer({ pdfFile }) {
   const [numPages, setNumPages] = useState(0);
   const flipBookRef = useRef(null);
-  const [showCover, setShowCover] = useState(true);
+  const [containerHeight, setContainerHeight] = useState(600);
+  const [pageHeight, setPageHeight] = useState(600);
+  const [containerWidth, setContainerWidth] = useState(1000);
+
+  const calculateHeight = (pdfWidth, pdfHeight) => {
+    const ratio = pdfHeight / pdfWidth;
+    const newHeight = containerHeight * ratio;
+    setPageHeight(newHeight);
+  };
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
+    
   };
 
-<<<<<<< Updated upstream
-  const renderCover = () => {
-    return (
-      <div
-        className="cover"
-        onClick={() => {
-          setShowCover(false);
-          if (flipBookRef.current) flipBookRef.current.pageFlip().flipNext();
-        }}
-      >
-=======
-  // Hàm render từng trang PDF
+  // Function to render each page of the PDF
   const renderPages = () => {
     const pages = [];
 
-    // Render trang bìa (trang 0)
+    // Render cover page (page 1)
     pages.push(
       <div
         key={0}
@@ -36,92 +34,53 @@ function PdfViewer({ pdfFile }) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: "600px",
+          height: "100%",
+          width: "70%",
           border: "2px solid #ccc",
           backgroundColor: "#f0f0f0",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
         }}
       >
-        {/* Hiển thị nội dung của trang bìa ở đây */}
->>>>>>> Stashed changes
-        <Page pageNumber={1} width={500} />
+        <Page pageNumber={1} width={450} />
       </div>
     );
-  };
 
-<<<<<<< Updated upstream
-  const renderPages = () => {
-    const pages = [];
-    for (let i = 2; i <= numPages; i += 2) {
-=======
-    // Render các trang theo kiểu lật
-    for (let i = 1; i <= numPages; i++) {
->>>>>>> Stashed changes
+    // Render the rest of the pages
+    for (let i = 2; i <= numPages; i++) {
       pages.push(
         <div key={i} className="page">
           <div className="front-page">
-            <Page pageNumber={i} width={500} />
-<<<<<<< Updated upstream
-=======
-            {/* Bỏ qua nút next */}
-          </div>
-          <div className="back-page">
-            <img src={`image${i}.jpg`} alt={`Page ${i}`} />
-            {/* Bỏ qua nút prev */}
->>>>>>> Stashed changes
+            <Page pageNumber={i} width={450} />
           </div>
           {i + 1 <= numPages && (
             <div className="back-page">
-              <Page pageNumber={i + 1} width={500} />
+              <Page pageNumber={i + 1} width={450} />
             </div>
           )}
         </div>
       );
     }
+
     return pages;
   };
 
-<<<<<<< Updated upstream
-=======
-  // Hàm render FlipBook
+  // Function to render the flipbook
   const renderFlipBook = () => {
     return (
-      <HTMLFlipBook width={500} height={600} ref={flipBookRef}>
+      <HTMLFlipBook width={450} height={600} ref={flipBookRef}>
         {renderPages()}
       </HTMLFlipBook>
     );
   };
 
->>>>>>> Stashed changes
   return (
     <div className="pdf-viewer-container">
       {pdfFile ? (
-        <Document
-          file={pdfFile}
-          onLoadSuccess={onDocumentLoadSuccess}
-          className="modal-90w"
-        >
-<<<<<<< Updated upstream
-          {showCover ? (
-            renderCover()
-          ) : (
-            <HTMLFlipBook width={500} height={600} ref={flipBookRef}>
-              {renderPages()}
-            </HTMLFlipBook>
-          )}
-=======
+        <Document file={pdfFile} onLoadSuccess={onDocumentLoadSuccess} className="modal-90w">
           <div className="flipbook-wrapper">
-            {/* Hiển thị trang bìa */}
-            <div className="cover-wrapper">
-              {renderPages().slice(0, 1)} {/* Chỉ hiển thị trang bìa */}
-            </div>
-
-            {/* Hiển thị phần còn lại của tài liệu như sách */}
-            <div className="flipbook-wrapper">
-              {renderFlipBook()} {/* Gọi hàm renderFlipBook */}
-            </div>
+            {/* Render the entire flipbook */}
+            {renderFlipBook()}
           </div>
->>>>>>> Stashed changes
         </Document>
       ) : (
         <p>No PDF file uploaded.</p>

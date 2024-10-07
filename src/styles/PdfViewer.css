@@ -1,104 +1,26 @@
-<<<<<<< Updated upstream
-/* Ensure body occupies full viewport and centers the content */
-body {
-  font-family: "Poppins", sans-serif;
-  background-color: #2e3537;
-  height: 100vh;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
 
-/* Main container for PDF viewer */
-
-/* Wrapper for the flipbook */
-.flipbook-wrapper {
-  width: 100%;
-  max-width: 400px; /* Control maximum width of the flipbook */
-  height: 100%;
-  max-height: 600px; /* Control maximum height */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-/* Cover styles */
-.cover {
-  width: 350px;
-  height: 500px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-}
-
-/* Individual page styles */
-.page {
-  width: 500px;
-  height: 600px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-=======
-.flipbook-wrapper {
-  width: 100%; /* Chiếm toàn bộ chiều rộng */
-  max-width: 1000px; /* Giới hạn chiều rộng tối đa */
-  height: auto; /* Tự động điều chỉnh chiều cao */
-  overflow: hidden; /* Ẩn phần nội dung tràn */
->>>>>>> Stashed changes
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-<<<<<<< Updated upstream
-=======
-
-.book {
-  width: 500px;
-  height: 600px;
-  position: relative;
-  border-radius: 15px; /* Bo tròn các cạnh ngoài của sách */
-  overflow: hidden; /* Ẩn phần tràn nếu có */
-}
-
-.cover,
-.back-cover,
-.page {
-  border-radius: 15px; /* Bo tròn các cạnh ngoài của các trang và bìa */
-}
-
-.page {
-  position: relative;
-  width: 500px; /* Điều chỉnh theo nhu cầu */
-  height: 700px; /* Điều chỉnh theo nhu cầu */
-  margin: 0 auto; /* Căn giữa các trang */
-  overflow: hidden; /* Ngăn chặn overflow */
-}
-
-.cover {
-  background-color: #f0f0f0; /* Màu nền nhẹ cho trang bìa */
-  border: 2px solid #ccc; /* Viền tùy chọn để nhấn mạnh */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Đổ bóng tùy chọn */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.front-page,
-.back-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-label {
-  cursor: pointer; /* Thay đổi con trỏ khi di chuột qua */
-}
->>>>>>> Stashed changes
+  
+  .flipbook-wrapper {
+    width: 100%; /* Chiếm toàn bộ chiều rộng */
+    max-width: 1000px; /* Giới hạn chiều rộng tối đa */
+    height: auto; /* Tự động điều chỉnh chiều cao */
+    overflow: hidden; /* Ẩn phần nội dung tràn */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .book {
+    width: 450px;
+    height: 600px;
+    position: relative;
+    border-radius: 15px; /* Bo tròn các cạnh ngoài của sách */
+    overflow: hidden; /* Ẩn phần tràn nếu có */
+  }
+  
+  .cover,
+  .back-cover,
+  .page {
+    border-radius: 15px; /* Bo tròn các cạnh ngoài của các trang và bìa */
+  }
+  

@@ -35,10 +35,10 @@ const SavedPdfList = ({ onSelectPdf }) => {
                    {/* Show the PDF thumbnail */}
                    <PdfThumbnail pdfId={pdf.id} pdfName={pdf.name} />
                   <h5 className="card-title">{pdf.name}</h5>
-                  <p className="card-text">Author: Jason Bourne</p>
+                  <p className="card-text">Author: {pdf.author}</p>
                   <button
                     className="btn btn-primary"
-                    onClick={() => onSelectPdf(pdf.url)}
+                    onClick={() => onSelectPdf(pdf)}
                   >
                     View
                   </button>

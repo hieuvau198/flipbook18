@@ -105,10 +105,8 @@
 }
 
 .flipbook-container {
-  font-family: 'Poppins', sans-serif;
-  border-radius: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  
+  
 }
 
 .toolbar {
@@ -189,10 +187,7 @@
 }
 
 .page {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  
 }
 
 /* Close List Button Style */
@@ -275,7 +270,7 @@
 }
 
 .page-background {
-  background-image: url('../assets/img/pexels-rafael-cosquiere-1059286-2041540.jpg');
+  background-image: url('../assets/images/pexels-rafael-cosquiere-1059286-2041540.jpg');
   /* Thêm ảnh nền */
   background-size: cover;
   background-position: center;
@@ -285,7 +280,20 @@
   align-items: center;
   justify-content: center;
 }
+.management-page-background {
+  background-image: url('https://d17kpcthhpu5tq.cloudfront.net/wp-content/uploads/2016/03/abstract-light-blue-triangles-background-psdgraphics.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  min-height: 100vh;
+}
 
+.management-container {
+  z-index: 1;
+}
+.management-table {
+  background-color: #d5a950;
+}
 /* CSS cho phần upload file */
 .upload-container {
   display: flex;
@@ -314,7 +322,7 @@
 }
 
 .flipbook-background {
-  background-image:  url('../assets/img/pexels-rafael-cosquiere-1059286-2041540.jpg');
+  background-image: url('../assets/images/pexels-rafael-cosquiere-1059286-2041540.jpg');
   /* Use your background image */
   background-size: cover;
   /* Cover the entire background */

@@ -1,78 +1,169 @@
 .c-button {
-  color: #000; /* Màu chữ */
-  font-weight: 700; /* Độ đậm của chữ */
-  font-size: 16px; /* Kích thước chữ */
-  text-decoration: none; /* Không có gạch chân */
-  padding: 0.9em 1.6em; /* Padding cho nút */
-  cursor: pointer; /* Con trỏ sẽ chuyển sang hình bàn tay khi hover */
-  display: flex; /* Sử dụng flex để căn giữa nội dung */
-  align-items: center; /* Căn giữa theo chiều dọc */
-  justify-content: center; /* Căn giữa theo chiều ngang */
-  position: relative; /* Để các phần tử con được đặt tương đối */
-  z-index: 1; /* Đảm bảo nút nằm trên cùng */
-  background: none; /* Không có nền mặc định */
-  border: none; /* Không có viền mặc định */
-  transition: background-color 0.3s; /* Thêm hiệu ứng chuyển tiếp */
-  border-radius: 5px; /* Thêm bo góc cho nút */
-  margin: 0 auto; /* Để căn giữa trong container */
+    color: #000;
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    padding: 0.9em 1.6em;
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    z-index: 1;
+    background: none;
+    border: none;
 }
 
 .c-button--gooey {
-  color: #06c8d9; /* Màu chữ khi không hover */
-  text-transform: uppercase; /* Chữ in hoa */
-  letter-spacing: 2px; /* Khoảng cách giữa các chữ cái */
-  border: 4px solid #06c8d9; /* Viền cho nút */
-  border-radius: 0; /* Không bo góc viền */
-  position: relative; /* Để các phần tử con được đặt tương đối */
-  transition: all 700ms ease; /* Hiệu ứng chuyển tiếp cho tất cả thuộc tính */
+    color: #06c8d9;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 4px solid #06c8d9;
+    border-radius: 0;
+    position: relative;
+    transition: all 700ms ease;
 }
 
 .c-button--gooey .c-button__blobs {
-  height: 100%; /* Chiều cao đầy đủ */
-  filter: url(#goo); /* Áp dụng filter goo */
-  overflow: hidden; /* Ẩn phần tràn */
-  position: absolute; /* Đặt các blob ở vị trí tuyệt đối */
-  top: 0;
-  left: 0;
-  bottom: -3px; /* Dịch chuyển phần dưới lên một chút */
-  right: -1px; /* Dịch chuyển phần bên phải lên một chút */
-  z-index: -1; /* Đặt ở dưới cùng */
+    height: 100%;
+    filter: url(#goo);
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: -3px;
+    right: -1px;
+    z-index: -1;
 }
 
 .c-button--gooey .c-button__blobs div {
-  background-color: #06c8d9; /* Màu nền cho các blob */
-  width: 34%; /* Chiều rộng của các blob */
-  height: 100%; /* Chiều cao đầy đủ */
-  border-radius: 100%; /* Bo góc hoàn toàn */
-  position: absolute; /* Đặt các blob ở vị trí tuyệt đối */
-  transform: scale(1.4) translateY(125%) translateZ(0); /* Hiệu ứng xuất hiện */
-  transition: all 700ms ease; /* Hiệu ứng chuyển tiếp cho tất cả thuộc tính */
+    background-color: #06c8d9;
+    width: 34%;
+    height: 100%;
+    border-radius: 100%;
+    position: absolute;
+    transform: scale(1.4) translateY(125%) translateZ(0);
+    transition: all 700ms ease;
 }
 
 .c-button--gooey .c-button__blobs div:nth-child(1) {
-  left: -5%; /* Vị trí của blob thứ nhất */
+    left: -5%;
 }
 
 .c-button--gooey .c-button__blobs div:nth-child(2) {
-  left: 30%; /* Vị trí của blob thứ hai */
-  transition-delay: 60ms; /* Độ trễ cho hiệu ứng */
+    left: 30%;
+    transition-delay: 60ms;
 }
 
 .c-button--gooey .c-button__blobs div:nth-child(3) {
-  left: 66%; /* Vị trí của blob thứ ba */
-  transition-delay: 25ms; /* Độ trễ cho hiệu ứng */
+    left: 66%;
+    transition-delay: 25ms;
 }
 
 .c-button--gooey:hover {
-  color: #fff; /* Màu chữ khi hover */
+    color: #fff;
 }
 
 .c-button--gooey:hover .c-button__blobs div {
-  transform: scale(1.4) translateY(0) translateZ(0); /* Hiệu ứng xuất hiện khi hover */
+    transform: scale(1.4) translateY(0) translateZ(0);
 }
 
 /* Disabled State */
 .disabled {
-  opacity: 0.5; /* Độ mờ cho trạng thái disabled */
-  pointer-events: none; /* Không cho phép sự kiện chuột */
+    opacity: 0.5;
+    pointer-events: none;
 }
+
+.pdf-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Căn giữa danh sách và nút */
+}
+
+.pdf-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* Chia thành 4 cột */
+    gap: 20px;
+    /* Khoảng cách giữa các mục */
+    margin-bottom: 20px;
+    /* Khoảng cách phía dưới danh sách */
+}
+
+.pdf-item {
+    list-style: none;
+    text-align: center;
+    cursor: pointer;
+}
+
+.pdf-cover {
+    margin-bottom: 10px;
+    /* Khoảng cách giữa ảnh bìa và tên */
+}
+
+.close-list-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.close-list-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+
+.pdf-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* 4 cột với kích thước bằng nhau */
+    gap: 20px;
+    /* Khoảng cách giữa các mục */
+}
+
+.pdf-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pdf-item:hover {
+    transform: scale(1.05);
+    /* Hiệu ứng phóng to khi hover */
+}
+
+.pdf-cover {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.pdf-name {
+    font-size: 14px;
+    color: #333;
+}
+
+.pdf-list-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+    /* Khoảng cách giữa tiêu đề và danh sách PDF */
+}
+.card img {
+    width: 100%; /* Ensure the canvas is responsive */
+    height: auto;
+  }

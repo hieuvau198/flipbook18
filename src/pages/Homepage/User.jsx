@@ -6,8 +6,8 @@ import UploadBox from "../../components/common/UploadBox.jsx";
 function User() {
   const navigate = useNavigate(); 
 
-  const handlePdfSelect = (url) => {
-    navigate("/flipbook", { state: { pdfFileUrl: url } });
+  const handlePdfSelect = (pdf) => {
+    navigate("/flipbook", { state: { pdfFileUrl: pdf.url, pdfDocId: pdf.id } });
   };
 
   return (
@@ -16,7 +16,6 @@ function User() {
       <div className="row">
       </div>
       <div>
-        <h1 className="text-center mb-4"></h1>
         <SavedPdfList
           onSelectPdf={handlePdfSelect} 
           onCloseList={() => {}}
