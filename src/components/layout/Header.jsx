@@ -39,6 +39,12 @@ const Header = () => {
   const handleNavigateToLibrary = () => {
     navigate("/library");
   };
+  const handleNavigateToDemo = () => {
+    navigate("/demo");
+  };
+  const handleNavigateToDemo2 = () => {
+    navigate("/demo2");
+  };
 
   return (
     <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
@@ -59,6 +65,18 @@ const Header = () => {
                 Library
               </button>
             )}
+            <button
+              className="btn btn-secondary"
+              onClick={handleNavigateToDemo}
+            >
+              Demo 1
+            </button>
+            <button
+              className="btn btn-secondary"
+              onClick={handleNavigateToDemo2}
+            >
+              Demo 2
+            </button>
             <button
               onClick={handleLogout}
               className="btn btn-secondary"

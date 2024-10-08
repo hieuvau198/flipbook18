@@ -8,7 +8,7 @@
     box-sizing: border-box;
     font-family: "Quicksand", sans-serif;
 }
-#best-selling-body {
+.best-selling-body {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,18 +18,18 @@
     overflow: hidden;
 }
 
-#best-swiper {
+.best-swiper {
     width: 100%;
     padding: 50px 0;
 }
-#best-swiper-slide {
+.best-swiper-slide {
     position: relative;
     width: 320px;
     aspect-ratio: 3/4;
     border-radius: 14px;
     border: 1px solid rgba(177, 177, 177, 0.4);
 }
-#best-swiper-slide img {
+.best-swiper-slide img {
     display: block;
     width: 100%;
     height: 100%;
@@ -37,7 +37,7 @@
     border-radius: inherit;
     user-select: none;
 }
-#best-title {
+.best-title {
     position: absolute;
     bottom: 5px;
     left: 50%;
@@ -52,7 +52,7 @@
     backdrop-filter: blur(10px);
     transition: all 0.5s linear;
 }
-#best-title span {
+.best-title span {
     font-size: 1.2rem;
     font-weight: 600;
 }
