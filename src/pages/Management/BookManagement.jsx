@@ -7,7 +7,6 @@ import {
 } from "../../utils/firebaseUtils"; // Adjust the path as needed
 import PdfViewsChart from "../../components/common/PdfViewsChart";
 import DailyViewChart from "../../components/common/DailyViewChart";
-import Demo2 from "../Demo/Demo2";
 import "../../styles/App.css";
 
 const BookManagement = () => {

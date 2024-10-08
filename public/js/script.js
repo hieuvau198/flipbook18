@@ -169,9 +169,9 @@
 
     }); // End of a document ready
 
-    window.addEventListener("load", function () {
-      const preloader = document.getElementById("preloader");
-      preloader.classList.add("hide-preloader");
-    });
+    // window.addEventListener("load", function () {
+    //   const preloader = document.getElementById("preloader");
+    //   preloader.classList.add("hide-preloader");
+    // });
 
 })(jQuery);
