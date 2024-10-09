@@ -4,7 +4,7 @@ import './Demo2.css';
 
 const Demo2 = () => {
     useEffect(() => {
-        var swiper = new window.Swiper(".swiper", {
+        var swiper = new window.Swiper(".best-swiper", {
             effect: "coverflow",
             grabCursor: true,
             centeredSlides: true,

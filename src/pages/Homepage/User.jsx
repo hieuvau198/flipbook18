@@ -2,6 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom"; 
 import SavedPdfList from "../../components/common/SavedPdfList.jsx"; 
 import UploadBox from "../../components/common/UploadBox.jsx";
+import Demo from "../Demo/Demo.jsx";
+import Demo2 from "../Demo2/Demo2.jsx";
 
 function User() {
   const navigate = useNavigate(); 
@@ -11,7 +13,25 @@ function User() {
   };
 
   return (
-    <div className="page-background homepage ">
+    <>
+    {/* apply demo 1 */}
+    <div className="row">
+      <div className="col-lg-12">
+      <Demo></Demo>
+      </div>
+      <div className="col-lg-12">
+      {/* <Demo2></Demo2> */}
+      </div>
+    </div>
+    <div className="row">
+      <div className="col-lg-12">
+      <Demo2></Demo2>
+      </div>
+    
+    </div>
+    {/* apply demo 2 */}
+    {/* old content */}
+    <div>
       <UploadBox /> {/* Add the upload box here */}
       <div className="row">
       </div>
@@ -22,6 +42,8 @@ function User() {
         />
       </div>
     </div>
+    </>
+    
   );
 }
 

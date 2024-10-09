@@ -52,6 +52,33 @@ export const fetchTopPdfs = async (quantity) => {
   }
 };
 
+export const fetchLatestPdfs = async (quantity) => {
+  try {
+    const pdfQuery = query(
+      collection(db, "pdfFiles"),   // Same collection
+      orderBy("viewedAt", "desc"),  // Order by viewedAt (newest first)
+      limit(quantity)               // Limit to the specified quantity
+    );
+    
+    const querySnapshot = await getDocs(pdfQuery);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || 'url error',
+      name: doc.data().name || 'Unnamed',
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : 'Unknown',
+      author: doc.data().author || 'Unknown Author',
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || 'Active',
+      uploader: doc.data().uploader || 'Spiderman Upload',
+      views: doc.data().views || 0,
+      imageUrl: doc.data().imageUrl || '',
+    }));
+  } catch (error) {
+    console.error("Error fetching latest PDFs: ", error);
+    throw error;
+  }
+};
+
 export const fetchSavedPdfByCollection = async (collectionName) => {
   try {
     const querySnapshot = await getDocs(collection(db, collectionName));
@@ -206,8 +233,12 @@ export const savePdfFirstPageAsImage = async (pdfFileUrl, pdfId) => {
     });
 
     console.log("First page image saved successfully with title: ", pdfTitle);
+
+    // Return the image URL
+    return imageUrl;
   } catch (error) {
     console.error("Error extracting or saving first page as image: ", error);
+    throw error;
   }
 };
 
@@ -243,7 +274,11 @@ export const savePdfToFirestore = async (pdfFileUrl, fileName, collectionName, a
     });
 
     // Extract and save the first page of the PDF as an image
-    await savePdfFirstPageAsImage(downloadURL, docRef.id);
+    const coverPageUrl = await savePdfFirstPageAsImage(downloadURL, docRef.id);
+
+    await updateDoc(docRef, {
+      coverPageUrl: coverPageUrl, // Add the coverPageUrl field
+    });
 
     // Return the document ID of the saved Firestore record
     return docRef.id;
