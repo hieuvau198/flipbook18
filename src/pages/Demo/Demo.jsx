@@ -3,8 +3,6 @@ import '../../assets/css/style.css';
 import '../../assets/css/vendor.css';
 import '../../assets/css/ajax-loader.gif';
 import "../../styles/Demo.css";
-import 'swiper/css';
-import 'swiper/css/navigation';
 
 const bestSellerBooks = [
   { id: 1, title: "The Fine Print", author: "Lauren Asher", price: "$20", image: "images/book1.jpg" },

@@ -14,6 +14,8 @@ import { AuthProvider } from "./contexts/authContext.jsx";
 import { PdfProvider } from "./contexts/PdfContext.jsx";
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
 import { useAuth } from "./contexts/authContext.jsx";
+import Demo4 from "./pages/Demo/Demo4.jsx";
+import Demo3 from "./pages/Demo/Demo3.jsx";
 
 function AdminRoute({ children }) {
   const { role } = useAuth(); // Fetch the user info
@@ -32,6 +34,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/demo" element={<Demo />} />
+              <Route path="/demo4" element={<Demo4 />} />
+              <Route path="/demo3" element={<Demo3 />} />
               <Route
                 path="/home"
                 element={
