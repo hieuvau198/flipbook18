@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom'; // Import hook useNavigate
 import '../../assets/css/style.css';
 import '../../assets/css/vendor.css';
 import "../../styles/Demo.css";
+
 
 const bookCategories = [
     {
@@ -26,7 +27,15 @@ const bookCategories = [
         category: "Economic",
         books: [
             { id: 5, title: "Black Swan", author: "Michelle Obama", price: "$28", image: "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p8236892_p_v13_bb.jpg" },
-            { id: 6, title: "The Economics Book: Big Ideas Simply Explained ", author: "Tara Westover", price: "$24", image: "https://m.media-amazon.com/images/I/81c6E2VdT3L._AC_UF1000,1000_QL80_.jpg" },
+            { id: 6, title: "The Economics Book: Big Ideas Simply Explained", author: "Tara Westover", price: "$24", image: "https://m.media-amazon.com/images/I/81c6E2VdT3L._AC_UF1000,1000_QL80_.jpg" },
+            // Thêm sách vào đây
+        ],
+    },
+    {
+        category: "Academic",
+        books: [
+            { id: 5, title: "Kiến Thức Nghề Lập Trình Cho Người Mới Bắt Đầu", author: "Michelle Obama", price: "$28", image: "https://tusachonthihay.com/wp-content/uploads/2023/04/Picsart_23-04-22_14-21-59-998.jpg" },
+            { id: 6, title: "Giáo trình lập trình Java cơ bản", author: "Tara Westover", price: "$24", image: "https://sachhoc.com/image/cache/catalog/Tinhoc/laptrinh/Giao-trinh-lap-trinh-java-co-ban-500x554.jpg" },
             // Thêm sách vào đây
         ],
     },
@@ -35,13 +44,55 @@ const bookCategories = [
 
 const Demo4 = () => {
     const navigate = useNavigate();
+    const [showModal, setShowModal] = useState(false);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    // Lấy danh sách tất cả các thể loại
+    const allCategories = bookCategories.map(cat => cat.category);
+
+    // Hàm để toggle lựa chọn các thể loại
+    const toggleCategory = (category) => {
+        if (selectedCategories.includes(category)) {
+            setSelectedCategories(selectedCategories.filter(cat => cat !== category));
+        } else {
+            setSelectedCategories([...selectedCategories, category]);
+        }
+    };
+    // Hàm xử lý khi người dùng áp dụng bộ lọc
+    const handleApplyFilter = () => {
+        setShowModal(false);
+    };
+
+    // Hàm xử lý khi người dùng muốn xóa bộ lọc
+    const handleClearFilter = () => {
+        setSelectedCategories([]);
+    };
+
+    // Xác định các thể loại sẽ được hiển thị dựa trên lựa chọn
+    const displayedCategories = selectedCategories.length > 0
+        ? bookCategories.filter(cat => selectedCategories.includes(cat.category))
+        : bookCategories;
+    console.log("Displayed Categories:", displayedCategories);
+
     return (
         <section id="book-categories" className="bg-light-gray py-5">
             <div className="container">
                 <h2 className="text-center mb-5">Book Category</h2>
+                {/* Nút Category */}
+                <div className="text-center mb-4">
+                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                        Category
+                    </button>
+                    {selectedCategories.length > 0 && (
+                        <button className="btn btn-secondary ms-2" onClick={handleClearFilter}>
+                            Clear Filter
+                        </button>
+                    )}
+                </div>
+
+                {/* Hiển thị các thể loại sách */}
                 <div className="row">
-                    {bookCategories.map((category) => (
-                        <div key={category.category} className="col-md-4 mb-4">
+                    {displayedCategories.map((category) => (
+                        <div key={category.category} className="col-md-3 mb-4"> {/* 4 cột */}
                             <h3 className="text-center mb-3">{category.category}</h3>
                             <div className="row">
                                 {category.books.map((book) => (
@@ -56,7 +107,7 @@ const Demo4 = () => {
                                                         <h5 className="card-title">{book.title}</h5>
                                                         <p className="card-text">Author: {book.author}</p>
                                                         <p className="card-text">Price: {book.price}</p>
-                                                        <a href="#" className="btn btn-primary">Buy Now !</a>
+                                                        <button className="btn btn-primary">Buy Now!</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -67,9 +118,47 @@ const Demo4 = () => {
                         </div>
                     ))}
                 </div>
-                <div className="text-center mt-5">
-                    <button className="btn btn-secondary" onClick={() => navigate('/demo')}>Back to Demo</button>
-                </div>
+
+                {/* Modal để chọn các thể loại */}
+                {showModal && (
+                    <div className="modal show fade d-block" tabIndex="-1" role="dialog" onClick={() => setShowModal(false)}>
+                        <div className="modal-dialog" role="document" onClick={(e) => e.stopPropagation()}>
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h5 className="modal-title">Select Categories</h5>
+                                    <button type="button" className="btn-close" aria-label="Close" onClick={() => setShowModal(false)}></button>
+                                </div>
+                                <div className="modal-body">
+                                    {allCategories.map((category) => (
+                                        <div className="form-check" key={category}>
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                value={category}
+                                                id={`checkbox-${category}`}
+                                                checked={selectedCategories.includes(category)}
+                                                onChange={() => toggleCategory(category)}
+                                            />
+                                            <label className="form-check-label" htmlFor={`checkbox-${category}`}>
+                                                {category}
+                                            </label>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                                        Close
+                                    </button>
+                                    <button type="button" className="btn btn-primary" onClick={handleApplyFilter}>
+                                        Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {/* Overlay backdrop của modal */}
+                {showModal && <div className="modal-backdrop fade show"></div>}
             </div>
         </section>
     );
