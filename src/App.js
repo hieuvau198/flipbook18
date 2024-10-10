@@ -7,6 +7,7 @@ import Register from "./components/auth/Register.jsx";
 import Header from "./components/layout/Header.jsx";
 import Home from "./pages/Homepage/Homepage.jsx";
 import FlipBook from "./pages/Flipbook/Flipbook.jsx";
+import Demo from "../src/pages/demo.jsx";
 import Share from "./pages/Share/Share.jsx"; // Import the Share component
 import BookManagement from "./pages/Management/BookManagement.jsx";
 import { AuthProvider } from "./contexts/authContext.jsx";
@@ -42,6 +43,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <FlipBook />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/demo"
+                element={
+                  <ProtectedRoute>
+                    <Demo />
                   </ProtectedRoute>
                 }
               />

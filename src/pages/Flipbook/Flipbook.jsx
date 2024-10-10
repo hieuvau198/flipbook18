@@ -18,7 +18,7 @@ import {
 import FileNameModal from "../../components/common/FileNameModal";
 import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils";
 import "../../styles/UploadButton.css";
-import { useAuth } from "../../contexts/authContext.jsx"; 
+import { useAuth } from "../../contexts/authContext.jsx";
 import PdfViewer from "../../components/common/PdfViewer.jsx";
 import JqueryPdfViewer from "../../components/common/JqueryPdfViewer.jsx";
 import SavedPdfList from "../../components/common/SavedPdfList.jsx";
@@ -47,7 +47,7 @@ function Flipbook() {
     localStorage.setItem("pdfFile", url);
     navigate('/flipbook', { state: { pdfFileUrl: url } });
   };
-  
+
 
   const handleSavePdf = async (fileName, author, status) => {
     if (!currentUser) {
@@ -73,25 +73,24 @@ function Flipbook() {
 
   return (
     <div className="flipbook-background">
-      <div className="flipbook-container">
-        {showPdfList ? (
-          <>
-            {/* Show the SavedPdfList */}
-            <SavedPdfList
-              onSelectPdf={handlePdfSelect} // Pass the PDF selection handler
-            />
-            {/* Close List button */}
-            <button onClick={() => setShowPdfList(false)} className="close-list-button">
-              <FontAwesomeIcon icon={faTimes} /> Close List
-            </button>
-          </>
-        ) : (
-          <>
-            {pdfFile ? (
-              <>
-                <JqueryPdfViewer key={pdfFile} pdfFile={pdfFile} />
+      {showPdfList ? (
+        <>
+          {/* Show the SavedPdfList */}
+          <SavedPdfList
+            onSelectPdf={handlePdfSelect} // Pass the PDF selection handler
+          />
+          {/* Close List button */}
+          <button onClick={() => setShowPdfList(false)} className="close-list-button">
+            <FontAwesomeIcon icon={faTimes} /> Close List
+          </button>
+        </>
+      ) : (
+        <>
+          {pdfFile ? (
+            <>
+              <JqueryPdfViewer key={pdfFile} pdfFile={pdfFile} />
 
-                <div className="toolbar">
+              {/* <div className="toolbar">
                   <button onClick={() => setShowPdfList(true)}>
                     <FontAwesomeIcon icon={faFolderOpen} /> View List
                   </button>
@@ -103,20 +102,19 @@ function Flipbook() {
                   <button onClick={handleShare}>
                     <FontAwesomeIcon icon={faShare} /> Share Book
                   </button>
-                </div>
-              </>
-            ) : (
-              <p className="no-pdf-message">No Book selected</p>
-            )}
-          </>
-        )}
+                </div> */}
+            </>
+          ) : (
+            <p className="no-pdf-message">No Book selected</p>
+          )}
+        </>
+      )}
 
-        <FileNameModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={handleSavePdf}
-        />
-      </div>
+      <FileNameModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSavePdf}
+      />
     </div>
   );
 }

@@ -1,35 +1,28 @@
 .flipbook-wrapper {
   width: 100%;
-  max-width: 1000px;
+  max-width: 900px; /* Điều chỉnh chiều rộng tối đa của sách */
   height: auto;
-  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.jquery-pdf-viewer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: auto;
-}
-
-.book {
-  width: 450px;
-  height: 600px;
-  position: relative;
-  border-radius: 15px;
   overflow: hidden;
+  transition: transform 0.6s ease; /* Hiệu ứng chuyển tiếp khi lật trang */
+  perspective: 1500px; /* Tạo chiều sâu 3D */
+  position: relative; /* Đảm bảo flipbook luôn nằm trong container */
+  margin: 0 auto; /* Đảm bảo flipbook luôn căn giữa theo chiều ngang */
 }
-
-.cover,
-.back-cover,
 
 .page {
-  width: 445; /* Đảm bảo mỗi trang chiếm toàn bộ chiều rộng của container */
-  height: 580; /* Chiều cao tự động để điều chỉnh nội dung */
+  width: 445px; /* Chiều rộng của trang */
+  height: 580px; /* Chiều cao của trang */
   display: flex;
-  border: 1px solid; /* Thêm đường viền để phân biệt các trang */
+  justify-content: center; /* Căn giữa nội dung trang */
+  align-items: center;
+  transform-style: preserve-3d; /* Bảo tồn không gian 3D */
+  backface-visibility: hidden; /* Ẩn mặt sau của trang khi lật */
 }
 
+/* Xử lý trạng thái lật trang */
+.flipbook-wrapper.flip-single {
+  transform: rotateY(0deg); /* Trang đã lật, đặt trạng thái mặc định */
+}

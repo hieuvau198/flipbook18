@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 import { logout } from "../../firebase/auth";
@@ -7,10 +7,31 @@ import { FaBook } from "react-icons/fa";
 const Header = () => {
   const navigate = useNavigate();
   const { userLoggedIn, currentUser } = useAuth();
-  const [error, setError] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // State to control header visibility
+  const [lastScrollY, setLastScrollY] = useState(0); // State to track the last scroll position
 
   const { role } = useAuth();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        // If scrolling down, hide the header
+        setIsVisible(false);
+      } else {
+        // If scrolling up, show the header
+        setIsVisible(true);
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll); // Cleanup on unmount
+    };
+  }, [lastScrollY]);
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
@@ -41,7 +62,11 @@ const Header = () => {
   };
 
   return (
-    <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
+    <nav
+      className={`flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200 transition-transform duration-300 ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <div className="flex items-center space-x-2">
         <FaBook className="text-2xl text-blue-600" aria-hidden="true" />
         <Link to="/home" className="text-xl font-bold text-blue-600">
