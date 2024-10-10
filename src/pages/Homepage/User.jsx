@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom"; 
 import SavedPdfList from "../../components/common/SavedPdfList.jsx"; 
 import UploadBox from "../../components/common/UploadBox.jsx";
+import UploadComponent from "../../components/common/UploadComponent.jsx";
 import Demo from "../Demo/Demo.jsx";
 import Demo2 from "../Demo2/Demo2.jsx";
 
@@ -32,10 +33,10 @@ function User() {
     {/* apply demo 2 */}
     {/* old content */}
     <div>
-      <UploadBox /> {/* Add the upload box here */}
+      <UploadComponent /> {/* Add the upload box here */}
       <div className="row">
       </div>
-      <div>
+      <div className="mt-10">
         <SavedPdfList
           onSelectPdf={handlePdfSelect} 
           onCloseList={() => {}}

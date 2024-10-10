@@ -17,7 +17,7 @@ export const fetchSavedPdfs = async () => {
       status: doc.data().status || 'Active',
       uploader: doc.data().uploader || 'Spiderman Upload',
       views: doc.data().views || 0,
-      imageUrl: doc.data().imageUrl || '', // Fetch 'imageUrl' if available
+      coverPageUrl: doc.data().coverPageUrl || '', // Fetch 'imageUrl' if available
     }));
   } catch (error) {
     console.error("Error fetching PDFs: ", error);
@@ -44,7 +44,7 @@ export const fetchTopPdfs = async (quantity) => {
       status: doc.data().status || 'Active',
       uploader: doc.data().uploader || 'Spiderman Upload',
       views: doc.data().views || 0,
-      imageUrl: doc.data().imageUrl || '',
+      coverPageUrl: doc.data().coverPageUrl || '',
     }));
   } catch (error) {
     console.error("Error fetching top PDFs: ", error);
@@ -71,7 +71,7 @@ export const fetchLatestPdfs = async (quantity) => {
       status: doc.data().status || 'Active',
       uploader: doc.data().uploader || 'Spiderman Upload',
       views: doc.data().views || 0,
-      imageUrl: doc.data().imageUrl || '',
+      coverPageUrl: doc.data().coverPageUrl || '',
     }));
   } catch (error) {
     console.error("Error fetching latest PDFs: ", error);
@@ -93,7 +93,7 @@ export const fetchSavedPdfByCollection = async (collectionName) => {
       status: doc.data().status || 'Active',
       uploader: doc.data().uploader || 'Spiderman Upload',
       views: doc.data().views || 0,
-      imageUrl: doc.data().imageUrl || '', // Fetch 'imageUrl' if available
+      coverPageUrl: doc.data().coverPageUrl || '', // Fetch 'imageUrl' if available
     }));
   } catch (error) {
     console.error(`Error fetching PDFs from collection: ${collectionName}`, error);

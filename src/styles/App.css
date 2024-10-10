@@ -16,16 +16,30 @@
   width: 100%; /* Ensure the canvas is responsive */
   height: auto;
 }
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Default header style */
+.app-header {
+  background-color: #1d1304; /* Default color */
+  color: #fff; /* Text color */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Optional shadow effect */
+  transition: all 0.3s ease; /* Smooth transition for all properties */
 }
+
+/* When scrolled, hide the header completely */
+.app-header.scrolled {
+  opacity: 0; /* Make header completely invisible */
+  visibility: hidden; /* Remove header from layout */
+  height: 0; /* Set the height to zero to collapse the space */
+  padding: 0; /* Remove padding to save space */
+  pointer-events: none; /* Disable interaction */
+  transition: opacity 0.3s ease, visibility 0s 0.3s, height 0s 0.3s, padding 0s 0.3s;
+}
+
+/* Optional: Add a smooth transition effect when showing */
+.app-header {
+  transition: opacity 0.3s ease, visibility 0.3s ease, height 0.3s ease, padding 0.3s ease;
+}
+
+
 
 .App-link {
   color: #61dafb;

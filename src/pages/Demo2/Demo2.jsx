@@ -1,8 +1,23 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { fetchTopPdfs } from "../../utils/firebaseUtils";
 import './Demo2.css';
 
-
 const Demo2 = () => {
+    const [topPdfs, setTopPdfs] = useState([]);
+
+    useEffect(() => {
+        const fetchTopPdfFiles = async () => {
+            try {
+                const topPdfFiles = await fetchTopPdfs(7); // Fetch top 7 PDFs
+                setTopPdfs(topPdfFiles); // Store fetched PDFs in state
+            } catch (error) {
+                console.error("Error fetching top pdfs: ", error);
+            }
+        };
+
+        fetchTopPdfFiles();
+    }, []);
+
     useEffect(() => {
         var swiper = new window.Swiper(".best-swiper", {
             effect: "coverflow",
@@ -30,69 +45,30 @@ const Demo2 = () => {
         });
 
         return () => {
-            // Cleanup function to destroy the swiper instance when the component unmounts
-            swiper.destroy();
+            swiper.destroy(); // Cleanup the swiper instance when the component unmounts
         };
-    }, [])
-    
+    }, []);
 
     return (
         <>
-        <div className="best-selling-body">
-      <div className="best-swiper swiper">
-        <div className="best-swiper-wrapper swiper-wrapper">
-          <div className="best-swiper-slide swiper-slide" >
-            <img src="/images/product-item1.png" alt="" />
-            <div className="best-title title">
-              <span>The Psychology of Money</span>
+            <div className="best-selling-body">
+                <div className="best-swiper swiper">
+                    <div className="best-swiper-wrapper swiper-wrapper">
+                        {topPdfs.map((pdf) => (
+                            <div key={pdf.id} className="best-swiper-slide swiper-slide">
+                                <img src={pdf.coverPageUrl || '/images/default-cover.png'} alt={pdf.name} />
+                                <div className="best-title title">
+                                    <span>{pdf.name}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="swiper-pagination"></div>
+                    <div className="swiper-button-prev"></div>
+                    <div className="swiper-button-next"></div>
+                    <div className="swiper-scrollbar"></div>
+                </div>
             </div>
-          </div>
-          <div className="best-swiper-slide swiper-slide" >
-            <img src="/images/product-item2.png" alt="" />
-            <div className="best-title title" >
-              <span>The Two Towers</span>
-            </div>
-          </div>
-          <div className="best-swiper-slide swiper-slide" >
-            <img src="/images/product-item3.png" alt="" />
-            <div className="best-title title" >
-              <span>Goal Planner</span>
-            </div>
-          </div>
-          <div className="best-swiper-slide swiper-slide" >
-            <img src="/images/product-item4.png" alt="" />
-            <div className="best-title title" >
-              <span>Stupore E Tremori</span>
-            </div>
-          </div>
-          <div className="best-swiper-slide swiper-slide">
-            <img src="/images/product-item5.png" alt="" />
-            <div className="best-title title" >
-              <span>The diary of Anne Frank</span>
-            </div>
-          </div>
-          <div className="best-swiper-slide swiper-slide" >
-            <img src="/images/product-item6.png" alt="" />
-            <div className="best-title title" >
-              <span>Company of One</span>
-            </div>
-          </div>
-          <div className="best-swiper-slide swiper-slide" >
-            <img src="/images/product-item7.png" alt="" />
-            <div className="best-title title" >
-              <span>Twisted Love</span>
-            </div>
-          </div>
-          
-        </div>
-        <div className="swiper-pagination"></div>
-
-        <div className="swiper-button-prev"></div>
-        <div className="swiper-button-next"></div>
-
-        <div className="swiper-scrollbar"></div>
-      </div>
-    </div>
         </>
     );
 };

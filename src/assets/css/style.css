@@ -1342,6 +1342,20 @@ select#input-sort {
   color: var(--primary-color);
 }
 
+.demo1-image-holder {
+  height: 100%; /* Set height to fill the container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.demo1-image-holder img {
+  height: 100%; /* Make image height match the container's height */
+  width: auto; /* Allow the width to adjust based on the image's aspect ratio */
+  object-fit: contain; /* Ensure the whole image is visible without cropping */
+  max-height: 100%; /* Make sure the image doesn’t overflow */
+}
+
 @media screen and (max-width: 991px) {
   .product-tabs .review-item{
     width: 100%;

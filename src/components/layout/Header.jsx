@@ -1,14 +1,39 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 import { logout } from "../../firebase/auth";
 import { FaBook } from "react-icons/fa";
+import "../../styles/App.css";
 
 const Header = () => {
   const navigate = useNavigate();
   const { userLoggedIn, currentUser } = useAuth();
   const [error, setError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [lastScrollTop, setLastScrollTop] = useState(0); // To track scroll direction
+
+  // Detect scroll position and update the state
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollTop = window.pageYOffset;
+
+      if (currentScrollTop > 10 && currentScrollTop > lastScrollTop) {
+        // User is scrolling down
+        setIsScrolled(true);  // Hide the header
+      } else if (currentScrollTop < lastScrollTop) {
+        // User is scrolling up
+        setIsScrolled(false); // Show the header
+      }
+
+      setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop); // Prevent negative scrolling
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup event listener on unmount
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollTop]);
 
   const { role } = useAuth();
 
@@ -47,11 +72,13 @@ const Header = () => {
   };
 
   return (
-    <nav className="flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200">
+    <nav
+      className={`app-header ${isScrolled ? "scrolled" : ""} flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b transition-all`}
+    >
       <div className="flex items-center space-x-2">
-        <FaBook className="text-2xl text-blue-600" aria-hidden="true" />
-        <Link to="/home" className="text-xl font-bold text-blue-600">
-          FlipBook App
+        <FaBook className="text-2xl" aria-hidden="true" />
+        <Link to="/home" className="text-xl font-bold text-white">
+          Flippin
         </Link>
       </div>
       <div className="flex items-center space-x-4">
@@ -59,27 +86,27 @@ const Header = () => {
           <>
             {role === "admin" && (
               <button
-                className="btn btn-secondary"
+                className="btn btn-light"
                 onClick={handleNavigateToLibrary}
               >
                 Library
               </button>
             )}
             <button
-              className="btn btn-secondary"
+              className="btn btn-light"
               onClick={handleNavigateToDemo}
             >
               Demo 1
             </button>
             <button
-              className="btn btn-secondary"
+              className="btn btn-light"
               onClick={handleNavigateToDemo2}
             >
               Demo 2
             </button>
             <button
               onClick={handleLogout}
-              className="btn btn-secondary"
+              className="btn btn-light"
               disabled={loading}
             >
               <span>{loading ? "Logging out..." : "Logout"}</span>

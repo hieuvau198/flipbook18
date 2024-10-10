@@ -3,9 +3,10 @@ import "../../styles/UploadButton.css";
 
 const UploadButton = ({ onUpload, disabled }) => (
   <button
+    
     onClick={onUpload}
     disabled={disabled}
-    className={`c-button c-button--gooey ${disabled ? "disabled" : ""}`}
+    className={`c-button c-button--gooey ${disabled ? "disabled" : ""} mb-20`}
   >
     Upload and View
     <span className="c-button__blobs">
