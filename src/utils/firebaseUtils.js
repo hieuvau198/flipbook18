@@ -1,10 +1,9 @@
 import { getDocument } from 'pdfjs-dist';
 import { db } from "../firebase/firebase";
-import { getFirestore, query, where, collection, getDoc, getDocs , doc, addDoc, deleteDoc, updateDoc, Timestamp } from "firebase/firestore";
+import { getFirestore, query, where, collection, getDoc, getDocs, setDoc, doc, addDoc, deleteDoc, updateDoc, increment, orderBy, limit, Timestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import * as pdfjsLib from "pdfjs-dist/webpack"; // Importing pdfjs library
+import * as pdfjsLib from "pdfjs-dist/webpack"; 
 
-// Fetch saved PDFs from Firestore
 export const fetchSavedPdfs = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "pdfFiles"));
@@ -18,10 +17,64 @@ export const fetchSavedPdfs = async () => {
       status: doc.data().status || 'Active',
       uploader: doc.data().uploader || 'Spiderman Upload',
       views: doc.data().views || 0,
-      imageUrl: doc.data().imageUrl || '', // Fetch 'imageUrl' if available
+      coverPageUrl: doc.data().coverPageUrl || '', // Fetch 'imageUrl' if available
     }));
   } catch (error) {
     console.error("Error fetching PDFs: ", error);
+    throw error;
+  }
+};
+
+export const fetchTopPdfs = async (quantity) => {
+  try {
+    const pdfQuery = query(
+      collection(db, "pdfFiles"),  
+      orderBy("views", "desc"),    
+      limit(quantity)              
+    );
+    
+    const querySnapshot = await getDocs(pdfQuery);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || 'url error',
+      name: doc.data().name || 'Unnamed',
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : 'Unknown',
+      author: doc.data().author || 'Unknown Author',
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || 'Active',
+      uploader: doc.data().uploader || 'Spiderman Upload',
+      views: doc.data().views || 0,
+      coverPageUrl: doc.data().coverPageUrl || '',
+    }));
+  } catch (error) {
+    console.error("Error fetching top PDFs: ", error);
+    throw error;
+  }
+};
+
+export const fetchLatestPdfs = async (quantity) => {
+  try {
+    const pdfQuery = query(
+      collection(db, "pdfFiles"),   // Same collection
+      orderBy("viewedAt", "desc"),  // Order by viewedAt (newest first)
+      limit(quantity)               // Limit to the specified quantity
+    );
+    
+    const querySnapshot = await getDocs(pdfQuery);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || 'url error',
+      name: doc.data().name || 'Unnamed',
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : 'Unknown',
+      author: doc.data().author || 'Unknown Author',
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || 'Active',
+      uploader: doc.data().uploader || 'Spiderman Upload',
+      views: doc.data().views || 0,
+      coverPageUrl: doc.data().coverPageUrl || '',
+    }));
+  } catch (error) {
+    console.error("Error fetching latest PDFs: ", error);
     throw error;
   }
 };
@@ -40,14 +93,13 @@ export const fetchSavedPdfByCollection = async (collectionName) => {
       status: doc.data().status || 'Active',
       uploader: doc.data().uploader || 'Spiderman Upload',
       views: doc.data().views || 0,
-      imageUrl: doc.data().imageUrl || '', // Fetch 'imageUrl' if available
+      coverPageUrl: doc.data().coverPageUrl || '', // Fetch 'imageUrl' if available
     }));
   } catch (error) {
     console.error(`Error fetching PDFs from collection: ${collectionName}`, error);
     throw error;
   }
 };
-
 
 export const fetchSavedPdfById = async (id) => {
   try {
@@ -181,8 +233,12 @@ export const savePdfFirstPageAsImage = async (pdfFileUrl, pdfId) => {
     });
 
     console.log("First page image saved successfully with title: ", pdfTitle);
+
+    // Return the image URL
+    return imageUrl;
   } catch (error) {
     console.error("Error extracting or saving first page as image: ", error);
+    throw error;
   }
 };
 
@@ -212,12 +268,17 @@ export const savePdfToFirestore = async (pdfFileUrl, fileName, collectionName, a
       author: author || "unknown",     // Default to "unknown" if not provided
       uploader: uploader || "unknown", // Default to "unknown" if not provided
       views: views || 0,               // Default to 0 if not provided
+      dailyViews: 0,
       favorites: favorites || 0,       // Default to 0 if not provided
       status: status || "active",      // Default to "active" if not provided
     });
 
     // Extract and save the first page of the PDF as an image
-    await savePdfFirstPageAsImage(downloadURL, docRef.id);
+    const coverPageUrl = await savePdfFirstPageAsImage(downloadURL, docRef.id);
+
+    await updateDoc(docRef, {
+      coverPageUrl: coverPageUrl, // Add the coverPageUrl field
+    });
 
     // Return the document ID of the saved Firestore record
     return docRef.id;
@@ -258,6 +319,95 @@ export const savePdfToFirestoreTemp = async (pdfFile, fileName, collectionName) 
   }
 };
 
+export const incrementPdfViews = async (pdfDocId, collectionName) => {
+  try {
+    const pdfDocRef = doc(db, collectionName, pdfDocId);
+    const dailyViewsRef = collection(pdfDocRef, "dailyViews");
+
+    const today = new Date(); // Use Date object directly
+
+    // Increment total views
+    await updateDoc(pdfDocRef, {
+      views: increment(1),
+    });
+
+    // Reference to today's document in the dailyViews sub-collection
+    const todayDocRef = doc(dailyViewsRef, today.toISOString().slice(0, 10)); // Use YYYY-MM-DD format
+
+    const todayDoc = await getDoc(todayDocRef);
+
+    if (todayDoc.exists()) {
+      // If a document for today exists, increment the views for today
+      await updateDoc(todayDocRef, {
+        views: increment(1),
+      });
+    } else {
+      // If no document for today, create a new one with the initial view count
+      await setDoc(todayDocRef, {
+        views: 1,
+        date: Timestamp.now(), // Save as a Firestore Timestamp
+      });
+    }
+  } catch (error) {
+    console.error("Error updating views: ", error);
+    throw error;
+  }
+};
+
+export const fetchDailyViews = async (pdfDocId) => {
+  try {
+    const dailyViewsRef = collection(db, `pdfFiles/${pdfDocId}/dailyViews`);
+    const querySnapshot = await getDocs(dailyViewsRef);
+
+    return querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      console.log(data);
+      if (data.date) {
+        // Check if the date is a Firestore Timestamp
+        const date = data.date instanceof Timestamp ? data.date.toDate().toISOString().split('T')[0] : data.date;
+
+        return {
+          date: date, // Handle both Firestore Timestamp and string
+          views: data.views || 0, // Default to 0 if views are undefined
+        };
+      } else {
+        console.warn(`Document ${doc.id} does not contain a valid date field.`);
+        return null; // Skip this entry if the date is invalid
+      }
+    }).filter(item => item !== null); // Filter out invalid entries
+  } catch (error) {
+    console.error("Error fetching daily views: ", error);
+    throw error;
+  }
+};
+
+export const fetchTotalDailyViews = async () => {
+  try {
+    const pdfs = await fetchSavedPdfs(); // Fetch all PDFs
+    const allDailyViewsPromises = pdfs.map(pdf => fetchDailyViews(pdf.id)); // Fetch daily views for each PDF
+    const allDailyViews = await Promise.all(allDailyViewsPromises);
+    
+    const totalViewsByDate = {};
+
+    allDailyViews.forEach(dailyViews => {
+      dailyViews.forEach(({ date, views }) => {
+        if (!totalViewsByDate[date]) {
+          totalViewsByDate[date] = 0;
+        }
+        totalViewsByDate[date] += views;
+      });
+    });
+
+    return Object.keys(totalViewsByDate).map(date => ({
+      date,
+      views: totalViewsByDate[date],
+    }));
+  } catch (error) {
+    console.error("Error fetching total daily views: ", error);
+    throw error;
+  }
+};
+
 export const updatePdfByIdAndCollection = async (pdfId, collectionName, newName, newAuthor, newStatus) => {
   if (!pdfId || !collectionName) {
     throw new Error("pdfId and collectionName are required to update the document.");
@@ -289,7 +439,6 @@ export const updatePdfByIdAndCollection = async (pdfId, collectionName, newName,
     throw error;
   }
 };
-
 
 export const deleteCoverPageByPdfFileId = async (pdfFileId) => {
   if (!pdfFileId) {

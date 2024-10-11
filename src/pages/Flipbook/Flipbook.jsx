@@ -4,22 +4,15 @@ import { Document, Page, pdfjs } from "react-pdf/dist/esm/entry.webpack";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowLeft,
-  faArrowRight,
-  faSearchPlus,
-  faSearchMinus,
-  faExpand,
-  faDownload,
   faSave,
   faFolderOpen,
   faShare,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import FileNameModal from "../../components/common/FileNameModal";
-import { fetchSavedPdfs, savePdfToFirestore } from "../../utils/firebaseUtils";
+import { fetchSavedPdfs, savePdfToFirestore, incrementPdfViews } from "../../utils/firebaseUtils";
 import "../../styles/UploadButton.css";
-import { useAuth } from "../../contexts/authContext.jsx";
-import PdfViewer from "../../components/common/PdfViewer.jsx";
+import { useAuth } from "../../contexts/authContext.jsx"; 
 import JqueryPdfViewer from "../../components/common/JqueryPdfViewer.jsx";
 import SavedPdfList from "../../components/common/SavedPdfList.jsx";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -34,18 +27,22 @@ function Flipbook() {
 
   useEffect(() => {
     if (location.state?.pdfFileUrl) {
-      setPdfFile(location.state.pdfFileUrl);
-      localStorage.setItem("pdfFile", location.state.pdfFileUrl);
+      const { pdfFileUrl, pdfDocId } = location.state;
+      setPdfFile(pdfFileUrl);
+      localStorage.setItem("pdfFile", pdfFileUrl);
+
+      // Increment the views for the PDF in Firestore
+      incrementPdfViews(pdfDocId, "pdfFiles");
     } else {
       navigate("/homepage");
     }
   }, [location.state, pdfFile, navigate]);
 
-  const handlePdfSelect = (url) => {
-    setPdfFile(url);
+  const handlePdfSelect = (pdf) => {
+    setPdfFile(pdf.url);
     setShowPdfList(false);
-    localStorage.setItem("pdfFile", url);
-    navigate('/flipbook', { state: { pdfFileUrl: url } });
+    localStorage.setItem("pdfFile", pdf.url);
+    navigate('/flipbook', { state: { pdfFileUrl: pdf.url, pdfDocId: pdf.id } });
   };
 
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { fetchSavedPdfs, fetchImageByPdfId } from "../../utils/firebaseUtils";
 import "../../styles/UploadButton.css";
 import PdfThumbnail from "./PdfThumbnail";
+import "../../styles/App.css";
 
 const SavedPdfList = ({ onSelectPdf }) => {
   const [savedPdfFiles, setSavedPdfFiles] = useState([]);
@@ -36,12 +37,15 @@ const SavedPdfList = ({ onSelectPdf }) => {
                    <PdfThumbnail pdfId={pdf.id} pdfName={pdf.name} />
                   <h5 className="card-title">{pdf.name}</h5>
                   <p className="card-text">Author: {pdf.author}</p>
+                  <div className="flex justify-center items-center">
                   <button
-                    className="btn btn-primary"
-                    onClick={() => onSelectPdf(pdf.url)}
+                    className="btn btn-primary active"
+                    onClick={() => onSelectPdf(pdf)}
                   >
-                    View
+                    View Flipbook
                   </button>
+                  </div>
+                  
                 </div>
               </div>
             </div>

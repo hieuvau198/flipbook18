@@ -9,6 +9,8 @@ import Home from "./pages/Homepage/Homepage.jsx";
 import FlipBook from "./pages/Flipbook/Flipbook.jsx";
 import Demo from "../src/components/common/demo.jsx";
 import Share from "./pages/Share/Share.jsx"; // Import the Share component
+import BookPage from "./pages/Book/BookPage.jsx";
+import MangaPage from "./pages/Book/MangaPage.jsx";
 import BookManagement from "./pages/Management/BookManagement.jsx";
 import { AuthProvider } from "./contexts/authContext.jsx";
 import { PdfProvider } from "./contexts/PdfContext.jsx";
@@ -30,6 +32,8 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/book" element={<BookPage />} />
+              <Route path="/mangapage" element={<MangaPage />} />
               <Route
                 path="/home"
                 element={

@@ -3,14 +3,36 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 import { logout } from "../../firebase/auth";
 import { FaBook } from "react-icons/fa";
+import "../../styles/App.css";
 
 const Header = () => {
   const navigate = useNavigate();
   const { userLoggedIn, currentUser } = useAuth();
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isVisible, setIsVisible] = useState(true); // State to control header visibility
-  const [lastScrollY, setLastScrollY] = useState(0); // State to track the last scroll position
+  const [error, setError] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollTop = window.pageYOffset;
+
+      if (currentScrollTop > 10 && currentScrollTop > lastScrollTop) {
+        // User is scrolling down
+        setIsScrolled(true);  // Hide the header
+      } else if (currentScrollTop < lastScrollTop) {
+        // User is scrolling up
+        setIsScrolled(false); // Show the header
+      }
+
+      setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop); // Prevent negative scrolling
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup event listener on unmount
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollTop]);
 
   const { role } = useAuth();
 
@@ -60,17 +82,18 @@ const Header = () => {
   const handleNavigateToLibrary = () => {
     navigate("/library");
   };
+  const handleNavigateToBook = () => {
+    navigate("/book");
+  };
 
   return (
     <nav
-      className={`flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b bg-gray-200 transition-transform duration-300 ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
-      }`}
+      className={`app-header ${isScrolled ? "scrolled" : ""} flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b transition-all`}
     >
       <div className="flex items-center space-x-2">
-        <FaBook className="text-2xl text-blue-600" aria-hidden="true" />
-        <Link to="/home" className="text-xl font-bold text-blue-600">
-          FlipBook App
+        <FaBook className="text-2xl" aria-hidden="true" />
+        <Link to="/home" className="text-xl font-bold text-white">
+          Flippin
         </Link>
       </div>
       <div className="flex items-center space-x-4">
@@ -78,15 +101,21 @@ const Header = () => {
           <>
             {role === "admin" && (
               <button
-                className="btn btn-secondary"
+                className="btn btn-light"
                 onClick={handleNavigateToLibrary}
               >
                 Library
               </button>
             )}
             <button
+              className="btn btn-light"
+              onClick={handleNavigateToBook}
+            >
+              Book
+            </button>
+            <button
               onClick={handleLogout}
-              className="btn btn-secondary"
+              className="btn btn-light"
               disabled={loading}
             >
               <span>{loading ? "Logging out..." : "Logout"}</span>
