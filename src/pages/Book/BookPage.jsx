@@ -106,21 +106,21 @@ const BookPage = () => {
         <ul className="book-style-chapter-list">
           <li className="book-style-chapter-item">
             <a href="#chapter1" className="book-style-chapter-link">
-              Chapter 1: This is chapter 1
+              In Development
             </a>
-            <span className="book-style-chapter-date">2023-01-01</span>
+            <span className="book-style-chapter-date">In Development</span>
           </li>
           <li className="book-style-chapter-item">
             <a href="#chapter2" className="book-style-chapter-link">
-              Chapter 2: This is chapter 2
+            In Development
             </a>
-            <span className="book-style-chapter-date">2023-02-15</span>
+            <span className="book-style-chapter-date">In Development</span>
           </li>
           <li className="book-style-chapter-item">
             <a href="#chapter3" className="book-style-chapter-link">
-              Chapter 3: This is chapter 3
+            In Development
             </a>
-            <span className="book-style-chapter-date">2023-03-10</span>
+            <span className="book-style-chapter-date">In Development</span>
           </li>
         </ul>
       </div>
