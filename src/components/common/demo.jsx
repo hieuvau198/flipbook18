@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import Toolbar from '../components/common/Toolbar.jsx';
-import exitIcon from '../assets/icons/exit.svg';
-import turnJs from '../assets/js/turn.js';
+import Toolbar from './Toolbar.jsx';
+import exitIcon from '../../assets/icons/exit.svg';
+import turnJs from '../../assets/js/turn.js';
 import 'jquery.panzoom';
 import $ from 'jquery';
 const PDFJS = require("pdfjs-dist/webpack");
