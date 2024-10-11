@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { fetchTopPdfs } from "../../utils/firebaseUtils";
+import { useNavigate } from "react-router-dom";
 import './Demo2.css';
 
 const Demo2 = () => {
     const [topPdfs, setTopPdfs] = useState([]);
-
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchTopPdfFiles = async () => {
             try {
@@ -49,6 +50,10 @@ const Demo2 = () => {
         };
     }, []);
 
+    const handleNavigateToBookPage = (pdfFileId) => {
+        navigate(`/book?b=${encodeURIComponent(pdfFileId)}`);
+      }
+
     return (
         <>
             <div className="best-selling-body">
@@ -57,9 +62,12 @@ const Demo2 = () => {
                         {topPdfs.map((pdf) => (
                             <div key={pdf.id} className="best-swiper-slide swiper-slide">
                                 <img src={pdf.coverPageUrl || '/images/default-cover.png'} alt={pdf.name} />
-                                <div className="best-title title">
+                                <button 
+                                className="best-title title"
+                                onClick={() => handleNavigateToBookPage(pdf.id)}
+                                >
                                     <span>{pdf.name}</span>
-                                </div>
+                                </button>
                             </div>
                         ))}
                     </div>

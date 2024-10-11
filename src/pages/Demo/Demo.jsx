@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
+
 import "../../assets/css/style.css";
 import "../../assets/css/vendor.css";
 import "../../assets/css/ajax-loader.gif";
+import "../../styles/App.css";
 import { fetchLatestPdfs } from "../../utils/firebaseUtils";
+import { useNavigate } from "react-router-dom";
 
 const Demo = () => {
   const [latestPdfs, setLatestPdfs] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLatestPdfFiles = async () => {
@@ -31,6 +36,10 @@ const Demo = () => {
       slidesPerView: 1,
     });
   }, []);
+
+  const handleNavigateToBookPage = (pdfFileId) => {
+    navigate(`/book?b=${encodeURIComponent(pdfFileId)}`);
+  }
 
   return (
     <section
@@ -75,9 +84,9 @@ const Demo = () => {
                       <h2>{pdf.name}</h2>
                       <p>{pdf.author}</p>
                       <a
-                        href="#"
-                        className="btn mt-3"
-                        onClick={() => window.location.reload()}
+                        
+                        className="button-74" role="button"
+                        onClick={() => handleNavigateToBookPage(pdf.id)}
                       >
                         Read
                       </a>

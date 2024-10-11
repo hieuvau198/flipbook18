@@ -11,9 +11,8 @@ const Header = () => {
   const [error, setError] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [lastScrollTop, setLastScrollTop] = useState(0); // To track scroll direction
+  const [lastScrollTop, setLastScrollTop] = useState(0);
 
-  // Detect scroll position and update the state
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollTop = window.pageYOffset;
@@ -64,11 +63,8 @@ const Header = () => {
   const handleNavigateToLibrary = () => {
     navigate("/library");
   };
-  const handleNavigateToDemo = () => {
-    navigate("/demo");
-  };
-  const handleNavigateToDemo2 = () => {
-    navigate("/demo2");
+  const handleNavigateToBook = () => {
+    navigate("/book");
   };
 
   return (
@@ -94,15 +90,9 @@ const Header = () => {
             )}
             <button
               className="btn btn-light"
-              onClick={handleNavigateToDemo}
+              onClick={handleNavigateToBook}
             >
-              Demo 1
-            </button>
-            <button
-              className="btn btn-light"
-              onClick={handleNavigateToDemo2}
-            >
-              Demo 2
+              Book
             </button>
             <button
               onClick={handleLogout}

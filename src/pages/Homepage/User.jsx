@@ -30,10 +30,8 @@ function User() {
       </div>
     
     </div>
-    {/* apply demo 2 */}
-    {/* old content */}
     <div>
-      <UploadComponent /> {/* Add the upload box here */}
+      <UploadComponent />
       <div className="row">
       </div>
       <div className="mt-10">
