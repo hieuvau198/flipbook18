@@ -9,13 +9,14 @@ import Home from "./pages/Homepage/Homepage.jsx";
 import FlipBook from "./pages/Flipbook/Flipbook.jsx";
 import Share from "./pages/Share/Share.jsx"; // Import the Share component
 import Demo from "./pages/Demo/Demo.jsx";
+import Demo2 from "./pages/Demo2/Demo2.jsx";
+import Demo3 from "./pages/Demo3/Demo 3 .jsx";
+import Demo4 from "./pages/Demo4/Demo4.jsx";
 import BookManagement from "./pages/Management/BookManagement.jsx";
 import { AuthProvider } from "./contexts/authContext.jsx";
 import { PdfProvider } from "./contexts/PdfContext.jsx";
 import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
 import { useAuth } from "./contexts/authContext.jsx";
-import Demo4 from "./pages/Demo/Demo4.jsx";
-import Demo3 from "./pages/Demo/Demo3.jsx";
 
 function AdminRoute({ children }) {
   const { role } = useAuth(); // Fetch the user info
@@ -30,12 +31,12 @@ function App() {
           <Header />
           <div className="w-full min-h-screen pt-16 flex flex-col">
             <Routes>
-              <Route path="/demo" element={<Demo />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/demo" element={<Demo />} />
-              <Route path="/demo4" element={<Demo4 />} />
+              <Route path="/demo2" element={<Demo2 />} />
               <Route path="/demo3" element={<Demo3 />} />
+              <Route path="/demo4" element={<Demo4 />} />
               <Route
                 path="/home"
                 element={

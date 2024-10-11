@@ -1,52 +1,40 @@
-// PdfViewsChart.js
 import React, { useState, useEffect } from 'react';
-import CanvasJSReact from '@canvasjs/react-charts';
-import { fetchSavedPdfs } from '../../utils/firebaseUtils'; // Import your function to fetch data
-
-var CanvasJSChart = CanvasJSReact.CanvasJSChart;
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { fetchSavedPdfs, fetchTopPdfs } from '../../utils/firebaseUtils';
 
 const PdfViewsChart = () => {
   const [pdfData, setPdfData] = useState([]);
-  
+
   useEffect(() => {
     const getPdfData = async () => {
       try {
-        const data = await fetchSavedPdfs();
+        const data = await fetchTopPdfs(7);
         setPdfData(data);
       } catch (error) {
         console.error("Error fetching PDF data for chart: ", error);
       }
     };
-    
+
     getPdfData();
   }, []);
 
-  // Prepare dataPoints for the chart
-  const dataPoints = pdfData.map(pdf => ({
-    label: pdf.name,  // Use the PDF name as the label
-    y: pdf.views      // Use the views as the data point value
-  }));
-
-  const options = {
-    theme: "light2",
-    animationEnabled: true,
-    title: {
-      text: ""
-    },
-    axisY: {
-      title: "",
-      includeZero: true
-    },
-    data: [{
-      type: "column",  // Use a column chart to show views
-      dataPoints: dataPoints
-    }]
+  const truncateLabel = (label) => {
+    return label.length > 10 ? `${label.substring(0, 10)}...` : label;
   };
 
   return (
-    <div>
-      <CanvasJSChart options={options} />
-    </div>
+    <ResponsiveContainer width="100%" height={450}>
+      <BarChart data={pdfData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis
+          dataKey="name"
+          tickFormatter={truncateLabel}
+        />
+        <YAxis />
+        <Tooltip />
+        <Bar dataKey="views" fill="#8884d8" />
+      </BarChart>
+    </ResponsiveContainer>
   );
 };
 
