@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Toolbar from './Toolbar.jsx';
-import exitIcon from '../../assets/icons/exit.svg';
+import exitIcon from '../../assets/icons/';
 import turnJs from '../../assets/js/turn.js';
 import 'jquery.panzoom';
 import $ from 'jquery';
