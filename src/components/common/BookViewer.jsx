@@ -102,19 +102,19 @@ const BookViewer = ({ initialUrl }) => {
     }, [pdfPages]);
 
     return (
-        <div ref={containerRef} className="container">
-            <div className="pdf-viewer">
+        <div ref={containerRef} className="flipbook-container">
+            <div className="flipbook-pdf-viewer">
                 
-                <div className="magazine-viewport">
-                    <div ref={flipbookRef} className="magazine">
+                <div className="flipbook-magazine-viewport">
+                    <div ref={flipbookRef} className="flipbook-magazine">
                         {pdfPages.map((page, index) => (
-                            <div key={index} className="page">
-                                <img src={page} alt={`Page ${index + 1}`} className="image" />
+                            <div key={index} className="flipbook-page">
+                                <img src={page} alt={`Page ${index + 1}`} className="flipbook-image" />
                             </div>
                         ))}
                     </div>
                 </div>
-                <div className="menu">
+                <div className="flipbook-menu">
                     <Toolbar
                         handlePreviousPage={() => $(flipbookRef.current).turn('previous')}
                         handleNextPage={() => $(flipbookRef.current).turn('next')}
