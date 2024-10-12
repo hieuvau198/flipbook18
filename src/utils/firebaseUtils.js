@@ -79,6 +79,29 @@ export const fetchLatestPdfs = async (quantity) => {
   }
 };
 
+export const fetchRandomPdfs = async (quantity) => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "pdfFiles"));
+    const allPdfs = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || 'url error',
+      name: doc.data().name || 'Unnamed',
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : 'Unknown',
+      author: doc.data().author || 'Unknown Author',
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || 'Active',
+      uploader: doc.data().uploader || 'Spiderman Upload',
+      views: doc.data().views || 0,
+      coverPageUrl: doc.data().coverPageUrl || '',
+    }));
+    const shuffledPdfs = shuffleArray(allPdfs);
+    return shuffledPdfs.slice(0, Math.min(quantity, shuffledPdfs.length));
+  } catch (error) {
+    console.error("Error fetching random PDFs: ", error);
+    throw error;
+  }
+};
+
 export const fetchSavedPdfByCollection = async (collectionName) => {
   try {
     const querySnapshot = await getDocs(collection(db, collectionName));
@@ -570,4 +593,14 @@ export const clearStorage = async () => {
     console.error("Error clearing storage and Firestore collection: ", error);
     throw error;
   }
+};
+
+
+// Function to shuffle an array randomly
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 };

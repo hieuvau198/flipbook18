@@ -478,6 +478,10 @@
 .book-style-manga-title {
   font-size: 14px;
   margin-top: 8px;
+  white-space: nowrap;     /* Prevents the text from wrapping */
+  overflow: hidden;        /* Hides the overflowing content */
+  text-overflow: ellipsis; /* Displays the '...' when text overflows */
+  max-width: 150px;        /* Adjust this to your desired width */
 }
 
 .button-74 {
@@ -542,3 +546,76 @@
   padding-left: 30px;
 }
 
+/* App.css */
+
+.read-pdf-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 9999; /* Ensure it covers everything */
+  display: flex;
+  justify-content: center; /* Horizontally center */
+  align-items: center; /* Vertically center */
+}
+
+.read-pdf-close-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background-color: #e1ecf4;
+  border-radius: 3px;
+  border: 1px solid #7aa7c7;
+  box-shadow: rgba(255, 255, 255, .7) 0 1px 0 0 inset;
+  box-sizing: border-box;
+  color: #39739d;
+  cursor: pointer;
+  display: inline-block;
+  font-family: -apple-system,system-ui,"Segoe UI","Liberation Sans",sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.15385;
+  margin: 0;
+  outline: none;
+  padding: 8px .8em;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.read-pdf-close-button:hover,
+.read-pdf-close-button:focus {
+  background-color: #b3d3ea;
+  color: #2c5777;
+}
+
+.read-pdf-close-button:focus {
+  box-shadow: 0 0 0 4px rgba(0, 149, 255, .15);
+}
+
+.read-pdf-close-button:active {
+  background-color: #a0c7e4;
+  box-shadow: none;
+  color: #2c5777;
+}
+
+.read-pdf-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%; /* Prevent horizontal overflow */
+  height: 90%; /* Prevent vertical overflow */
+  max-width: 1000px; /* Optional max width */
+  max-height: 800px; /* Optional max height */
+}
+
+.read-pdf-viewer {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Scale without distorting */
+}

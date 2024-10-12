@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../assets/css/toolbar.css'; // Import file CSS mới chứa hiệu ứng Aqua
 
 // Import SVG icons

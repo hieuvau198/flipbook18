@@ -4,7 +4,6 @@ import ErrorMessage from "../../components/common/ErrorMessage";
 import UploadButton from "../../components/forms/UploadButton";
 import { useHomepageLogic } from "../../hooks/useHomepageLogic";
 import { useAuth } from "../../contexts/authContext";
-import Admin from "./Admin.jsx";
 import User from "./User.jsx";
 
 function Homepage() {
@@ -20,7 +19,7 @@ function Homepage() {
   const { role } = useAuth(); // Get the role from auth context
 
   if (role === "admin") {
-    return <Admin />; // Render the Admin component if user is admin
+    return <User />; // Render the Admin component if user is admin
   } else if (role === "customer"){
     return <User />;
   }

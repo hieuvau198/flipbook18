@@ -18,7 +18,14 @@ export const convertPdfToImages = async (file) => {
     const pdf = await getDocument(data).promise;
     const canvas = document.createElement("canvas");
 
+<<<<<<< HEAD
     for (let i = 0; i < pdf.numPages; i++) {
+=======
+    // Set the maximum number of pages to render
+    const maxPages = Math.min(pdf.numPages, 30); // Only process up to 30 pages
+
+    for (let i = 0; i < maxPages; i++) {
+>>>>>>> 53872ea4e85d99f86d1a29f94deab4b7ac459e4c
         const page = await pdf.getPage(i + 1);
         const viewport = page.getViewport({ scale: 1 });
         const context = canvas.getContext("2d");
@@ -30,9 +37,15 @@ export const convertPdfToImages = async (file) => {
         const imgElement = new Image();
         imgElement.src = imgDataUrl;
 
+<<<<<<< HEAD
         // Vẽ ảnh theo kích thước A4
         await drawImageToA4Size(imgElement); // Vẽ ảnh theo kích thước A4
         images.push(canvas.toDataURL()); // Đẩy kết quả đã xử lý vào mảng images
+=======
+        // Draw the image to A4 size
+        await drawImageToA4Size(imgElement); // Ensure image is drawn in A4 size
+        images.push(canvas.toDataURL()); // Push processed result to images array
+>>>>>>> 53872ea4e85d99f86d1a29f94deab4b7ac459e4c
     }
 
     canvas.remove();

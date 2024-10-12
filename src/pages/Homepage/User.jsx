@@ -12,7 +12,8 @@ function User() {
   const navigate = useNavigate();
 
   const handlePdfSelect = (pdf) => {
-    navigate("/flipbook", { state: { pdfFileUrl: pdf.url, pdfDocId: pdf.id } });
+    // navigate("/flipbook", { state: { pdfFileUrl: pdf.url, pdfDocId: pdf.id } });
+    navigate(`/book?b=${encodeURIComponent(pdf.id)}`);
   };
 
   return (
