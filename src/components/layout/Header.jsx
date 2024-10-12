@@ -7,9 +7,9 @@ import "../../styles/App.css";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { userLoggedIn, currentUser } = useAuth();
-  const [error, setError] = React.useState(null);
-  const [loading, setLoading] = React.useState(false);
+  const { userLoggedIn, currentUser, role } = useAuth();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [lastScrollTop, setLastScrollTop] = useState(0);
 
@@ -18,11 +18,11 @@ const Header = () => {
       const currentScrollTop = window.pageYOffset;
 
       if (currentScrollTop > 10 && currentScrollTop > lastScrollTop) {
-        // User is scrolling down
-        setIsScrolled(true);  // Hide the header
+        // User is scrolling down, hide the header
+        setIsScrolled(true);
       } else if (currentScrollTop < lastScrollTop) {
-        // User is scrolling up
-        setIsScrolled(false); // Show the header
+        // User is scrolling up, show the header
+        setIsScrolled(false);
       }
 
       setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop); // Prevent negative scrolling
@@ -30,30 +30,9 @@ const Header = () => {
 
     window.addEventListener("scroll", handleScroll);
 
-    // Cleanup event listener on unmount
+    // Cleanup the event listener on component unmount
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollTop]);
-
-  const { role } = useAuth();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > lastScrollY) {
-        // If scrolling down, hide the header
-        setIsVisible(false);
-      } else {
-        // If scrolling up, show the header
-        setIsVisible(true);
-      }
-      setLastScrollY(window.scrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll); // Cleanup on unmount
-    };
-  }, [lastScrollY]);
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm("Are you sure you want to logout?");
@@ -71,20 +50,13 @@ const Header = () => {
     }
   };
 
-  const handleLogin = () => {
-    navigate("/login");
-  };
+  const handleLogin = () => navigate("/login");
 
-  const handleRegister = () => {
-    navigate("/register");
-  };
+  const handleRegister = () => navigate("/register");
 
-  const handleNavigateToLibrary = () => {
-    navigate("/library");
-  };
-  const handleNavigateToBook = () => {
-    navigate("/book");
-  };
+  const handleNavigateToLibrary = () => navigate("/library");
+
+  const handleNavigateToBook = () => navigate("/book");
 
   return (
     <nav
@@ -107,10 +79,7 @@ const Header = () => {
                 Library
               </button>
             )}
-            <button
-              className="btn btn-light"
-              onClick={handleNavigateToBook}
-            >
+            <button className="btn btn-light" onClick={handleNavigateToBook}>
               Book
             </button>
             <button
@@ -135,10 +104,7 @@ const Header = () => {
                 )}
               </div>
             )}
-
-            {error && (
-              <span className="text-sm text-red-500 ml-2">{error}</span>
-            )}
+            {error && <span className="text-sm text-red-500 ml-2">{error}</span>}
           </>
         ) : (
           <>
