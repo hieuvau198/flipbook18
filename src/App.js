@@ -6,6 +6,7 @@ import Login from "./components/auth/Login.jsx";
 import Register from "./components/auth/Register.jsx";
 import Header from "./components/layout/Header.jsx";
 import Home from "./pages/Homepage/Homepage.jsx";
+import Viewer from "./components/common/BookViewer.jsx"
 import FlipBook from "./pages/Flipbook/Flipbook.jsx";
 import Share from "./pages/Share/Share.jsx"; // Import the Share component
 import BookPage from "./pages/Book/BookPage.jsx";
@@ -32,6 +33,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/book" element={<BookPage />} />
+              <Route path="/viewer" element={<Viewer />} />
               <Route path="/mangapage" element={<MangaPage />} />
               <Route
                 path="/home"
