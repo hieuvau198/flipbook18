@@ -1,8 +1,11 @@
 // src/pages/BookPage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {fetchSavedPdfById} from "../../utils/firebaseUtils";
+import {fetchSavedPdfById, fetchRandomPdfs} from "../../utils/firebaseUtils";
+import JqueryPdfViewer from "../../components/common/JqueryPdfViewer";
+import ShareButton from "../../components/common/ShareButton";
 import "../../styles/App.css";
+
 
 const BookPage = () => {
   const [searchParams] = useSearchParams();
@@ -10,13 +13,18 @@ const BookPage = () => {
 
   const [searchValue, setSearchValue] = useState(b);
   const [pdfData, setPdfData] = useState(null);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const [suggestedBooks, setSuggestedBooks] = useState([]);
 
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    if (searchValue.trim()) {
-      navigate(`/book?b=${encodeURIComponent(searchValue)}`);
-    }
+  const handleToggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+  };
+
+  const handleNavigateToAnotherBook = (selectedId) => {
+    navigate(`/book?b=${encodeURIComponent(selectedId)}`);
   };
 
   useEffect(() => {
@@ -36,28 +44,24 @@ const BookPage = () => {
         }
     }
     fetchPdf();
-  }, [b])
+  }, [b]);
+
+  useEffect(() => {
+    // Fetch 5 random books when the component mounts
+    const getRandomBooks = async () => {
+      try {
+        const randomBooks = await fetchRandomPdfs(5); // Fetch 3 random books
+        setSuggestedBooks(randomBooks);
+      } catch (error) {
+        console.error("Error fetching random books: ", error);
+      }
+    };
+
+    getRandomBooks();
+  }, []);
 
   return (
     <>
-      {/* <div>
-        <input
-          type="text"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          placeholder="Enter book ID or name"
-        />
-
-        <button onClick={handleSearch}>Search</button>
-
-        {b ? (
-          <p>You are viewing content for book: {b}</p>
-        ) : (
-          <p>No book selected</p>
-        )}
-      </div> */}
-
-    
       <div className="book-style-container">
       <div className="book-style-flex-row">
         {/* Left Side - Cover Image */}
@@ -93,9 +97,14 @@ const BookPage = () => {
 
           {/* Read/Bookmark/Share Buttons */}
           <div className="book-style-buttons-container">
-            <button className="book-style-button">Read Now</button>
+            <button 
+                className="book-style-button"
+                onClick={handleToggleFullScreen}
+            >
+                Read Now
+            </button>
             <button className="book-style-button">Bookmark</button>
-            <button className="book-style-button">Share</button>
+            <ShareButton></ShareButton>
           </div>
         </div>
       </div>
@@ -125,39 +134,47 @@ const BookPage = () => {
         </ul>
       </div>
 
-      {/* Other Manga Suggestions */}
+      {/* Other Books Suggestions */}
       <div className="book-style-other-manga">
         <h2>Other Books You Might Like</h2>
         <div className="book-style-manga-suggestions">
-          <div className="book-style-manga-item">
-            <img
-              src="images/insta-item2.jpg"
-              alt="Manga 1"
-              className="book-style-manga-image"
-            />
-            <p className="book-style-manga-title">In Development</p>
-          </div>
-          <div className="book-style-manga-item">
-            <img
-              src="images/insta-item3.jpg"
-              alt="Manga 2"
-              className="book-style-manga-image"
-            />
-            <p className="book-style-manga-title">In Development</p>
-          </div>
-          <div className="book-style-manga-item">
-            <img
-              src="images/insta-item4.jpg"
-              alt="Manga 3"
-              className="book-style-manga-image"
-            />
-            <p className="book-style-manga-title">In Development</p>
-          </div>
+        {suggestedBooks.length > 0 ? (
+            suggestedBooks.map((book) => (
+              <div className="book-style-manga-item" key={book.id}>
+                <img
+                  src={book.coverPageUrl || 'images/default-cover.jpg'} // Default image if no coverPageUrl
+                  alt={book.name}
+                  className="book-style-manga-image"
+                  onClick={() => handleNavigateToAnotherBook(book.id)}
+                />
+                <p className="book-style-manga-title">{book.name}</p>
+              </div>
+            ))
+          ) : (
+            <p>Loading book suggestions...</p>
+          )}
         </div>
       </div>
+    </div>
+
+    {/* Display book fullscreen overlay */}
+    <div>
+      {isFullScreen && (
+        <div className="read-pdf-overlay">
+          {/* Close button */}
+          <button className="read-pdf-close-button" onClick={handleToggleFullScreen}>
+            X
+          </button>
+          {/* Centered and responsive PDF viewer */}
+          <div className="read-pdf-container">
+            <JqueryPdfViewer pdfFile={pdfData.url} className="read-pdf-viewer" />
+          </div>
+        </div>
+      )}
     </div>
     </>
   );
 };
 
+  
 export default BookPage;
