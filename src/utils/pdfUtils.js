@@ -1,7 +1,6 @@
 import { getDocument } from "pdfjs-dist";
 import React, { useEffect, useRef } from 'react';
 import * as fabric from 'fabric';
-
 // Function to read file data as an ArrayBuffer
 export const readFileData = (file) => {
     return new Promise((resolve, reject) => {

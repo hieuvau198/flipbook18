@@ -1,5 +1,5 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../assets/css/toolbar.css'; // Import file CSS mới chứa hiệu ứng Aqua
 
@@ -11,17 +11,18 @@ import zoomInIcon from '../../assets/icons/zoom-in.svg';
 import fullscreenIcon from '../../assets/icons/fullscreen.svg';
 import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.svg';
 
+
 function Toolbar({
   handlePreviousPage,
   handleNextPage,
   handleZoomOut,
   handleZoomIn,
   toggleFullscreen,
-  isFullscreen
+  isFullscreen,
+
 }) {
   return (
     <div className="d-flex justify-content-center align-items-center mb-2">
-      
       <div className="toolbar">
         <button className="toolbar-btn mx-1" onClick={handlePreviousPage}>
           <img src={previousIcon} alt="Previous" style={styles.icon} />
@@ -43,7 +44,6 @@ function Toolbar({
           />
         </button>
       </div>
-      
     </div>
   );
 }
