@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {fetchSavedPdfById, fetchRandomPdfs} from "../../utils/firebaseUtils";
 import JqueryPdfViewer from "../../components/common/JqueryPdfViewer";
+import BookViewer from "../../components/common/BookViewer";
 import ShareButton from "../../components/common/ShareButton";
 import "../../styles/App.css";
 
@@ -167,7 +168,7 @@ const BookPage = () => {
           </button>
           {/* Centered and responsive PDF viewer */}
           <div className="read-pdf-container">
-            <JqueryPdfViewer pdfFile={pdfData.url} className="read-pdf-viewer" />
+            <BookViewer initialUrl={pdfData.url} className="read-pdf-viewer" />
           </div>
         </div>
       )}
