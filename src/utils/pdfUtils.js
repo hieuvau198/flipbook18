@@ -1,7 +1,5 @@
-
 import { getDocument } from "pdfjs-dist";
-import React, { useEffect, useRef } from 'react';
-import * as fabric from 'fabric';
+
 // Function to read file data as an ArrayBuffer
 export const readFileData = (file) => {
     return new Promise((resolve, reject) => {
@@ -12,7 +10,7 @@ export const readFileData = (file) => {
     });
 };
 
-// Function to convert PDF to images
+// Function to convert PDF to images without resizing to A4
 export const convertPdfToImages = async (file) => {
     const images = [];
     const data = await readFileData(file);
@@ -25,59 +23,14 @@ export const convertPdfToImages = async (file) => {
         const context = canvas.getContext("2d");
         canvas.height = viewport.height;
         canvas.width = viewport.width;
+
+        // Render the page onto the canvas
         await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-        const imgDataUrl = canvas.toDataURL();
-        const imgElement = new Image();
-        imgElement.src = imgDataUrl;
-
-        // Vẽ ảnh theo kích thước A4
-        await drawImageToA4Size(imgElement); // Vẽ ảnh theo kích thước A4
-        images.push(canvas.toDataURL()); // Đẩy kết quả đã xử lý vào mảng images
+        // Convert the rendered canvas to an image data URL
+        images.push(canvas.toDataURL());
     }
 
     canvas.remove();
     return images;
-};
-
-// Hàm vẽ hình ảnh vào canvas có kích thước A4
-export const drawImageToA4Size = (imageElement) => {
-    return new Promise((resolve) => {
-        // Tạo một canvas Fabric mới
-        const canvas = new fabric.Canvas();
-        const a4Width = 210 * 3.78;  // Chuyển đổi mm sang px
-        const a4Height = 297 * 3.78; // Chuyển đổi mm sang px
-
-        // Thiết lập kích thước canvas
-        canvas.setWidth(a4Width);
-        canvas.setHeight(a4Height);
-
-        // Tính toán tỉ lệ để không bị cắt nội dung
-        const imgRatio = imageElement.width / imageElement.height;
-        const a4Ratio = a4Width / a4Height;
-
-        let targetWidth, targetHeight;
-        if (imgRatio > a4Ratio) {
-            targetWidth = a4Width;
-            targetHeight = a4Width / imgRatio;
-        } else {
-            targetHeight = a4Height;
-            targetWidth = a4Height * imgRatio;
-        }
-
-        // Tạo đối tượng hình ảnh Fabric
-        const imgInstance = new fabric.Image(imageElement, {
-            left: (a4Width - targetWidth) / 2, // Canh giữa
-            top: (a4Height - targetHeight) / 2, // Canh giữa
-            scaleX: targetWidth / imageElement.width, // Tính tỉ lệ theo chiều rộng
-            scaleY: targetHeight / imageElement.height // Tính tỉ lệ theo chiều cao
-        });
-
-        // Thêm hình ảnh vào canvas
-        canvas.add(imgInstance);
-        canvas.renderAll(); // Cập nhật canvas
-
-        // Trả về hình ảnh đã được vẽ trên canvas A4
-        resolve(canvas.toDataURL()); // Trả về kết quả là data URL
-    });
 };

@@ -1,81 +1,39 @@
+.toolbar {
+  background-color: black; /* Nền đen cho toolbar */
+  width: 70%; /* Chiều dài 70% */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+    /* Fix the toolbar to the bottom */
+    bottom: 0;
+    /* Align it to the bottom */
+    left: 0;
+    /* Align it to the left */
+    right: 0;
+  padding: 10px; /* Thêm padding để nút không dính sát nhau */
+  margin: 0 auto; /* Căn giữa toolbar */
+  border: 1px solid white; /* Viền trắng cho nút */
+  border-radius: 10px; /* Làm tròn góc nút */
+}
+
 .toolbar-btn {
-    font-size: 1.2em;
-    font-weight: 500;
-    color: var(--text);
-    background-color: var(--clr);
-    background-image: linear-gradient(180deg, var(--clr2) var(--gradgap), transparent calc(100% - var(--gradgap)));
-    background-repeat: no-repeat;
-    background-position: center var(--gradoffset);
-    background-size: 100% 200%;
-    padding: 0.8em 1.5em;
-    border-radius: 1.5em;
-    border: none;
-    box-shadow: 
-      0 -0.5em 0.5em transparent,
-      0 0.5em 0.5em transparent,
-      0 0.25em 0.3em -0.2em hsla(var(--hue), var(--sat), 50%, 0.46), 
-      0 0.25em 0.75em hsla(var(--hue), calc(var(--sat) - 10%), 40%, 0.3);
-    position: relative;
-    transition: all 0.5s ease;
-    outline: none;
-  }
-  
-  .toolbar-btn::before, .toolbar-btn::after {
-    content: "";
-    inset: 0;
-    position: absolute;
-    border-radius: 5em;
-  }
-  
-  .toolbar-btn::before {
-    background-image: 
-      radial-gradient(ellipse, 
-        hsla(var(--hue), 100%, 90%, .8) 20%,
-        transparent 50%,
-        transparent 200%
-      ),
-      linear-gradient(90deg, 
-        hsl(0deg, 0%, 25%) -10%, 
-        transparent 30%, 
-        transparent 70%, 
-        hsl(0deg, 0%, 25%) 110%
-      );
-    box-shadow: 
-      inset 0 .25em .75em hsla(0deg, 0%, 0%, 0.8),
-      inset 0 -.05em .2em rgba(255, 255, 255, 0.4),
-      inset 0 -1px 3px hsla(var(--hue), 80%, 50%, .75);
-    background-blend-mode: overlay;
-    background-repeat: no-repeat;
-    background-size: 200% 80%, cover;
-    background-position: center 220%;
-    mix-blend-mode: overlay;
-  }
-  
-  .toolbar-btn::after {
-    background: linear-gradient(
-      180deg, 
-      hsla(var(--hue2),100%,90%,.9), 
-      hsla(var(--hue2),calc(var(--sat2)*0.7),50%,.75) 40%, 
-      transparent 80%
-    );
-    top: 0.075em;
-    left: 0.75em;
-    right: 0.75em;
-    bottom: 1.4em;
-    filter: blur(var(--blur));
-    mix-blend-mode: screen;
-  }
-  
-  .toolbar-btn:hover,
-  .toolbar-btn:active,
-  .toolbar-btn:focus {
-    outline: none;
-    box-shadow: 
-      0 -0.2em 1em hsla(var(--hue2), 70%, 80%, 0.3),
-      0 0.5em 1.5em hsla(var(--hue), 70%, 80%, 0.5),
-      0 0.25em 0.3em -0.2em hsl(var(--hue) 90% 70%), 
-      0 0.25em 0.5em hsla(var(--hue),20%,30%, 0.2),
-      inset 0 -2px 2px rgba(255,255,255,0.2);
-    background-position: center calc(var(--gradoffset) - 0.75em);
-  }
-  
+  font-size: 1em; /* Kích thước font bình thường */
+  font-weight: 500;
+  background-color: white; /* Nền nút trắng */
+  border: 1px solid white; /* Viền trắng cho nút */
+  border-radius: 10px; /* Làm tròn góc nút */
+  padding: 8px 12px; /* Kích thước padding nút */
+  margin: 0 8px; /* Khoảng cách giữa các nút */
+  color: black; /* Chữ màu đen cho nút */
+  transition: all 0.3s ease; /* Thêm hiệu ứng mượt */
+}
+
+.toolbar-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Đổi màu nền khi hover */
+  transform: scale(1.1); /* Phóng to nhẹ khi hover */
+}
+
+.toolbar-btn img {
+  width: 24px;  /* Đảm bảo kích thước icon chuẩn */
+  height: 24px;
+}

@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Toolbar from './Toolbar.jsx';
-import exitIcon from '../../assets/icons/exit.svg';
-import { convertPdfToImages } from '../../utils/pdfUtils.js'; // Import utility function
-import '../../assets/css/flipbook.css'; // Import CSS styles
+import previousIcon from '../../assets/icons/previous.svg'; // Import biểu tượng Previous
+import nextIcon from '../../assets/icons/next.svg'; // Import biểu tượng Next
+import { convertPdfToImages } from '../../utils/pdfUtils.js';
+import '../../assets/css/flipbook.css';
 import $ from 'jquery';
 import 'jquery.panzoom';
 
@@ -16,7 +17,7 @@ const BookViewer = ({ initialFile }) => {
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-            const images = await convertPdfToImages(file); // Convert PDF to images
+            const images = await convertPdfToImages(file);
             setPdfPages(images);
             setUploadedFile(file);
         }
@@ -30,15 +31,6 @@ const BookViewer = ({ initialFile }) => {
             document.exitFullscreen();
             setIsFullscreen(false);
         }
-    };
-
-    const handleExit = () => {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        }
-        setIsFullscreen(false);
-        setUploadedFile(null);
-        setPdfPages([]);
     };
 
     useEffect(() => {
@@ -61,11 +53,11 @@ const BookViewer = ({ initialFile }) => {
                 when: {
                     turning: (event, page) => {
                         console.log('Turning to page', page);
-                        $('.magazine-viewport').panzoom('disable'); // Disable zoom on turn
+                        $('.magazine-viewport').panzoom('disable');
                     },
                     turned: (event, page) => {
                         console.log('Turned to page', page);
-                        $('.magazine-viewport').panzoom('enable'); // Enable zoom after turn
+                        $('.magazine-viewport').panzoom('enable');
                     },
                 },
             });
@@ -79,20 +71,18 @@ const BookViewer = ({ initialFile }) => {
             $('.magazine-viewport').panzoom({
                 minScale: 1,
                 maxScale: 2,
-                disablePan: true, // Disable pan functionality
+                disablePan: true,
             });
 
             // Enable zoom with mouse wheel
             $('.magazine-viewport').on('mousewheel', (event) => {
-                event.preventDefault(); // Prevent default scrolling
-                const zoomOut = event.originalEvent.deltaY > 0; // Determine zoom direction
+                event.preventDefault();
+                const zoomOut = event.originalEvent.deltaY > 0;
                 $('.magazine-viewport').panzoom('zoom', !zoomOut, {
                     animate: false,
                     focal: event,
                 });
             });
-
-            // Removed mouse click event to turn pages
         }
     }, [pdfPages, uploadedFile]);
 
@@ -104,9 +94,6 @@ const BookViewer = ({ initialFile }) => {
                 </div>
             ) : (
                 <div className="flipbook-pdf-viewer">
-                    <button onClick={handleExit} className="flipbook-exit-button">
-                        <img src={exitIcon} alt="Exit" className="flipbook-exit-icon" />
-                    </button>
                     <div className="flipbook-magazine-viewport">
                         <div ref={flipbookRef} className="flipbook-magazine">
                             {pdfPages.map((page, index) => (
@@ -116,18 +103,38 @@ const BookViewer = ({ initialFile }) => {
                             ))}
                         </div>
                     </div>
+                    {/* Nút Previous */}
+                    <button
+                        className="flipbook-nav-button previous"
+                        onClick={() => $(flipbookRef.current).turn('previous')}
+                    >
+                        <img src={previousIcon} alt="Previous" style={styles.icon} />
+                    </button>
+                    {/* Nút Next */}
+                    <button
+                        className="flipbook-nav-button next"
+                        onClick={() => $(flipbookRef.current).turn('next')}
+                    >
+                        <img src={nextIcon} alt="Next" style={styles.icon} />
+                    </button>
                     <Toolbar
-                        handlePreviousPage={() => $(flipbookRef.current).turn('previous')}
-                        handleNextPage={() => $(flipbookRef.current).turn('next')}
                         handleZoomOut={() => $('.magazine-viewport').panzoom('zoom', true)}
                         handleZoomIn={() => $('.magazine-viewport').panzoom('zoom', false)}
                         toggleFullscreen={toggleFullscreen}
                         isFullscreen={isFullscreen}
+                        className="flipbook-tool-bar"
                     />
                 </div>
             )}
         </div>
     );
+};
+
+const styles = {
+    icon: {
+        width: '24px',  // Kích thước biểu tượng
+        height: '24px',
+    }
 };
 
 export default BookViewer;
