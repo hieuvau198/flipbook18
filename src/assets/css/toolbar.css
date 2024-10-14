@@ -1,19 +1,16 @@
 .toolbar {
   background-color: black; /* Nền đen cho toolbar */
   width: 70%; /* Chiều dài 70% */
+  height: 7%;
   display: flex;
   justify-content: center;
   align-items: center;
-    /* Fix the toolbar to the bottom */
-    bottom: 0;
-    /* Align it to the bottom */
-    left: 0;
-    /* Align it to the left */
-    right: 0;
   padding: 10px; /* Thêm padding để nút không dính sát nhau */
   margin: 0 auto; /* Căn giữa toolbar */
   border: 1px solid white; /* Viền trắng cho nút */
   border-radius: 10px; /* Làm tròn góc nút */
+  position: fixed; /* Giữ thanh công cụ ở vị trí cố định */
+  bottom: 0; /* Đặt ở dưới cùng của trang */
 }
 
 .toolbar-btn {
