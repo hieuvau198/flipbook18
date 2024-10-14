@@ -6,7 +6,7 @@ import '../../assets/css/flipbook.css'; // Import CSS styles
 import $ from 'jquery';
 import 'jquery.panzoom';
 
-const Demo = ({ initialFile }) => {
+const BookViewer = ({ initialFile }) => {
     const containerRef = useRef(null);
     const flipbookRef = useRef(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -72,7 +72,7 @@ const Demo = ({ initialFile }) => {
 
             // Load pages into flipbook
             pdfPages.forEach((page, index) => {
-                flipbook.turn('addPage', $(`<div class="page"><img src="${page}" /></div>`), index + 1);
+                flipbook.turn('addPage', $(`<div class="flipbook-page"><img src="${page}" /></div>`), index + 1);
             });
 
             // Initialize panzoom with disabled pan
@@ -97,41 +97,37 @@ const Demo = ({ initialFile }) => {
     }, [pdfPages, uploadedFile]);
 
     return (
-        <div ref={containerRef} className="container">
+        <div ref={containerRef} className="flipbook-container">
             {!uploadedFile ? (
-                <div className="upload-container">
+                <div className="flipbook-upload-container">
                     <input type="file" accept="application/pdf" onChange={handleFileChange} />
                 </div>
             ) : (
-                <div className="pdf-viewer">
-                    <div className="overlay">
-                        <button onClick={handleExit} className="exit-button">
-                            <img src={exitIcon} alt="Exit" className="exit-icon" />
-                        </button>
-                    </div>
-                    <div className="magazine-viewport">
-                        <div ref={flipbookRef} className="magazine">
+                <div className="flipbook-pdf-viewer">
+                    <button onClick={handleExit} className="flipbook-exit-button">
+                        <img src={exitIcon} alt="Exit" className="flipbook-exit-icon" />
+                    </button>
+                    <div className="flipbook-magazine-viewport">
+                        <div ref={flipbookRef} className="flipbook-magazine">
                             {pdfPages.map((page, index) => (
-                                <div key={index} className="page">
-                                    <img src={page} alt={`Page ${index + 1}`} className="image" />
+                                <div key={index} className="flipbook-page">
+                                    <img src={page} alt={`Page ${index + 1}`} className="flipbook-image" />
                                 </div>
                             ))}
                         </div>
                     </div>
-                    <div className="menu">
-                        <Toolbar
-                            handlePreviousPage={() => $(flipbookRef.current).turn('previous')}
-                            handleNextPage={() => $(flipbookRef.current).turn('next')}
-                            handleZoomOut={() => $('.magazine-viewport').panzoom('zoom', true)}
-                            handleZoomIn={() => $('.magazine-viewport').panzoom('zoom', false)}
-                            toggleFullscreen={toggleFullscreen}
-                            isFullscreen={isFullscreen}
-                        />
-                    </div>
+                    <Toolbar
+                        handlePreviousPage={() => $(flipbookRef.current).turn('previous')}
+                        handleNextPage={() => $(flipbookRef.current).turn('next')}
+                        handleZoomOut={() => $('.magazine-viewport').panzoom('zoom', true)}
+                        handleZoomIn={() => $('.magazine-viewport').panzoom('zoom', false)}
+                        toggleFullscreen={toggleFullscreen}
+                        isFullscreen={isFullscreen}
+                    />
                 </div>
             )}
         </div>
     );
 };
 
-export default Demo;
+export default BookViewer;
