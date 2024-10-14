@@ -9,6 +9,8 @@ import {
 } from "../../utils/firebaseUtils";
 import PdfViewsChart from "../../components/common/PdfViewsChart";
 import DailyViewChart from "../../components/common/DailyViewChart";
+import AddCategory from "../../components/common/AddCategory";
+import TableCategory from "../../components/common/TableCategory";
 import "../../styles/App.css";
 
 const BookManagement = () => {
@@ -184,6 +186,8 @@ const BookManagement = () => {
             <div className="col-lg-8">
               <PdfViewsChart />
             </div>
+
+            <div className="row mt-5 mb-5">
             <div className="col-lg-5">
               {/* Add Book */}
               <div
@@ -249,9 +253,9 @@ const BookManagement = () => {
                       <th scope="col">Name</th>
                       <th scope="col">Date</th>
                       <th scope="col">Author</th>
-                      <th scope="col">Update</th>
-                      <th scope="col">Remove</th>
-                      <th scope="col">Access</th>
+                      <th scope="col"></th>
+                      <th scope="col"></th>
+                      <th scope="col"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -324,8 +328,19 @@ const BookManagement = () => {
                 )}
               </div>
             </div>
-
             <div className="col-lg-1"></div>
+            </div>
+            
+            <div className="row mt-4">
+            <div className="col-lg-5">
+              <AddCategory></AddCategory>
+            </div>
+            <div className="col-lg-6">
+                <TableCategory></TableCategory>
+            </div>
+            <div className="col-lg-1"></div>
+            </div>
+            
           </div>
         </div>
       </div>

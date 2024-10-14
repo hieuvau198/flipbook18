@@ -619,3 +619,113 @@
   height: 100%;
   object-fit: contain; /* Scale without distorting */
 }
+
+/* AddCategory Component Styles */
+
+.category-container {
+  background-color: #f5f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.category-header {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.category-form-group {
+  margin-bottom: 20px;
+}
+
+.category-label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.category-textarea,
+.category-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #495057;
+}
+
+.category-textarea {
+  height: 100px;
+}
+
+.category-pdfId-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.category-remove-button {
+  padding: 8px 15px; /* Adjust padding to match input height */
+  background-color: #6b6b6b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px; /* Increase font size for better alignment */
+  height: 37px; /* Set height to match the input field */
+  display: flex;
+  align-items: center; /* Vertically center the text */
+}
+
+.category-input {
+  width: 70%; /* Adjust width to balance space with the button */
+  padding: 8px; /* Ensure consistent padding */
+  height: 40px; /* Set height to match the button */
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.category-remove-button:hover {
+  background-color: #c82333;
+}
+
+.category-add-button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+.category-add-button:hover {
+  background-color: #0056b3;
+}
+
+.category-submit-button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.category-submit-button:hover {
+  background-color: #218838;
+}

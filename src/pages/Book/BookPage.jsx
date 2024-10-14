@@ -1,7 +1,7 @@
 // src/pages/BookPage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {fetchSavedPdfById, fetchRandomPdfs} from "../../utils/firebaseUtils";
+import {fetchSavedPdfById, fetchRandomPdfs, fetchCategoriesByPdfId } from "../../utils/firebaseUtils";
 import JqueryPdfViewer from "../../components/common/JqueryPdfViewer";
 import BookViewer from "../../components/common/BookViewer";
 import ShareButton from "../../components/common/ShareButton";
@@ -17,6 +17,7 @@ const BookPage = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   const [suggestedBooks, setSuggestedBooks] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const navigate = useNavigate();
 
@@ -61,6 +62,22 @@ const BookPage = () => {
     getRandomBooks();
   }, []);
 
+  useEffect(() => {
+    // Fetch categories for the PDF once pdfData is available
+    const loadCategories = async () => {
+      if (pdfData && pdfData.id) {
+        try {
+          const fetchedCategories = await fetchCategoriesByPdfId(pdfData.id);
+          setCategories(fetchedCategories);
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+        }
+      }
+    };
+
+    loadCategories();
+  }, [pdfData]);
+
   return (
     <>
       <div className="book-style-container">
@@ -71,6 +88,10 @@ const BookPage = () => {
             src={pdfData && pdfData.coverPageUrl ? pdfData.coverPageUrl : "images/insta-item1.jpg"}
             alt="Manga Cover"
             className="book-style-cover-image"
+            // onLoad={(e) => {
+            //   const { naturalWidth, naturalHeight } = e.target; // Get the natural dimensions of the image
+            //   console.log(`Cover Page Width: ${naturalWidth}px, Height: ${naturalHeight}px`);
+            // }}
           />
         </div>
 
@@ -87,13 +108,19 @@ const BookPage = () => {
               This is a static description of the book.
             </p>
 
-            {/* Tags/Genres */}
+            {/* Tags/Categories */}
             <div className="book-style-genres">
-              <strong>Genres:</strong>
-              <span className="book-style-genre">In Development</span>
-              <span className="book-style-genre">In Development</span>
-              <span className="book-style-genre">In Development</span>
-            </div>
+                <strong>Category:</strong>
+                {categories.length > 0 ? (
+                  categories.map((category) => (
+                    <span key={category.id} className="book-style-genre">
+                      {category.name}
+                    </span>
+                  ))
+                ) : (
+                  <span className="book-style-genre">No categories available</span>
+                )}
+              </div>
           </div>
 
           {/* Read/Bookmark/Share Buttons */}

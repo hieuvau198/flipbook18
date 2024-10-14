@@ -46,8 +46,6 @@ function User() {
       {/* old content */}
 
       <div>
-        
-
         <div className="mt-10">
           <SavedPdfList onSelectPdf={handlePdfSelect} onCloseList={() => {}} />
         </div>
