@@ -97,3 +97,37 @@
 .flipbook-nav-button.next {
     right: 10px; /* Sát cạnh phải */
 }
+
+.magnifying-glass {
+    position: absolute;
+    border-radius: 50%;
+    width: 150px; /* Width of magnifying glass */
+    height: 150px; /* Height of magnifying glass */
+    border: 3px solid black;
+    background-repeat: no-repeat;
+    pointer-events: none; /* So it doesn’t block interactions */
+    display: none;
+    z-index: 100;
+}
+.flipbook-magazine-viewport.zoomer {
+    cursor: none; /* Ẩn con trỏ mặc định */
+}
+
+.result {
+    pointer-events: none; /* Để kính lúp không chặn sự kiện chuột */
+    position: fixed; /* Đặt kính lúp theo vị trí cố định */
+    transform: translate(-50%, -50%); /* Căn giữa kính lúp với con trỏ */
+    border-radius: 50%;
+    width: 400px;
+    height: 400px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+
+    display: none; /* Mặc định ẩn */
+    z-index: 100;
+}
+
+.hide {
+    display: none;
+}
+
+

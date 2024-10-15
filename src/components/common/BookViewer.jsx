@@ -9,11 +9,18 @@ import $ from 'jquery';
 const BookViewer = ({ initialFile }) => {
     const containerRef = useRef(null);
     const flipbookRef = useRef(null);
+    const resultRef = useRef(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [pdfDocument, setPdfDocument] = useState(null);
     const [uploadedFile, setUploadedFile] = useState(initialFile);
-    const [scale, setScale] = useState(1);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
+    const [magnifyPosition, setMagnifyPosition] = useState({ x: 0, y: 0 });
+
+    const size = 4; // Magnification size
+
+    const toggleMagnify = () => {
+        setIsMagnifyEnabled((prev) => !prev);
+    };
 
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
@@ -36,11 +43,8 @@ const BookViewer = ({ initialFile }) => {
 
     const renderPdfToFlipbook = async (pdf) => {
         const flipbook = $(flipbookRef.current);
-
-        // Clear any existing content
         flipbook.empty();
 
-        // Render pages into flipbook
         const pages = [];
         for (let i = 0; i < pdf.numPages; i++) {
             const page = await pdf.getPage(i + 1);
@@ -51,20 +55,17 @@ const BookViewer = ({ initialFile }) => {
             canvas.height = viewport.height;
             canvas.width = viewport.width;
 
-            // Render page on canvas
             await page.render({ canvasContext: context, viewport }).promise;
-
-            // Add the canvas to the pages array (to be appended after rendering)
             pages.push(canvas);
         }
 
-        // After all pages are rendered, append them to the flipbook
-        pages.forEach((canvas, index) => {
-            flipbook.append(`<div class="flipbook-page"></div>`);
-            flipbook.children().last().append(canvas);
+        pages.forEach((canvas) => {
+            const pageContainer = document.createElement('div');
+            pageContainer.className = 'flipbook-page image';
+            pageContainer.appendChild(canvas);
+            flipbook.append(pageContainer);
         });
 
-        // Initialize Turn.js after all pages are in place
         flipbook.turn({
             width: 922,
             height: 600,
@@ -72,44 +73,41 @@ const BookViewer = ({ initialFile }) => {
             display: 'double',
             elevation: 50,
             gradients: true,
-            when: {
-                turning: function(event, page, view) {
-                    // Luôn cho phép lật trang bằng chuột khi zoom
-                    if (scale > 1) {
-                        event.preventDefault(); // Allow custom handling during zoom
-                    }
-                }
-            },
-            mouseEvents: {
-                down: 'mousedown',
-                move: 'mousemove',
-                up: 'mouseup',
-                over: 'mouseover',
-                out: 'mouseout'
-            },
-            touchEvents: {
-                down: 'touchstart',
-                move: 'touchmove',
-                up: 'touchend',
-                over: 'touchstart',
-                out: 'touchend'
-            }
         });
+    };
+    const handleMouseMove = (e) => {
+        if (!isMagnifyEnabled || !resultRef.current) return;
+
+        const imgElement = e.target.tagName === 'CANVAS' ? e.target : null;
+        if (!imgElement) return;
+
+        const result = resultRef.current;
+        result.classList.remove('hide');
+
+        const rect = imgElement.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+        // Vị trí kính lúp ngay tại vị trí con trỏ, căn giữa
+        const posX = e.clientX;
+        const posY = e.clientY;
+
+        result.style.cssText = `
+            background-image: url(${imgElement.toDataURL()});
+            background-size: ${imgElement.width * size}px ${imgElement.height * size}px;
+            background-position: ${x}% ${y}%;
+            left: ${posX}px;
+            top: ${posY}px;
+            display: block;
+        `;
+    };
+    const handleMouseLeave = () => {
+        if (resultRef.current) {
+            resultRef.current.classList.add('hide');
+            resultRef.current.style = '';
+        }
     };
 
-    const handleZoomIn = () => {
-        setScale((prevScale) => {
-            const newScale = Math.min(prevScale + 0.1, 2); // Giới hạn zoom tối đa là 2
-            return newScale;
-        });
-    };
-
-    const handleZoomOut = () => {
-        setScale((prevScale) => {
-            const newScale = Math.max(prevScale - 0.1, 0.5); // Giới hạn zoom tối thiểu là 0.5
-            return newScale;
-        });
-    };
 
     useEffect(() => {
         if (pdfDocument && flipbookRef.current) {
@@ -125,26 +123,22 @@ const BookViewer = ({ initialFile }) => {
                 </div>
             ) : (
                 <div className="flipbook-pdf-viewer">
-                    <div className="flipbook-magazine-viewport">
+                    <div className={`flipbook-magazine-viewport ${isMagnifyEnabled ? 'zoomer' : ''}`}>
                         <div
                             ref={flipbookRef}
                             className="flipbook-magazine"
-                            style={{
-                                transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`,
-                                transition: 'transform 0.3s ease',
-                                transformOrigin: 'center center',
-                            }}
-                        >
-                        </div>
+                            onMouseMove={handleMouseMove}
+                            onMouseLeave={handleMouseLeave}
+                        ></div>
+                        <div ref={resultRef} className="result hide"></div>
                     </div>
-                    {/* Nút Previous */}
+
                     <button
                         className="flipbook-nav-button previous"
                         onClick={() => $(flipbookRef.current).turn('previous')}
                     >
                         <img src={previousIcon} alt="Previous" style={styles.icon} />
                     </button>
-                    {/* Nút Next */}
                     <button
                         className="flipbook-nav-button next"
                         onClick={() => $(flipbookRef.current).turn('next')}
@@ -152,10 +146,10 @@ const BookViewer = ({ initialFile }) => {
                         <img src={nextIcon} alt="Next" style={styles.icon} />
                     </button>
                     <Toolbar
-                        handleZoomOut={handleZoomOut}
-                        handleZoomIn={handleZoomIn}
                         toggleFullscreen={toggleFullscreen}
                         isFullscreen={isFullscreen}
+                        onToggleMagnify={toggleMagnify}
+                        isMagnifyEnabled={isMagnifyEnabled}
                     />
                 </div>
             )}
@@ -165,7 +159,7 @@ const BookViewer = ({ initialFile }) => {
 
 const styles = {
     icon: {
-        width: '24px', // Kích thước biểu tượng
+        width: '24px',
         height: '24px',
     },
 };

@@ -4,66 +4,65 @@ import ToggleButton from 'react-toggle-button'; // Import ToggleButton
 import '../../assets/css/toolbar.css'; // Import file CSS mới chứa hiệu ứng Aqua
 
 // Import SVG icons
-import zoomOutIcon from '../../assets/icons/zoom-out.svg';
-import zoomInIcon from '../../assets/icons/zoom-in.svg';
+
 import fullscreenIcon from '../../assets/icons/fullscreen.svg';
 import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.svg';
 
 function Toolbar({
-  handleZoomOut,
-  handleZoomIn,
+
   toggleFullscreen,
   isFullscreen,
-  onTogglePan,
-  isPanEnabled
+  onToggleMagnify, // Add this prop
+  isMagnifyEnabled // Add this prop
 }) {
-  const [isToggled, setIsToggled] = useState(isPanEnabled);
+  const [isToggled, setIsToggled] = useState(false); // State for pan toggle
+  const [isMagnifyToggled, setIsMagnifyToggled] = useState(isMagnifyEnabled); // State for magnify toggle
 
-  const handleToggle = (value) => {
+  const handleTogglePan = (value) => {
     setIsToggled(!value);
-    onTogglePan(); // Gọi hàm toggle pan từ BookViewer
+    // Assuming you have a function to toggle pan in the parent
+    // onTogglePan(); 
+  };
+
+  const handleMagnifyToggle = (value) => {
+    setIsMagnifyToggled(!value); // Toggle magnify state
+    onToggleMagnify(); // Call the passed function to toggle magnification
   };
 
   return (
-      <div className="toolbar">
-        <button className="toolbar-btn" onClick={handleZoomOut}>
-          <img src={zoomOutIcon} alt="Zoom Out" style={styles.icon} />
-        </button>
-        <button className="toolbar-btn" onClick={handleZoomIn}>
-          <img src={zoomInIcon} alt="Zoom In" style={styles.icon} />
-        </button>
-        <button className="toolbar-btn" onClick={toggleFullscreen}>
-          <img
-            src={isFullscreen ? exitFullscreenIcon : fullscreenIcon}
-            alt={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-            style={styles.icon}
-          />
-        </button>
-        <div className="toggle">
-          <ToggleButton
-            value={isToggled}
-            onToggle={handleToggle}
-          />
-        </div>
+    <div className="toolbar">
+
+      <button className="toolbar-btn" onClick={toggleFullscreen}>
+        <img
+          src={isFullscreen ? exitFullscreenIcon : fullscreenIcon}
+          alt={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          style={styles.icon}
+        />
+      </button>
+
+      <div className="toggle">
+        <ToggleButton
+          value={isMagnifyToggled}
+          onToggle={handleMagnifyToggle} // Use the magnify toggle handler
+        />
       </div>
+    </div>
   );
 }
 
 // PropTypes to define the expected types of props
 Toolbar.propTypes = {
-  handleZoomOut: PropTypes.func.isRequired,
-  handleZoomIn: PropTypes.func.isRequired,
+
   toggleFullscreen: PropTypes.func.isRequired,
   isFullscreen: PropTypes.bool.isRequired,
-  onTogglePan: PropTypes.func.isRequired, // Thêm prop cho toggle pan
-  isPanEnabled: PropTypes.bool.isRequired // Thêm prop cho trạng thái pan
+  onToggleMagnify: PropTypes.func.isRequired, // Added prop for magnify toggle
+  isMagnifyEnabled: PropTypes.bool.isRequired // Added prop for magnify state
 };
 
 const styles = {
   icon: {
     width: '24px',  // Set icon size
     height: '24px',
-
   }
 };
 
