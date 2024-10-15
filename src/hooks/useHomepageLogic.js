@@ -8,6 +8,7 @@ export const useHomepageLogic = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [pdfUrl, setPdfUrl] = useState(null);  // Store the uploaded PDF URL
   const { userLoggedIn } = useAuth();
 
   // Convert the file to a Base64 URL (data URL) before uploading
@@ -37,32 +38,29 @@ export const useHomepageLogic = () => {
     if (file) {
       try {
         setLoading(true);
-        const fileName = "temp_PDF"; // Set a default file name
-        const fileCollection = "temps"; // Set a default collection to store
-
-        // Convert the file to a Base64 URL before passing it to the savePdfToFirestore function
+        console.log("Starting file upload...");  // Log upload start
+        const fileName = "temp_PDF";
+        const fileCollection = "temps";
         const base64File = await fileToBase64(file);
-
-        // Save the base64 file and get its ID from Firestore
         const pdfFileId = await savePdfToFirestoreTemp(base64File, fileName, fileCollection);
-
-        // Fetch the saved PDF by ID and get its download URL
         const pdfFileUrl = await fetchSavedPdfByIdAndCollection(pdfFileId, fileCollection);
-
-        // Navigate to Flipbook and pass the file URL
-        navigate("/flipbook", { state: { pdfFileUrl } });
+        console.log("PDF uploaded successfully, URL:", pdfFileUrl);  // Log successful upload
+        setPdfUrl(pdfFileUrl.url);  // Set the PDF URL to show in the viewer
       } catch (error) {
-        setError("Failed to process the file because of oversize.");
+        setError("Failed to process the file due to size limit.");
+        console.error("File upload failed:", error);  // Log upload failure
       } finally {
         setLoading(false);
       }
     } else {
       setError("No file selected or invalid file type.");
+      console.warn("Upload attempt with no file or invalid file type");  // Log warning
     }
   };
 
-  const handleLogin = () => {
-    navigate("/login");
+  const closeViewer = () => {
+    setPdfUrl(null);  // Close the viewer
+    console.log("PDF viewer closed");  // Log viewer close
   };
 
   return {
@@ -70,8 +68,9 @@ export const useHomepageLogic = () => {
     error,
     loading,
     userLoggedIn,
+    pdfUrl,  // Expose the PDF URL
     handleFileChange,
     handleUpload,
-    handleLogin,
+    closeViewer,  // Expose the close function
   };
 };

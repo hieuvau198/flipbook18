@@ -6,13 +6,12 @@ import { loadPdfDocument } from '../../utils/pdfUtils.js';
 import '../../assets/css/flipbook.css';
 import $ from 'jquery';
 
-const BookViewer = ({ initialFile }) => {
+const BookViewer = ({ pdfUrl }) => {
     const containerRef = useRef(null);
     const flipbookRef = useRef(null);
     const resultRef = useRef(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [pdfDocument, setPdfDocument] = useState(null);
-    const [uploadedFile, setUploadedFile] = useState(initialFile);
     const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
     const [magnifyPosition, setMagnifyPosition] = useState({ x: 0, y: 0 });
 
@@ -20,15 +19,6 @@ const BookViewer = ({ initialFile }) => {
 
     const toggleMagnify = () => {
         setIsMagnifyEnabled((prev) => !prev);
-    };
-
-    const handleFileChange = async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const pdf = await loadPdfDocument(file);
-            setPdfDocument(pdf);
-            setUploadedFile(file);
-        }
     };
 
     const toggleFullscreen = () => {
@@ -75,6 +65,7 @@ const BookViewer = ({ initialFile }) => {
             gradients: true,
         });
     };
+
     const handleMouseMove = (e) => {
         if (!isMagnifyEnabled || !resultRef.current) return;
 
@@ -88,19 +79,19 @@ const BookViewer = ({ initialFile }) => {
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-        // Vị trí kính lúp ngay tại vị trí con trỏ, căn giữa
         const posX = e.clientX;
         const posY = e.clientY;
 
         result.style.cssText = `
             background-image: url(${imgElement.toDataURL()});
             background-size: ${imgElement.width * size}px ${imgElement.height * size}px;
-            background-position: ${x}% ${y}%;
+            background-position: ${x}% ${y}% ;
             left: ${posX}px;
             top: ${posY}px;
             display: block;
         `;
     };
+
     const handleMouseLeave = () => {
         if (resultRef.current) {
             resultRef.current.classList.add('hide');
@@ -108,51 +99,55 @@ const BookViewer = ({ initialFile }) => {
         }
     };
 
+    useEffect(() => {
+        const fetchPdf = async () => {
+            if (pdfUrl) {
+                const pdf = await loadPdfDocument(pdfUrl);
+                setPdfDocument(pdf);
+            }
+        };
+
+        fetchPdf();
+    }, [pdfUrl]);
 
     useEffect(() => {
         if (pdfDocument && flipbookRef.current) {
             renderPdfToFlipbook(pdfDocument);
         }
-    }, [pdfDocument, uploadedFile]);
+    }, [pdfDocument]);
 
     return (
         <div ref={containerRef} className="flipbook-container">
-            {!uploadedFile ? (
-                <div className="flipbook-upload-container">
-                    <input type="file" accept="application/pdf" onChange={handleFileChange} />
+            <div className="flipbook-pdf-viewer">
+                <div className={`flipbook-magazine-viewport ${isMagnifyEnabled ? 'zoomer' : ''}`}>
+                    <div
+                        ref={flipbookRef}
+                        className="flipbook-magazine"
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                    ></div>
+                    <div ref={resultRef} className="result hide"></div>
                 </div>
-            ) : (
-                <div className="flipbook-pdf-viewer">
-                    <div className={`flipbook-magazine-viewport ${isMagnifyEnabled ? 'zoomer' : ''}`}>
-                        <div
-                            ref={flipbookRef}
-                            className="flipbook-magazine"
-                            onMouseMove={handleMouseMove}
-                            onMouseLeave={handleMouseLeave}
-                        ></div>
-                        <div ref={resultRef} className="result hide"></div>
-                    </div>
 
-                    <button
-                        className="flipbook-nav-button previous"
-                        onClick={() => $(flipbookRef.current).turn('previous')}
-                    >
-                        <img src={previousIcon} alt="Previous" style={styles.icon} />
-                    </button>
-                    <button
-                        className="flipbook-nav-button next"
-                        onClick={() => $(flipbookRef.current).turn('next')}
-                    >
-                        <img src={nextIcon} alt="Next" style={styles.icon} />
-                    </button>
-                    <Toolbar
-                        toggleFullscreen={toggleFullscreen}
-                        isFullscreen={isFullscreen}
-                        onToggleMagnify={toggleMagnify}
-                        isMagnifyEnabled={isMagnifyEnabled}
-                    />
-                </div>
-            )}
+                <button
+                    className="flipbook-nav-button previous"
+                    onClick={() => $(flipbookRef.current).turn('previous')}
+                >
+                    <img src={previousIcon} alt="Previous" style={styles.icon} />
+                </button>
+                <button
+                    className="flipbook-nav-button next"
+                    onClick={() => $(flipbookRef.current).turn('next')}
+                >
+                    <img src={nextIcon} alt="Next" style={styles.icon} />
+                </button>
+                <Toolbar
+                    toggleFullscreen={toggleFullscreen}
+                    isFullscreen={isFullscreen}
+                    onToggleMagnify={toggleMagnify}
+                    isMagnifyEnabled={isMagnifyEnabled}
+                />
+            </div>
         </div>
     );
 };
