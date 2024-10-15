@@ -81,6 +81,22 @@ const BookPage = () => {
     loadCategories();
   }, [pdfData]);
 
+  // Listen for "Esc" key press to exit fullscreen
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+        if (event.key === 'Escape' && isFullScreen) {
+            handleToggleFullScreen();
+        }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+    };
+}, [isFullScreen]);
+
   return (
     <>
       <div className="book-style-container">
@@ -192,13 +208,9 @@ const BookPage = () => {
     <div>
       {isFullScreen && (
         <div className="read-pdf-overlay">
-          {/* Close button */}
-          <button className="read-pdf-close-button" onClick={handleToggleFullScreen}>
-            X
-          </button>
           {/* Centered and responsive PDF viewer */}
           <div className="read-pdf-container">
-            <BookViewer initialUrl={pdfData.url} className="read-pdf-viewer" />
+            <BookViewer pdfUrl={pdfData.url} className="read-pdf-viewer" />
           </div>
         </div>
       )}

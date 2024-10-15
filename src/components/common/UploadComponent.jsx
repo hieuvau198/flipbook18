@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import FileInput from "../../components/forms/FileInput";
 import ErrorMessage from "../../components/common/ErrorMessage";
 import UploadButton from "../../components/forms/UploadButton";
@@ -15,11 +15,27 @@ const UploadComponent = () => {
     handleUpload,
     handleLogin,
     userLoggedIn,
-    pdfUrl,  // Get the PDF URL from the logic
+    pdfUrl,   // Get the PDF URL from the logic
     closeViewer,  // Get the close function
   } = useHomepageLogic();
 
   const { role } = useAuth(); // Get the role from auth context
+
+  // Handle "Esc" key to close the viewer
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && pdfUrl) {
+        closeViewer();  // Call the closeViewer function when Esc is pressed
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Cleanup the event listener when component unmounts
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [pdfUrl, closeViewer]);  // Effect depends on pdfUrl and closeViewer
 
   return (
     <div className="bg-black p-8 shadow-md w-full h-full text-white mx-auto flex flex-col justify-center items-center">
@@ -45,15 +61,9 @@ const UploadComponent = () => {
       {/* Conditionally render the BookViewer when a PDF is uploaded */}
       {pdfUrl && (
         <div className="read-pdf-overlay">
-          {/* Close Button in Top Right */}
-          <button
-            className="read-pdf-close-button"
-            onClick={closeViewer}
-          >
-            ✕
-          </button>
+          {/* Close Button in Top Right is removed, now controlled by Esc */}
           <div className="read-pdf-container">
-            <BookViewer initialUrl={pdfUrl} className="read-pdf-viewer" />
+            <BookViewer pdfUrl={pdfUrl} className="read-pdf-viewer" />
           </div>
         </div>
       )}

@@ -1,47 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import ToggleButton from 'react-toggle-button'; // Import ToggleButton
 import '../../assets/css/toolbar.css'; // Import file CSS mới chứa hiệu ứng Aqua
 
 // Import SVG icons
-import previousIcon from '../../assets/icons/previous.svg';
-import nextIcon from '../../assets/icons/next.svg';
-import zoomOutIcon from '../../assets/icons/zoom-out.svg';
-import zoomInIcon from '../../assets/icons/zoom-in.svg';
+
 import fullscreenIcon from '../../assets/icons/fullscreen.svg';
 import exitFullscreenIcon from '../../assets/icons/exit-fullscreen.svg';
 
-
 function Toolbar({
-  handlePreviousPage,
-  handleNextPage,
-  handleZoomOut,
-  handleZoomIn,
+
   toggleFullscreen,
   isFullscreen,
-
+  onToggleMagnify, // Add this prop
+  isMagnifyEnabled // Add this prop
 }) {
+  const [isToggled, setIsToggled] = useState(false); // State for pan toggle
+  const [isMagnifyToggled, setIsMagnifyToggled] = useState(isMagnifyEnabled); // State for magnify toggle
+
+  const handleTogglePan = (value) => {
+    setIsToggled(!value);
+    // Assuming you have a function to toggle pan in the parent
+    // onTogglePan(); 
+  };
+
+  const handleMagnifyToggle = (value) => {
+    setIsMagnifyToggled(!value); // Toggle magnify state
+    onToggleMagnify(); // Call the passed function to toggle magnification
+  };
+
   return (
-    <div className="d-flex justify-content-center align-items-center mb-2">
-      <div className="toolbar">
-        <button className="toolbar-btn mx-1" onClick={handlePreviousPage}>
-          <img src={previousIcon} alt="Previous" style={styles.icon} />
-        </button>
-        <button className="toolbar-btn mx-1" onClick={handleNextPage}>
-          <img src={nextIcon} alt="Next" style={styles.icon} />
-        </button>
-        <button className="toolbar-btn mx-1" onClick={handleZoomOut}>
-          <img src={zoomOutIcon} alt="Zoom Out" style={styles.icon} />
-        </button>
-        <button className="toolbar-btn mx-1" onClick={handleZoomIn}>
-          <img src={zoomInIcon} alt="Zoom In" style={styles.icon} />
-        </button>
-        <button className="toolbar-btn mx-1" onClick={toggleFullscreen}>
-          <img
-            src={isFullscreen ? exitFullscreenIcon : fullscreenIcon}
-            alt={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-            style={styles.icon}
-          />
-        </button>
+    <div className="toolbar">
+
+      <button className="toolbar-btn" onClick={toggleFullscreen}>
+        <img
+          src={isFullscreen ? exitFullscreenIcon : fullscreenIcon}
+          alt={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+          style={styles.icon}
+        />
+      </button>
+
+      <div className="toggle">
+        <ToggleButton
+          value={isMagnifyToggled}
+          onToggle={handleMagnifyToggle} // Use the magnify toggle handler
+        />
       </div>
     </div>
   );
@@ -49,12 +52,11 @@ function Toolbar({
 
 // PropTypes to define the expected types of props
 Toolbar.propTypes = {
-  handlePreviousPage: PropTypes.func.isRequired,
-  handleNextPage: PropTypes.func.isRequired,
-  handleZoomOut: PropTypes.func.isRequired,
-  handleZoomIn: PropTypes.func.isRequired,
+
   toggleFullscreen: PropTypes.func.isRequired,
   isFullscreen: PropTypes.bool.isRequired,
+  onToggleMagnify: PropTypes.func.isRequired, // Added prop for magnify toggle
+  isMagnifyEnabled: PropTypes.bool.isRequired // Added prop for magnify state
 };
 
 const styles = {

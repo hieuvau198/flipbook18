@@ -1,34 +1,25 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Toolbar from './Toolbar.jsx';
-import exitIcon from '../../assets/icons/exit.svg';
-import { convertPdfToImages } from '../../utils/pdfUtils.js'; // Import utility function
-import '../../assets/css/flipbook.css'; // Import CSS styles
+import previousIcon from '../../assets/icons/previous.svg';
+import nextIcon from '../../assets/icons/next.svg';
+import { loadPdfDocument } from '../../utils/pdfUtils.js';
+import '../../assets/css/flipbook.css';
 import $ from 'jquery';
-import 'jquery.panzoom';
 
-const BookViewer = ({ initialUrl }) => {
+const BookViewer = ({ pdfUrl }) => {
     const containerRef = useRef(null);
     const flipbookRef = useRef(null);
+    const resultRef = useRef(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [pdfPages, setPdfPages] = useState([]);
+    const [pdfDocument, setPdfDocument] = useState(null);
+    const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
+    const [magnifyPosition, setMagnifyPosition] = useState({ x: 0, y: 0 });
 
-    // Fetch and convert PDF when initialUrl is provided
-    useEffect(() => {
-        const fetchAndConvertPdf = async () => {
-            if (initialUrl) {
-                try {
-                    const response = await fetch(initialUrl);
-                    const blob = await response.blob();
-                    const images = await convertPdfToImages(blob);
-                    setPdfPages(images);
-                } catch (error) {
-                    console.error("Error fetching or converting PDF:", error);
-                }
-            }
-        };
+    const size = 4; // Magnification size
 
-        fetchAndConvertPdf();
-    }, [initialUrl]);
+    const toggleMagnify = () => {
+        setIsMagnifyEnabled((prev) => !prev);
+    };
 
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
@@ -40,93 +31,132 @@ const BookViewer = ({ initialUrl }) => {
         }
     };
 
-    const handleExit = () => {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
+    const renderPdfToFlipbook = async (pdf) => {
+        const flipbook = $(flipbookRef.current);
+        flipbook.empty();
+
+        const pages = [];
+        for (let i = 0; i < pdf.numPages; i++) {
+            const page = await pdf.getPage(i + 1);
+            const viewport = page.getViewport({ scale: 1 });
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport }).promise;
+            pages.push(canvas);
         }
-        setIsFullscreen(false);
-        setPdfPages([]);
+
+        pages.forEach((canvas) => {
+            const pageContainer = document.createElement('div');
+            pageContainer.className = 'flipbook-page image';
+            pageContainer.appendChild(canvas);
+            flipbook.append(pageContainer);
+        });
+
+        flipbook.turn({
+            width: 922,
+            height: 600,
+            autoCenter: true,
+            display: 'double',
+            elevation: 50,
+            gradients: true,
+        });
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isMagnifyEnabled || !resultRef.current) return;
+
+        const imgElement = e.target.tagName === 'CANVAS' ? e.target : null;
+        if (!imgElement) return;
+
+        const result = resultRef.current;
+        result.classList.remove('hide');
+
+        const rect = imgElement.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+        const posX = e.clientX;
+        const posY = e.clientY;
+
+        result.style.cssText = `
+            background-image: url(${imgElement.toDataURL()});
+            background-size: ${imgElement.width * size}px ${imgElement.height * size}px;
+            background-position: ${x}% ${y}% ;
+            left: ${posX}px;
+            top: ${posY}px;
+            display: block;
+        `;
+    };
+
+    const handleMouseLeave = () => {
+        if (resultRef.current) {
+            resultRef.current.classList.add('hide');
+            resultRef.current.style = '';
+        }
     };
 
     useEffect(() => {
-        if (pdfPages.length > 0 && flipbookRef.current) {
-            const flipbook = $(flipbookRef.current);
-
-            // Destroy existing turn instance if it exists
-            if (flipbook.data('turn')) {
-                flipbook.turn('destroy').empty();
+        const fetchPdf = async () => {
+            if (pdfUrl) {
+                const pdf = await loadPdfDocument(pdfUrl);
+                setPdfDocument(pdf);
             }
+        };
 
-            // Initialize the turn.js flipbook
-            flipbook.turn({
-                width: 922,
-                height: 600,
-                autoCenter: true,
-                display: 'double',
-                elevation: 50,
-                gradients: true,
-                when: {
-                    turning: (event, page) => {
-                        console.log('Turning to page', page);
-                        $('.magazine-viewport').panzoom('disable'); // Disable zoom on turn
-                    },
-                    turned: (event, page) => {
-                        console.log('Turned to page', page);
-                        $('.magazine-viewport').panzoom('enable'); // Enable zoom after turn
-                    },
-                },
-            });
+        fetchPdf();
+    }, [pdfUrl]);
 
-            // Load pages into flipbook
-            pdfPages.forEach((page, index) => {
-                flipbook.turn('addPage', $(`<div class="page"><img src="${page}" /></div>`), index + 1);
-            });
-
-            // Initialize panzoom with disabled pan
-            $('.magazine-viewport').panzoom({
-                minScale: 1,
-                maxScale: 2,
-                disablePan: true, // Disable pan functionality
-            });
-
-            // Enable zoom with mouse wheel
-            $('.magazine-viewport').on('mousewheel', (event) => {
-                event.preventDefault(); // Prevent default scrolling
-                const zoomOut = event.originalEvent.deltaY > 0; // Determine zoom direction
-                $('.magazine-viewport').panzoom('zoom', !zoomOut, {
-                    animate: false,
-                    focal: event,
-                });
-            });
+    useEffect(() => {
+        if (pdfDocument && flipbookRef.current) {
+            renderPdfToFlipbook(pdfDocument);
         }
-    }, [pdfPages]);
+    }, [pdfDocument]);
 
     return (
         <div ref={containerRef} className="flipbook-container">
             <div className="flipbook-pdf-viewer">
-                
-                <div className="flipbook-magazine-viewport">
-                    <div ref={flipbookRef} className="flipbook-magazine">
-                        {pdfPages.map((page, index) => (
-                            <div key={index} className="flipbook-page">
-                                <img src={page} alt={`Page ${index + 1}`} className="flipbook-image" />
-                            </div>
-                        ))}
-                    </div>
+                <div className={`flipbook-magazine-viewport ${isMagnifyEnabled ? 'zoomer' : ''}`}>
+                    <div
+                        ref={flipbookRef}
+                        className="flipbook-magazine"
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                    ></div>
+                    <div ref={resultRef} className="result hide"></div>
                 </div>
-                <div className="flipbook-menu">
-                    <Toolbar
-                        handlePreviousPage={() => $(flipbookRef.current).turn('previous')}
-                        handleNextPage={() => $(flipbookRef.current).turn('next')}
-                        handleZoomOut={() => $('.magazine-viewport').panzoom('zoom', true)}
-                        handleZoomIn={() => $('.magazine-viewport').panzoom('zoom', false)}
-                        toggleFullscreen={toggleFullscreen}
-                        isFullscreen={isFullscreen}
-                    />
-                </div>
+
+                <button
+                    className="flipbook-nav-button previous"
+                    onClick={() => $(flipbookRef.current).turn('previous')}
+                >
+                    <img src={previousIcon} alt="Previous" style={styles.icon} />
+                </button>
+                <button
+                    className="flipbook-nav-button next"
+                    onClick={() => $(flipbookRef.current).turn('next')}
+                >
+                    <img src={nextIcon} alt="Next" style={styles.icon} />
+                </button>
+                <Toolbar
+                    toggleFullscreen={toggleFullscreen}
+                    isFullscreen={isFullscreen}
+                    onToggleMagnify={toggleMagnify}
+                    isMagnifyEnabled={isMagnifyEnabled}
+                />
             </div>
         </div>
     );
+};
+
+const styles = {
+    icon: {
+        width: '24px',
+        height: '24px',
+    },
 };
 
 export default BookViewer;
