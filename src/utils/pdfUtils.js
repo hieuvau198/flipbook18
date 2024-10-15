@@ -19,7 +19,7 @@ export const convertPdfToImages = async (file) => {
     const canvas = document.createElement("canvas");
 
     // Set the maximum number of pages to render
-    const maxPages = Math.min(pdf.numPages, 30); // Only process up to 30 pages
+    const maxPages = Math.min(pdf.numPages, 10); // Only process up to 30 pages
 
     for (let i = 0; i < maxPages; i++) {
         const page = await pdf.getPage(i + 1);

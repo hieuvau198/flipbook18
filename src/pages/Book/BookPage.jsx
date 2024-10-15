@@ -1,7 +1,7 @@
 // src/pages/BookPage.jsx
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {fetchSavedPdfById, fetchRandomPdfs, fetchCategoriesByPdfId } from "../../utils/firebaseUtils";
+import {fetchSavedPdfById, fetchRandomPdfs, fetchCategoriesByPdfId, incrementPdfViews } from "../../utils/firebaseUtils";
 import JqueryPdfViewer from "../../components/common/JqueryPdfViewer";
 import BookViewer from "../../components/common/BookViewer";
 import ShareButton from "../../components/common/ShareButton";
@@ -21,8 +21,11 @@ const BookPage = () => {
 
   const navigate = useNavigate();
 
-  const handleToggleFullScreen = () => {
+  const handleToggleFullScreen = async() => {
     setIsFullScreen(!isFullScreen);
+    if(!isFullScreen && pdfData && pdfData.id){
+      await incrementPdfViews(pdfData.id, "pdfFiles");
+    }
   };
 
   const handleNavigateToAnotherBook = (selectedId) => {

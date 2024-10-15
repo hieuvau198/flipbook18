@@ -72,7 +72,7 @@ const Demo4 = () => {
     return (
         <section id="book-categories" className="bg-light-gray py-5">
             <div className="container">
-                <h2 className="text-center mb-5">Book Categories</h2>
+                <h2 className="text-center mb-5">Categories</h2>
 
                 {/* Dropdown Category */}
                 <div className="d-flex justify-content-center mb-4">
@@ -124,7 +124,7 @@ const Demo4 = () => {
                                                     <div className="card-body">
                                                         <h5 className="card-title">{book.title}</h5>
                                                         <p className="card-text">Author: {book.author}</p>
-                                                        <p className="card-text">Price: {book.price}</p>
+                                                        
                                                         <button className="btn btn-primary">In Development</button>
                                                     </div>
                                                 </div>
