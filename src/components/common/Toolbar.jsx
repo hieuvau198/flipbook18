@@ -13,14 +13,15 @@ function Toolbar({
   handleZoomOut,
   handleZoomIn,
   toggleFullscreen,
-  isFullscreen
+  isFullscreen,
+  onTogglePan,
+  isPanEnabled
 }) {
-  const [isToggled, setIsToggled] = useState(false);
+  const [isToggled, setIsToggled] = useState(isPanEnabled);
 
   const handleToggle = (value) => {
     setIsToggled(!value);
-    // Thực hiện thêm hành động cần thiết khi toggle, ví dụ:
-    console.log('Toggled:', !value);
+    onTogglePan(); // Gọi hàm toggle pan từ BookViewer
   };
 
   return (
@@ -53,7 +54,9 @@ Toolbar.propTypes = {
   handleZoomOut: PropTypes.func.isRequired,
   handleZoomIn: PropTypes.func.isRequired,
   toggleFullscreen: PropTypes.func.isRequired,
-  isFullscreen: PropTypes.bool.isRequired
+  isFullscreen: PropTypes.bool.isRequired,
+  onTogglePan: PropTypes.func.isRequired, // Thêm prop cho toggle pan
+  isPanEnabled: PropTypes.bool.isRequired // Thêm prop cho trạng thái pan
 };
 
 const styles = {
