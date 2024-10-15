@@ -52,10 +52,10 @@ const BookPage = () => {
   }, [b]);
 
   useEffect(() => {
-    // Fetch 5 random books when the component mounts
+    // Fetch 7 random books when the component mounts
     const getRandomBooks = async () => {
       try {
-        const randomBooks = await fetchRandomPdfs(5); // Fetch 3 random books
+        const randomBooks = await fetchRandomPdfs(7); // Fetch 3 random books
         setSuggestedBooks(randomBooks);
       } catch (error) {
         console.error("Error fetching random books: ", error);

@@ -209,6 +209,57 @@ export const fetchSavedPdfByUrl = async (url) => {
   }
 };
 
+export const fetchPdfByCategoryName = async (categoryName) => {
+  if (!categoryName) {
+    throw new Error("Category name is required.");
+  }
+
+  try {
+    // Query the 'categories' collection to find the document with the specified category name
+    const categoryQuery = query(
+      collection(db, "categories"),
+      where("name", "==", categoryName)
+    );
+    const categorySnapshot = await getDocs(categoryQuery);
+
+    if (categorySnapshot.empty) {
+      throw new Error(`No category found with the name: ${categoryName}`);
+    }
+
+    // Get the first matching category (assuming category names are unique)
+    const categoryDoc = categorySnapshot.docs[0];
+    const { pdfIds } = categoryDoc.data();
+
+    if (!pdfIds || pdfIds.length === 0) {
+      return []; // No PDFs associated with this category
+    }
+
+    // Fetch the PDFs by their IDs
+    const pdfFetchPromises = pdfIds.map(async (pdfId) => {
+      const pdfDocRef = doc(db, "pdfFiles", pdfId);
+      const pdfDoc = await getDoc(pdfDocRef);
+
+      if (pdfDoc.exists()) {
+        return {
+          id: pdfDoc.id,
+          ...pdfDoc.data(), // Include all other fields in the document
+        };
+      } else {
+        console.warn(`PDF with ID ${pdfId} not found`);
+        return null;
+      }
+    });
+
+    // Wait for all PDF fetch promises to resolve and filter out null results
+    const pdfFiles = (await Promise.all(pdfFetchPromises)).filter(Boolean);
+
+    return pdfFiles;
+  } catch (error) {
+    console.error("Error fetching PDFs by category name: ", error);
+    throw error;
+  }
+};
+
 export const fetchImageByPdfId = async (pdfId) => {
   try {
     // Reference to the 'images' collection in Firestore
@@ -661,7 +712,6 @@ export const clearStorage = async () => {
   }
 };
 
-// Function to shuffle an array randomly
 const shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -670,7 +720,7 @@ const shuffleArray = (array) => {
   return array;
 };
 
-// Save category to Firestore
+//#region categories
 export const saveCategoryToFirestore = async (
   name,
   description,
@@ -696,7 +746,6 @@ export const saveCategoryToFirestore = async (
   }
 };
 
-// Fetch categories from Firestore
 export const fetchCategories = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "categories")); // Use collection to get a reference
@@ -710,7 +759,6 @@ export const fetchCategories = async () => {
   }
 };
 
-// Update category in Firestore
 export const updateCategory = async (id, name, description, pdfIds) => {
   const categoryRef = doc(db, "categories", id);
   try {
@@ -725,7 +773,6 @@ export const updateCategory = async (id, name, description, pdfIds) => {
   }
 };
 
-// Delete category from Firestore
 export const deleteCategory = async (id) => {
   const categoryRef = doc(db, "categories", id); // Get a reference to the document
   try {
@@ -759,3 +806,4 @@ export const fetchCategoriesByPdfId = async (pdfId) => {
     throw error; // Rethrow the error to handle it in the calling function
   }
 };
+//#endregion
