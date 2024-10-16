@@ -735,6 +735,7 @@
   justify-content: right; /* Center the contents */
   flex-grow: 1; /* Allow form to take available space */
   margin-left: 10px;
+  
 }
 
 .header-search-input {

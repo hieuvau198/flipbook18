@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import SavedPdfList from "../../components/common/SavedPdfList";
 import { fetchSavedPdfs, fetchPdfBySearchNameAndAuthor } from "../../utils/firebaseUtils";
-import { useSearchParams } from "react-router-dom"; // Import useSearchParams
+import { useSearchParams, useNavigate } from "react-router-dom"; 
 
 const BookList = () => {
   const [pdfFiles, setPdfFiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchParams] = useSearchParams(); // Get search params from the URL
+  const [searchParams] = useSearchParams(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,12 +33,10 @@ const BookList = () => {
     };
 
     fetchData();
-  }, [searchParams]); // Re-run the effect whenever the search params change
+  }, [searchParams]); 
 
   const handleSelectPdf = (pdf) => {
-    // Handle the event when a PDF is selected
-    console.log("Selected PDF: ", pdf);
-    // You can navigate to the Flipbook page or perform other actions
+    navigate(`/book?b=${encodeURIComponent(pdf.id)}`);
   };
 
   return (

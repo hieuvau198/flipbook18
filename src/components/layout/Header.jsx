@@ -91,7 +91,6 @@ const Header = () => {
       </div>
 
       <div className="flex items-center space-x-4 flex-grow justify-center">
-        {/* This div wraps the search form and allows it to be centered */}
         <div className="flex-grow flex justify-center">
           <form onSubmit={handleSearchSubmit} className="header-search-form">
             <input
@@ -99,7 +98,7 @@ const Header = () => {
               className="header-search-input"
               placeholder="Search for books or authors..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)} // Update search term
+              onChange={(e) => setSearchTerm(e.target.value)} 
             />
             <button type="submit" className="header-search-button">
               Search
