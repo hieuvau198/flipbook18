@@ -5,6 +5,7 @@ import {fetchSavedPdfById, fetchRandomPdfs, fetchCategoriesByPdfId, incrementPdf
 import JqueryPdfViewer from "../../components/common/JqueryPdfViewer";
 import BookViewer from "../../components/common/BookViewer";
 import ShareButton from "../../components/common/ShareButton";
+import BookList from "./BookList";
 import "../../styles/App.css";
 
 
@@ -97,6 +98,12 @@ const BookPage = () => {
     };
 }, [isFullScreen]);
 
+  // If no "b" parameter or no valid PDF data, show BookList component
+  if (!b || !pdfData) {
+    return <BookList />;
+  }
+
+  
   return (
     <>
       <div className="book-style-container">

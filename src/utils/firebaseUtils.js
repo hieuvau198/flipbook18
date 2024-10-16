@@ -124,6 +124,57 @@ export const fetchRandomPdfs = async (quantity) => {
   }
 };
 
+export const fetchPdfBySearchNameAndAuthor = async (searchTerm) => {
+  try {
+    const searchTermLower = searchTerm.toLowerCase();
+    const pdfFilesRef = collection(db, "pdfFiles");
+
+    // Fetch all documents ordered by 'name' and 'author' so we can filter on the client side
+    const searchQueryByName = query(
+      pdfFilesRef,
+      orderBy("name"),
+      limit(50) // Fetch a larger number of docs, but you can adjust the limit as per your needs
+    );
+    const searchQueryByAuthor = query(
+      pdfFilesRef,
+      orderBy("author"),
+      limit(50)
+    );
+
+    const querySnapshotByName = await getDocs(searchQueryByName);
+    const querySnapshotByAuthor = await getDocs(searchQueryByAuthor);
+
+    // Combine results and remove duplicates
+    const combinedResults = [
+      ...querySnapshotByName.docs,
+      ...querySnapshotByAuthor.docs,
+    ];
+
+    const results = combinedResults.reduce((acc, doc) => {
+      if (!acc.some((item) => item.id === doc.id)) {
+        const data = doc.data();
+        // Convert both the 'name' and 'author' to lowercase for case-insensitive comparison
+        const nameLower = data.name.toLowerCase();
+        const authorLower = data.author.toLowerCase();
+
+        // Check if the search term is found in either the 'name' or 'author' fields
+        if (nameLower.includes(searchTermLower) || authorLower.includes(searchTermLower)) {
+          acc.push({
+            id: doc.id,
+            ...data,
+          });
+        }
+      }
+      return acc;
+    }, []);
+
+    return results;
+  } catch (error) {
+    console.error("Error fetching PDFs by search:", error);
+    throw error;
+  }
+};
+
 export const fetchSavedPdfByCollection = async (collectionName) => {
   try {
     const querySnapshot = await getDocs(collection(db, collectionName));

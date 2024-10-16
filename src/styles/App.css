@@ -729,3 +729,40 @@
 .category-submit-button:hover {
   background-color: #218838;
 }
+.header-search-form {
+  display: flex;
+  align-items: center;
+  justify-content: right; /* Center the contents */
+  flex-grow: 1; /* Allow form to take available space */
+  margin-left: 10px;
+}
+
+.header-search-input {
+  width: 100%; /* Full width for smaller screens */
+  max-width: 500px; /* Increase the maximum width to 500px */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s ease-in-out;
+  color: black; /* Set text color to black */
+}
+
+.header-search-button {
+  display: none; /* Hide the button */
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+  .header-search-input {
+    max-width: 400px; /* Adjust max width on medium screens */
+    padding: 8px; /* Adjust padding for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .header-search-input {
+    max-width: 250px; /* Further reduce max width for very small screens */
+    padding: 6px; /* Adjust padding for very small screens */
+  }
+}
+

@@ -12,6 +12,7 @@ const Header = () => {
   const [loading, setLoading] = React.useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [lastScrollTop, setLastScrollTop] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,7 +20,7 @@ const Header = () => {
 
       if (currentScrollTop > 10 && currentScrollTop > lastScrollTop) {
         // User is scrolling down
-        setIsScrolled(true);  // Hide the header
+        setIsScrolled(true); // Hide the header
       } else if (currentScrollTop < lastScrollTop) {
         // User is scrolling up
         setIsScrolled(false); // Show the header
@@ -67,9 +68,20 @@ const Header = () => {
     navigate("/book");
   };
 
+  const handleSearchSubmit = (event) => {
+    event.preventDefault(); // Prevent the form from reloading the page
+
+    if (searchTerm.trim()) {
+      // Navigate to the book page with the search term as the 's' parameter
+      navigate(`/book?s=${encodeURIComponent(searchTerm)}`);
+    }
+  };
+
   return (
     <nav
-      className={`app-header ${isScrolled ? "scrolled" : ""} flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b transition-all`}
+      className={`app-header ${
+        isScrolled ? "scrolled" : ""
+      } flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b transition-all`}
     >
       <div className="flex items-center space-x-2">
         <FaBook className="text-2xl" aria-hidden="true" />
@@ -77,7 +89,23 @@ const Header = () => {
           Flippin
         </Link>
       </div>
-      <div className="flex items-center space-x-4">
+
+      <div className="flex items-center space-x-4 flex-grow justify-center">
+        {/* This div wraps the search form and allows it to be centered */}
+        <div className="flex-grow flex justify-center">
+          <form onSubmit={handleSearchSubmit} className="header-search-form">
+            <input
+              type="text"
+              className="header-search-input"
+              placeholder="Search for books or authors..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)} // Update search term
+            />
+            <button type="submit" className="header-search-button">
+              Search
+            </button>
+          </form>
+        </div>
         {userLoggedIn ? (
           <>
             {role === "admin" && (
@@ -88,10 +116,7 @@ const Header = () => {
                 Library
               </button>
             )}
-            <button
-              className="btn btn-light"
-              onClick={handleNavigateToBook}
-            >
+            <button className="btn btn-light" onClick={handleNavigateToBook}>
               Book
             </button>
             <button
