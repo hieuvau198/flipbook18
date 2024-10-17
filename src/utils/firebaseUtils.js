@@ -15,6 +15,7 @@ import {
   increment,
   orderBy,
   limit,
+  distinct,
   Timestamp,
 } from "firebase/firestore";
 import {
@@ -26,460 +27,7 @@ import {
 } from "firebase/storage";
 import * as pdfjsLib from "pdfjs-dist/webpack";
 
-export const fetchSavedPdfs = async () => {
-  try {
-    const querySnapshot = await getDocs(collection(db, "pdfFiles"));
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      url: doc.data().url || "url error",
-      name: doc.data().name || "Unnamed", // Fetch 'name' field
-      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown", // Fetch 'viewedAt' field
-      author: doc.data().author || "Unknown Author",
-      favorites: doc.data().favorites || 0,
-      status: doc.data().status || "Active",
-      uploader: doc.data().uploader || "Spiderman Upload",
-      views: doc.data().views || 0,
-      coverPageUrl: doc.data().coverPageUrl || "", // Fetch 'imageUrl' if available
-    }));
-  } catch (error) {
-    console.error("Error fetching PDFs: ", error);
-    throw error;
-  }
-};
 
-export const fetchTopPdfs = async (quantity) => {
-  try {
-    const pdfQuery = query(
-      collection(db, "pdfFiles"),
-      orderBy("views", "desc"),
-      limit(quantity)
-    );
-
-    const querySnapshot = await getDocs(pdfQuery);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      url: doc.data().url || "url error",
-      name: doc.data().name || "Unnamed",
-      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown",
-      author: doc.data().author || "Unknown Author",
-      favorites: doc.data().favorites || 0,
-      status: doc.data().status || "Active",
-      uploader: doc.data().uploader || "Spiderman Upload",
-      views: doc.data().views || 0,
-      coverPageUrl: doc.data().coverPageUrl || "",
-    }));
-  } catch (error) {
-    console.error("Error fetching top PDFs: ", error);
-    throw error;
-  }
-};
-
-export const fetchLatestPdfs = async (quantity) => {
-  try {
-    const pdfQuery = query(
-      collection(db, "pdfFiles"), // Same collection
-      orderBy("viewedAt", "desc"), // Order by viewedAt (newest first)
-      limit(quantity) // Limit to the specified quantity
-    );
-
-    const querySnapshot = await getDocs(pdfQuery);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      url: doc.data().url || "url error",
-      name: doc.data().name || "Unnamed",
-      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown",
-      author: doc.data().author || "Unknown Author",
-      favorites: doc.data().favorites || 0,
-      status: doc.data().status || "Active",
-      uploader: doc.data().uploader || "Spiderman Upload",
-      views: doc.data().views || 0,
-      coverPageUrl: doc.data().coverPageUrl || "",
-    }));
-  } catch (error) {
-    console.error("Error fetching latest PDFs: ", error);
-    throw error;
-  }
-};
-
-export const fetchRandomPdfs = async (quantity) => {
-  try {
-    const querySnapshot = await getDocs(collection(db, "pdfFiles"));
-    const allPdfs = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      url: doc.data().url || "url error",
-      name: doc.data().name || "Unnamed",
-      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown",
-      author: doc.data().author || "Unknown Author",
-      favorites: doc.data().favorites || 0,
-      status: doc.data().status || "Active",
-      uploader: doc.data().uploader || "Spiderman Upload",
-      views: doc.data().views || 0,
-      coverPageUrl: doc.data().coverPageUrl || "",
-    }));
-    const shuffledPdfs = shuffleArray(allPdfs);
-    return shuffledPdfs.slice(0, Math.min(quantity, shuffledPdfs.length));
-  } catch (error) {
-    console.error("Error fetching random PDFs: ", error);
-    throw error;
-  }
-};
-
-export const fetchPdfBySearchNameAndAuthor = async (searchTerm) => {
-  try {
-    const searchTermLower = searchTerm.toLowerCase();
-    const pdfFilesRef = collection(db, "pdfFiles");
-
-    // Fetch all documents ordered by 'name' and 'author' so we can filter on the client side
-    const searchQueryByName = query(
-      pdfFilesRef,
-      orderBy("name"),
-      limit(50) // Fetch a larger number of docs, but you can adjust the limit as per your needs
-    );
-    const searchQueryByAuthor = query(
-      pdfFilesRef,
-      orderBy("author"),
-      limit(50)
-    );
-
-    const querySnapshotByName = await getDocs(searchQueryByName);
-    const querySnapshotByAuthor = await getDocs(searchQueryByAuthor);
-
-    // Combine results and remove duplicates
-    const combinedResults = [
-      ...querySnapshotByName.docs,
-      ...querySnapshotByAuthor.docs,
-    ];
-
-    const results = combinedResults.reduce((acc, doc) => {
-      if (!acc.some((item) => item.id === doc.id)) {
-        const data = doc.data();
-        // Convert both the 'name' and 'author' to lowercase for case-insensitive comparison
-        const nameLower = data.name.toLowerCase();
-        const authorLower = data.author.toLowerCase();
-
-        // Check if the search term is found in either the 'name' or 'author' fields
-        if (nameLower.includes(searchTermLower) || authorLower.includes(searchTermLower)) {
-          acc.push({
-            id: doc.id,
-            ...data,
-          });
-        }
-      }
-      return acc;
-    }, []);
-
-    return results;
-  } catch (error) {
-    console.error("Error fetching PDFs by search:", error);
-    throw error;
-  }
-};
-
-export const fetchSavedPdfByCollection = async (collectionName) => {
-  try {
-    const querySnapshot = await getDocs(collection(db, collectionName));
-
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      url: doc.data().url || "url error",
-      name: doc.data().name || "Unnamed", // Fetch 'name' field
-      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown", // Fetch 'viewedAt' field
-      author: doc.data().author || "Unknown Author",
-      favorites: doc.data().favorites || 0,
-      status: doc.data().status || "Active",
-      uploader: doc.data().uploader || "Spiderman Upload",
-      views: doc.data().views || 0,
-      coverPageUrl: doc.data().coverPageUrl || "", // Fetch 'imageUrl' if available
-    }));
-  } catch (error) {
-    console.error(
-      `Error fetching PDFs from collection: ${collectionName}`,
-      error
-    );
-    throw error;
-  }
-};
-
-export const fetchSavedPdfById = async (id) => {
-  try {
-    const pdfDoc = await getDoc(doc(db, "pdfFiles", id));
-    if (pdfDoc.exists()) {
-      return { id: pdfDoc.id, ...pdfDoc.data() };
-    } else {
-      console.log("No such document!");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching PDF by ID: ", error);
-    throw error;
-  }
-};
-
-export const fetchSavedPdfByIdAndCollection = async (id, collection) => {
-  try {
-    const pdfDoc = await getDoc(doc(db, collection, id));
-    if (pdfDoc.exists()) {
-      return { id: pdfDoc.id, ...pdfDoc.data() };
-    } else {
-      console.log("No such document!");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching PDF by ID: ", error);
-    throw error;
-  }
-};
-
-export const fetchSavedPdfByICReturnUrl = async (id, collection) => {
-  try {
-    const pdfDoc = await getDoc(doc(db, collection, id));
-    if (pdfDoc.exists()) {
-      return { url: pdfDoc.url, ...pdfDoc.data() };
-    } else {
-      console.log("No such document!");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching PDF by ID: ", error);
-    throw error;
-  }
-};
-
-export const fetchSavedPdfByUrl = async (url) => {
-  try {
-    const pdfDoc = await getDoc(doc(db, "pdfFiles", url));
-    if (pdfDoc.exists()) {
-      return { url: pdfDoc.url, ...pdfDoc.data() };
-    } else {
-      console.log("No such document!");
-      return null;
-    }
-  } catch (error) {
-    console.error("Error fetching PDF by URL: ", error);
-    throw error;
-  }
-};
-
-export const fetchPdfByCategoryName = async (categoryName) => {
-  if (!categoryName) {
-    throw new Error("Category name is required.");
-  }
-
-  try {
-    // Query the 'categories' collection to find the document with the specified category name
-    const categoryQuery = query(
-      collection(db, "categories"),
-      where("name", "==", categoryName)
-    );
-    const categorySnapshot = await getDocs(categoryQuery);
-
-    if (categorySnapshot.empty) {
-      throw new Error(`No category found with the name: ${categoryName}`);
-    }
-
-    // Get the first matching category (assuming category names are unique)
-    const categoryDoc = categorySnapshot.docs[0];
-    const { pdfIds } = categoryDoc.data();
-
-    if (!pdfIds || pdfIds.length === 0) {
-      return []; // No PDFs associated with this category
-    }
-
-    // Fetch the PDFs by their IDs
-    const pdfFetchPromises = pdfIds.map(async (pdfId) => {
-      const pdfDocRef = doc(db, "pdfFiles", pdfId);
-      const pdfDoc = await getDoc(pdfDocRef);
-
-      if (pdfDoc.exists()) {
-        return {
-          id: pdfDoc.id,
-          ...pdfDoc.data(), // Include all other fields in the document
-        };
-      } else {
-        console.warn(`PDF with ID ${pdfId} not found`);
-        return null;
-      }
-    });
-
-    // Wait for all PDF fetch promises to resolve and filter out null results
-    const pdfFiles = (await Promise.all(pdfFetchPromises)).filter(Boolean);
-
-    return pdfFiles;
-  } catch (error) {
-    console.error("Error fetching PDFs by category name: ", error);
-    throw error;
-  }
-};
-
-export const fetchImageByPdfId = async (pdfId) => {
-  try {
-    // Reference to the 'images' collection in Firestore
-    const imagesCollectionRef = collection(db, "images");
-
-    // Create a query to find the image document with the matching pdfId
-    const q = query(imagesCollectionRef, where("pdfId", "==", pdfId));
-
-    // Execute the query and get the documents
-    const querySnapshot = await getDocs(q);
-
-    // Check if we got any results
-    if (querySnapshot.empty) {
-      throw new Error(`No image found for pdfId: ${pdfId}`);
-    }
-
-    // Assuming only one image corresponds to each pdfId, get the first result
-    const imageDoc = querySnapshot.docs[0];
-    const imageData = imageDoc.data();
-
-    // Return the image URL
-    return imageData.imageUrl;
-  } catch (error) {
-    console.error("Error fetching image: ", error);
-    throw error;
-  }
-};
-
-export const savePdfFirstPageAsImage = async (pdfFileUrl, pdfId) => {
-  try {
-    // Load the PDF document
-    const pdf = await getDocument(pdfFileUrl).promise;
-
-    // Extract the PDF metadata (including the title)
-    const pdfMetadata = await pdf.getMetadata();
-    const pdfTitle = pdfMetadata.info.Title || "Untitled PDF"; // Use the title from metadata or default to "Untitled PDF"
-
-    // Get the first page
-    const page = await pdf.getPage(1);
-
-    // Set up a canvas to render the page
-    const viewport = page.getViewport({ scale: 1.5 });
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-
-    // Render the page onto the canvas
-    await page.render({ canvasContext: context, viewport }).promise;
-
-    // Convert the canvas to a Blob (image format)
-    const imageBlob = await new Promise((resolve) => {
-      canvas.toBlob(resolve, "image/jpeg", 0.8); // Convert to JPEG format
-    });
-
-    // Upload the image to Firebase Storage
-    const storage = getStorage();
-    const imageStorageRef = ref(storage, `images/${pdfId}_${pdfTitle}.jpg`); // Save the image with the PDF title
-    const snapshot = await uploadBytes(imageStorageRef, imageBlob);
-
-    // Get the download URL of the uploaded image
-    const imageUrl = await getDownloadURL(snapshot.ref);
-
-    // Save the image metadata to Firestore
-    await addDoc(collection(db, "images"), {
-      pdfId: pdfId, // Link the image to the saved PDF
-      pdfTitle: pdfTitle, // Save the PDF title as metadata
-      imageUrl: imageUrl,
-      uploadedAt: Timestamp.now(),
-    });
-
-    console.log("First page image saved successfully with title: ", pdfTitle);
-
-    // Return the image URL
-    return imageUrl;
-  } catch (error) {
-    console.error("Error extracting or saving first page as image: ", error);
-    throw error;
-  }
-};
-
-export const savePdfToFirestore = async (
-  pdfFileUrl,
-  fileName,
-  collectionName,
-  author = "unknown",
-  uploader = "unknown",
-  views = 0,
-  favorites = 0,
-  status = "active"
-) => {
-  if (!pdfFileUrl) throw new Error("No PDF file URL to save.");
-
-  // Initialize Firebase Storage
-  const storage = getStorage();
-  const storageRef = ref(storage, `${collectionName}/${fileName}`);
-
-  try {
-    // Fetch the PDF from the URL
-    const response = await fetch(pdfFileUrl);
-    const blob = await response.blob(); // Convert the response to a Blob
-
-    // Upload the Blob to Firebase Storage
-    const snapshot = await uploadBytes(storageRef, blob);
-
-    // Get the download URL for the uploaded PDF
-    const downloadURL = await getDownloadURL(snapshot.ref);
-
-    // Save metadata (including download URL) to Firestore
-    const docRef = await addDoc(collection(db, collectionName), {
-      name: fileName,
-      url: downloadURL,
-      viewedAt: Timestamp.now(),
-      author: author || "unknown", // Default to "unknown" if not provided
-      uploader: uploader || "unknown", // Default to "unknown" if not provided
-      views: views || 0, // Default to 0 if not provided
-      dailyViews: 0,
-      favorites: favorites || 0, // Default to 0 if not provided
-      status: status || "active", // Default to "active" if not provided
-    });
-
-    // Extract and save the first page of the PDF as an image
-    const coverPageUrl = await savePdfFirstPageAsImage(downloadURL, docRef.id);
-
-    await updateDoc(docRef, {
-      coverPageUrl: coverPageUrl, // Add the coverPageUrl field
-    });
-
-    // Return the document ID of the saved Firestore record
-    return docRef.id;
-  } catch (error) {
-    console.error("Error saving PDF: ", error);
-    throw error;
-  }
-};
-
-export const savePdfToFirestoreTemp = async (
-  pdfFile,
-  fileName,
-  collectionName
-) => {
-  if (!pdfFile) throw new Error("No PDF file to save.");
-
-  await clearStorage();
-
-  const storage = getStorage();
-  const storageRef = ref(storage, `${collectionName}/${fileName}`);
-
-  const response = await fetch(pdfFile);
-  const blob = await response.blob();
-
-  try {
-    const snapshot = await uploadBytes(storageRef, blob);
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    const expiryDate = Timestamp.now().toMillis() + 2 * 60 * 60 * 1000;
-
-    const docRef = addDoc(collection(db, collectionName), {
-      name: fileName,
-      url: downloadURL,
-      viewedAt: Timestamp.now(),
-      expiryDate: expiryDate, // Add expiry date
-    });
-
-    return (await docRef).id;
-  } catch (error) {
-    console.error("Error saving PDF: ", error);
-    throw error;
-  }
-};
 
 export const incrementPdfViews = async (pdfDocId, collectionName) => {
   try {
@@ -771,6 +319,494 @@ const shuffleArray = (array) => {
   return array;
 };
 
+//#region pdf
+
+export const fetchSavedPdfs = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "pdfFiles"));
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || "url error",
+      name: doc.data().name || "Unnamed", // Fetch 'name' field
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown", // Fetch 'viewedAt' field
+      author: doc.data().author || "Unknown Author",
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || "Active",
+      uploader: doc.data().uploader || "Spiderman Upload",
+      views: doc.data().views || 0,
+      coverPageUrl: doc.data().coverPageUrl || "", // Fetch 'imageUrl' if available
+    }));
+  } catch (error) {
+    console.error("Error fetching PDFs: ", error);
+    throw error;
+  }
+};
+
+export const fetchTopPdfs = async (quantity) => {
+  try {
+    const pdfQuery = query(
+      collection(db, "pdfFiles"),
+      orderBy("views", "desc"),
+      limit(quantity)
+    );
+
+    const querySnapshot = await getDocs(pdfQuery);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || "url error",
+      name: doc.data().name || "Unnamed",
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown",
+      author: doc.data().author || "Unknown Author",
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || "Active",
+      uploader: doc.data().uploader || "Spiderman Upload",
+      views: doc.data().views || 0,
+      coverPageUrl: doc.data().coverPageUrl || "",
+    }));
+  } catch (error) {
+    console.error("Error fetching top PDFs: ", error);
+    throw error;
+  }
+};
+
+export const fetchLatestPdfs = async (quantity) => {
+  try {
+    const pdfQuery = query(
+      collection(db, "pdfFiles"), // Same collection
+      orderBy("viewedAt", "desc"), // Order by viewedAt (newest first)
+      limit(quantity) // Limit to the specified quantity
+    );
+
+    const querySnapshot = await getDocs(pdfQuery);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || "url error",
+      name: doc.data().name || "Unnamed",
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown",
+      author: doc.data().author || "Unknown Author",
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || "Active",
+      uploader: doc.data().uploader || "Spiderman Upload",
+      views: doc.data().views || 0,
+      coverPageUrl: doc.data().coverPageUrl || "",
+    }));
+  } catch (error) {
+    console.error("Error fetching latest PDFs: ", error);
+    throw error;
+  }
+};
+
+export const fetchRandomPdfs = async (quantity) => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "pdfFiles"));
+    const allPdfs = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || "url error",
+      name: doc.data().name || "Unnamed",
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown",
+      author: doc.data().author || "Unknown Author",
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || "Active",
+      uploader: doc.data().uploader || "Spiderman Upload",
+      views: doc.data().views || 0,
+      coverPageUrl: doc.data().coverPageUrl || "",
+    }));
+    const shuffledPdfs = shuffleArray(allPdfs);
+    return shuffledPdfs.slice(0, Math.min(quantity, shuffledPdfs.length));
+  } catch (error) {
+    console.error("Error fetching random PDFs: ", error);
+    throw error;
+  }
+};
+
+export const fetchPdfBySearchNameAndAuthor = async (searchTerm) => {
+  try {
+    const searchTermLower = searchTerm.toLowerCase();
+    const pdfFilesRef = collection(db, "pdfFiles");
+
+    // Fetch all documents ordered by 'name' and 'author' so we can filter on the client side
+    const searchQueryByName = query(
+      pdfFilesRef,
+      orderBy("name"),
+      limit(50) // Fetch a larger number of docs, but you can adjust the limit as per your needs
+    );
+    const searchQueryByAuthor = query(
+      pdfFilesRef,
+      orderBy("author"),
+      limit(50)
+    );
+
+    const querySnapshotByName = await getDocs(searchQueryByName);
+    const querySnapshotByAuthor = await getDocs(searchQueryByAuthor);
+
+    // Combine results and remove duplicates
+    const combinedResults = [
+      ...querySnapshotByName.docs,
+      ...querySnapshotByAuthor.docs,
+    ];
+
+    const results = combinedResults.reduce((acc, doc) => {
+      if (!acc.some((item) => item.id === doc.id)) {
+        const data = doc.data();
+        // Convert both the 'name' and 'author' to lowercase for case-insensitive comparison
+        const nameLower = data.name.toLowerCase();
+        const authorLower = data.author.toLowerCase();
+
+        // Check if the search term is found in either the 'name' or 'author' fields
+        if (nameLower.includes(searchTermLower) || authorLower.includes(searchTermLower)) {
+          acc.push({
+            id: doc.id,
+            ...data,
+          });
+        }
+      }
+      return acc;
+    }, []);
+
+    return results;
+  } catch (error) {
+    console.error("Error fetching PDFs by search:", error);
+    throw error;
+  }
+};
+
+export const fetchSavedPdfByCollection = async (collectionName) => {
+  try {
+    const querySnapshot = await getDocs(collection(db, collectionName));
+
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      url: doc.data().url || "url error",
+      name: doc.data().name || "Unnamed", // Fetch 'name' field
+      viewedAt: doc.data().viewedAt ? doc.data().viewedAt.toDate() : "Unknown", // Fetch 'viewedAt' field
+      author: doc.data().author || "Unknown Author",
+      favorites: doc.data().favorites || 0,
+      status: doc.data().status || "Active",
+      uploader: doc.data().uploader || "Spiderman Upload",
+      views: doc.data().views || 0,
+      coverPageUrl: doc.data().coverPageUrl || "", // Fetch 'imageUrl' if available
+    }));
+  } catch (error) {
+    console.error(
+      `Error fetching PDFs from collection: ${collectionName}`,
+      error
+    );
+    throw error;
+  }
+};
+
+export const fetchSavedPdfById = async (id) => {
+  try {
+    const pdfDoc = await getDoc(doc(db, "pdfFiles", id));
+    if (pdfDoc.exists()) {
+      return { id: pdfDoc.id, ...pdfDoc.data() };
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching PDF by ID: ", error);
+    throw error;
+  }
+};
+
+export const fetchSavedPdfByIdAndCollection = async (id, collection) => {
+  try {
+    const pdfDoc = await getDoc(doc(db, collection, id));
+    if (pdfDoc.exists()) {
+      return { id: pdfDoc.id, ...pdfDoc.data() };
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching PDF by ID: ", error);
+    throw error;
+  }
+};
+
+export const fetchSavedPdfByICReturnUrl = async (id, collection) => {
+  try {
+    const pdfDoc = await getDoc(doc(db, collection, id));
+    if (pdfDoc.exists()) {
+      return { url: pdfDoc.url, ...pdfDoc.data() };
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching PDF by ID: ", error);
+    throw error;
+  }
+};
+
+export const fetchSavedPdfByUrl = async (url) => {
+  try {
+    const pdfDoc = await getDoc(doc(db, "pdfFiles", url));
+    if (pdfDoc.exists()) {
+      return { url: pdfDoc.url, ...pdfDoc.data() };
+    } else {
+      console.log("No such document!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching PDF by URL: ", error);
+    throw error;
+  }
+};
+
+export const fetchPdfByCategoryName = async (categoryName) => {
+  if (!categoryName) {
+    throw new Error("Category name is required.");
+  }
+
+  try {
+    // Query the 'categories' collection to find the document with the specified category name
+    const categoryQuery = query(
+      collection(db, "categories"),
+      where("name", "==", categoryName)
+    );
+    const categorySnapshot = await getDocs(categoryQuery);
+
+    if (categorySnapshot.empty) {
+      throw new Error(`No category found with the name: ${categoryName}`);
+    }
+
+    // Get the first matching category (assuming category names are unique)
+    const categoryDoc = categorySnapshot.docs[0];
+    const { pdfIds } = categoryDoc.data();
+
+    if (!pdfIds || pdfIds.length === 0) {
+      return []; // No PDFs associated with this category
+    }
+
+    // Fetch the PDFs by their IDs
+    const pdfFetchPromises = pdfIds.map(async (pdfId) => {
+      const pdfDocRef = doc(db, "pdfFiles", pdfId);
+      const pdfDoc = await getDoc(pdfDocRef);
+
+      if (pdfDoc.exists()) {
+        return {
+          id: pdfDoc.id,
+          ...pdfDoc.data(), // Include all other fields in the document
+        };
+      } else {
+        console.warn(`PDF with ID ${pdfId} not found`);
+        return null;
+      }
+    });
+
+    // Wait for all PDF fetch promises to resolve and filter out null results
+    const pdfFiles = (await Promise.all(pdfFetchPromises)).filter(Boolean);
+
+    return pdfFiles;
+  } catch (error) {
+    console.error("Error fetching PDFs by category name: ", error);
+    throw error;
+  }
+};
+
+export const fetchPdfByAuthor = async (authorName) => {
+  if (!authorName) {
+    throw new Error("Author name is required.");
+  }
+
+  try {
+    // Query the 'pdfFiles' collection to find documents with the specified author name
+    const pdfQuery = query(
+      collection(db, "pdfFiles"),
+      where("author", "==", authorName)
+    );
+    const querySnapshot = await getDocs(pdfQuery);
+
+    if (querySnapshot.empty) {
+      throw new Error(`No PDFs found for the author: ${authorName}`);
+    }
+
+    // Map the results to return PDF data
+    const pdfFiles = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return pdfFiles;
+  } catch (error) {
+    console.error("Error fetching PDFs by author: ", error);
+    throw error;
+  }
+};
+
+export const fetchImageByPdfId = async (pdfId) => {
+  try {
+    // Reference to the 'images' collection in Firestore
+    const imagesCollectionRef = collection(db, "images");
+
+    // Create a query to find the image document with the matching pdfId
+    const q = query(imagesCollectionRef, where("pdfId", "==", pdfId));
+
+    // Execute the query and get the documents
+    const querySnapshot = await getDocs(q);
+
+    // Check if we got any results
+    if (querySnapshot.empty) {
+      throw new Error(`No image found for pdfId: ${pdfId}`);
+    }
+
+    // Assuming only one image corresponds to each pdfId, get the first result
+    const imageDoc = querySnapshot.docs[0];
+    const imageData = imageDoc.data();
+
+    // Return the image URL
+    return imageData.imageUrl;
+  } catch (error) {
+    console.error("Error fetching image: ", error);
+    throw error;
+  }
+};
+
+export const savePdfFirstPageAsImage = async (pdfFileUrl, pdfId) => {
+  try {
+    // Load the PDF document
+    const pdf = await getDocument(pdfFileUrl).promise;
+
+    // Extract the PDF metadata (including the title)
+    const pdfMetadata = await pdf.getMetadata();
+    const pdfTitle = pdfMetadata.info.Title || "Untitled PDF"; // Use the title from metadata or default to "Untitled PDF"
+
+    // Get the first page
+    const page = await pdf.getPage(1);
+
+    // Set up a canvas to render the page
+    const viewport = page.getViewport({ scale: 1.5 });
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    // Render the page onto the canvas
+    await page.render({ canvasContext: context, viewport }).promise;
+
+    // Convert the canvas to a Blob (image format)
+    const imageBlob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", 0.8); // Convert to JPEG format
+    });
+
+    // Upload the image to Firebase Storage
+    const storage = getStorage();
+    const imageStorageRef = ref(storage, `images/${pdfId}_${pdfTitle}.jpg`); // Save the image with the PDF title
+    const snapshot = await uploadBytes(imageStorageRef, imageBlob);
+
+    // Get the download URL of the uploaded image
+    const imageUrl = await getDownloadURL(snapshot.ref);
+
+    // Save the image metadata to Firestore
+    await addDoc(collection(db, "images"), {
+      pdfId: pdfId, // Link the image to the saved PDF
+      pdfTitle: pdfTitle, // Save the PDF title as metadata
+      imageUrl: imageUrl,
+      uploadedAt: Timestamp.now(),
+    });
+
+    console.log("First page image saved successfully with title: ", pdfTitle);
+
+    // Return the image URL
+    return imageUrl;
+  } catch (error) {
+    console.error("Error extracting or saving first page as image: ", error);
+    throw error;
+  }
+};
+
+export const savePdfToFirestore = async (
+  pdfFileUrl,
+  fileName,
+  collectionName,
+  author = "unknown",
+  uploader = "unknown",
+  views = 0,
+  favorites = 0,
+  status = "active"
+) => {
+  if (!pdfFileUrl) throw new Error("No PDF file URL to save.");
+
+  // Initialize Firebase Storage
+  const storage = getStorage();
+  const storageRef = ref(storage, `${collectionName}/${fileName}`);
+
+  try {
+    // Fetch the PDF from the URL
+    const response = await fetch(pdfFileUrl);
+    const blob = await response.blob(); // Convert the response to a Blob
+
+    // Upload the Blob to Firebase Storage
+    const snapshot = await uploadBytes(storageRef, blob);
+
+    // Get the download URL for the uploaded PDF
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    // Save metadata (including download URL) to Firestore
+    const docRef = await addDoc(collection(db, collectionName), {
+      name: fileName,
+      url: downloadURL,
+      viewedAt: Timestamp.now(),
+      author: author || "unknown", // Default to "unknown" if not provided
+      uploader: uploader || "unknown", // Default to "unknown" if not provided
+      views: views || 0, // Default to 0 if not provided
+      dailyViews: 0,
+      favorites: favorites || 0, // Default to 0 if not provided
+      status: status || "active", // Default to "active" if not provided
+    });
+
+    // Extract and save the first page of the PDF as an image
+    const coverPageUrl = await savePdfFirstPageAsImage(downloadURL, docRef.id);
+
+    await updateDoc(docRef, {
+      coverPageUrl: coverPageUrl, // Add the coverPageUrl field
+    });
+
+    // Return the document ID of the saved Firestore record
+    return docRef.id;
+  } catch (error) {
+    console.error("Error saving PDF: ", error);
+    throw error;
+  }
+};
+
+export const savePdfToFirestoreTemp = async (
+  pdfFile,
+  fileName,
+  collectionName
+) => {
+  if (!pdfFile) throw new Error("No PDF file to save.");
+
+  await clearStorage();
+
+  const storage = getStorage();
+  const storageRef = ref(storage, `${collectionName}/${fileName}`);
+
+  const response = await fetch(pdfFile);
+  const blob = await response.blob();
+
+  try {
+    const snapshot = await uploadBytes(storageRef, blob);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    const expiryDate = Timestamp.now().toMillis() + 2 * 60 * 60 * 1000;
+
+    const docRef = addDoc(collection(db, collectionName), {
+      name: fileName,
+      url: downloadURL,
+      viewedAt: Timestamp.now(),
+      expiryDate: expiryDate, // Add expiry date
+    });
+
+    return (await docRef).id;
+  } catch (error) {
+    console.error("Error saving PDF: ", error);
+    throw error;
+  }
+};
+//#endregion
+
 //#region categories
 export const saveCategoryToFirestore = async (
   name,
@@ -855,6 +891,31 @@ export const fetchCategoriesByPdfId = async (pdfId) => {
   } catch (error) {
     console.error("Error fetching categories by PDF ID:", error);
     throw error; // Rethrow the error to handle it in the calling function
+  }
+};
+//#endregion
+
+//#region author
+
+export const fetchAuthorName = async () => {
+  try {
+    const pdfsRef = collection(db, "pdfFiles");
+    const q = query(pdfsRef);
+    const querySnapshot = await getDocs(q);
+
+    // Extract authors and get unique names
+    const authors = new Set();
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      if (data.author) {
+        authors.add(data.author);
+      }
+    });
+
+    return Array.from(authors); // Return an array of unique authors
+  } catch (error) {
+    console.error("Error fetching authors: ", error);
+    throw error;
   }
 };
 //#endregion
