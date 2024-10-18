@@ -126,13 +126,23 @@ const BookViewer = ({ pdfUrl }) => {
     };
 
     const handleKeyPress = (e) => {
+        const leftKeys = ['ArrowLeft', 'ArrowUp', 'A', 'W', 'a', 'w'];
+        const rightKeys = ['ArrowRight', 'ArrowDown', 'S', 'D', 's', 'd'];
+    
+        if (leftKeys.includes(e.key)) {
+            $(flipbookRef.current).turn('previous'); // Turn to the previous page
+        } else if (rightKeys.includes(e.key)) {
+            $(flipbookRef.current).turn('next'); // Turn to the next page
+        }
+    
+        // Handle search navigation with Enter key if search results are available
         if (e.key === 'Enter' && searchResults.length > 0) {
-            // Navigate to the next search result on each Enter press
             const nextIndex = (currentResultIndex + 1) % searchResults.length; // Loop back to start
-            $(flipbookRef.current).turn('page', searchResults[nextIndex]); // Navigate to next page
+            $(flipbookRef.current).turn('page', searchResults[nextIndex]); // Navigate to next result
             setCurrentResultIndex(nextIndex); // Update current result index
         }
     };
+    
 
     useEffect(() => {
         const fetchPdf = async () => {
