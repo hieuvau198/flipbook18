@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { fetchImageByPdfId } from "../../utils/firebaseUtils"; // Ensure the path is correct
-
+import "../../styles/App.css";
 const PdfThumbnail = ({ pdfId, pdfName }) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,13 +21,17 @@ const PdfThumbnail = ({ pdfId, pdfName }) => {
   }, [pdfId]);
 
   return (
-    <div>
+    <div className="thumbnail-container">
       {isLoading ? (
         <p>Loading thumbnail...</p>
       ) : imageUrl ? (
-        <img src={imageUrl} alt={`${pdfName} thumbnail`} className="img-fluid mb-2" />
+        <img
+          src={imageUrl}
+          alt={`${pdfName} thumbnail`}
+          className="thumbnail-image"
+        />
       ) : (
-        <div className="placeholder-thumbnail mb-2">No Thumbnail Available</div>
+        <div className="placeholder-thumbnail">No Thumbnail Available</div>
       )}
     </div>
   );
