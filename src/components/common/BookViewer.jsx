@@ -46,37 +46,70 @@ const BookViewer = ({ pdfUrl }) => {
     const renderPdfToFlipbook = async (pdf) => {
         const flipbook = $(flipbookRef.current);
         flipbook.empty();
-
+    
         const pages = [];
+        const scaleFactor = 1.6;  // Adjust this value for how much bigger you want the PDF (e.g., 1.2 for 20% bigger)
+        
+        console.log("Starting to render PDF with scale factor:", scaleFactor);
+    
         for (let i = 0; i < pdf.numPages; i++) {
             const page = await pdf.getPage(i + 1);
-            const viewport = page.getViewport({ scale: 1 });
+    
+            // Adjust scaleFactor to increase the size of the PDF
+            const viewport = page.getViewport({ scale: scaleFactor }); 
+    
+            // Get device pixel ratio for high-quality rendering
+            const scale = window.devicePixelRatio || 1;
             const canvas = document.createElement("canvas");
             const context = canvas.getContext("2d");
-
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-
-            await page.render({ canvasContext: context, viewport }).promise;
+    
+            // Set canvas dimensions with the scale factor applied
+            canvas.height = viewport.height * scale;
+            canvas.width = viewport.width * scale;
+    
+            // Scale the context for high resolution
+            context.scale(scale, scale);
+    
+            // Render the page onto the canvas
+            console.log(`Rendering page ${i + 1} with size ${canvas.width}x${canvas.height}`);
+            await page.render({
+                canvasContext: context,
+                viewport,
+            }).promise;
+    
             pages.push(canvas);
         }
-
+    
+        // Append rendered pages to flipbook
         pages.forEach((canvas) => {
             const pageContainer = document.createElement('div');
             pageContainer.className = 'flipbook-page image';
             pageContainer.appendChild(canvas);
             flipbook.append(pageContainer);
         });
-
+    
+        // Centering flipbook with CSS if autoCenter doesn't fully work
         flipbook.turn({
-            width: 922,
-            height: 600,
-            autoCenter: true,
+            width: 922 * scaleFactor,  // Apply scale factor to width
+            height: 600 * scaleFactor, // Apply scale factor to height
+            autoCenter: true, // Ensure flipbook tries to auto-center the pages
             display: 'double',
             elevation: 50,
             gradients: true,
         });
+    
+        // Apply a flexbox style for better centering if necessary
+        $(flipbookRef.current).css({
+            display: 'flex',
+            justifyContent: 'center', // Center horizontally
+            alignItems: 'center',     // Center vertically
+        });
+    
+        console.log("PDF rendering complete and flipbook centered.");
     };
+    
+    
+    
 
     const handleSearch = () => {
         const results = [];
@@ -120,7 +153,7 @@ const BookViewer = ({ pdfUrl }) => {
     }, [pdfDocument]);
 
     return (
-        <div ref={containerRef} className="flipbook-container" onKeyDown={handleKeyPress} tabIndex="0">
+        <div ref={containerRef} className="" onKeyDown={handleKeyPress} tabIndex="0">
             <div className="flipbook-pdf-viewer">
                 <div className={`flipbook-magazine-viewport ${isMagnifyEnabled ? 'zoomer' : ''}`}>
                     <div ref={flipbookRef} className="flipbook-magazine"></div>

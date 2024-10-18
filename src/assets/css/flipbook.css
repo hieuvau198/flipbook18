@@ -31,14 +31,17 @@
 
 .flipbook-magazine-viewport {
     width: 100%; /* Chiều rộng linh hoạt theo kích thước màn hình */
-    max-width: 922px; /* Giới hạn chiều rộng tối đa */
+    max-width: 1500px; /* Giới hạn chiều rộng tối đa */
     height: auto; /* Chiều cao tự động dựa trên tỷ lệ hình ảnh */
-    max-height: 80vh; /* Giới hạn chiều cao tối đa theo 80% chiều cao viewport */
+    max-height: 100vh; /* Giới hạn chiều cao tối đa theo 80% chiều cao viewport */
     position: relative;
     top: -15px;
     margin: auto;
     transition: transform 0.3s ease; /* Hiệu ứng mượt khi zoom */
     transform-origin: center center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .flipbook-magazine {
