@@ -1,16 +1,4 @@
 
-
-/* src/Modal.css */
-/* src/Modal.css */
-/* .flipbook-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  /* Ensure space is distributed */
-  /* align-items: center;
-  height: 90vh;
-} */ */
-
 .modal-90w {
   width: 90%;
   height: 90%;
@@ -19,28 +7,6 @@
   /* Allow the document to take available space */
 }
 
-.toolbar {
-  margin-top: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  /* Fix the toolbar to the bottom */
-  bottom: 0;
-  /* Align it to the bottom */
-  left: 0;
-  /* Align it to the left */
-  right: 0;
-  /* Align it to the right */
-  background-color: #fff;
-  /* Optional: set background color */
-  padding: 10px;
-  /* Add some padding */
-  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-  /* Optional: add a shadow */
-}
 
 .page {
   display: flex;

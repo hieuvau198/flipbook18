@@ -7,7 +7,7 @@
   align-items: center;
   padding: 10px; /* Thêm padding để nút không dính sát nhau */
   margin: 0 auto; /* Căn giữa toolbar */
-  border: 1px solid white; /* Viền trắng cho nút */
+  border: 1px solid rgb(114, 112, 112); /* Viền trắng cho nút */
   border-radius: 10px; /* Làm tròn góc nút */
   position: fixed; /* Giữ thanh công cụ ở vị trí cố định */
   bottom: 0; /* Đặt ở dưới cùng của trang */

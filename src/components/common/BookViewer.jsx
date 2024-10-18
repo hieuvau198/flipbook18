@@ -117,8 +117,8 @@ const BookViewer = ({ pdfUrl }) => {
     }, [pdfDocument]);
 
     return (
-        <div ref={containerRef} className="flipbook-container">
-            <div className="flipbook-pdf-viewer">
+        // <div ref={containerRef} className="flipbook-container">
+            <div ref={containerRef} className="flipbook-pdf-viewer">
                 <div className={`flipbook-magazine-viewport ${isMagnifyEnabled ? 'zoomer' : ''}`}>
                     <div
                         ref={flipbookRef}
@@ -148,7 +148,7 @@ const BookViewer = ({ pdfUrl }) => {
                     isMagnifyEnabled={isMagnifyEnabled}
                 />
             </div>
-        </div>
+        // </div>
     );
 };
 
