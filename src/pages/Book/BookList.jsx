@@ -16,28 +16,41 @@ const BookList = () => {
   const [authors, setAuthors] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedAuthors, setSelectedAuthors] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState("Recently"); // New order state
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const sortedPdfs = (pdfs) => {
+    switch (selectedOrder) {
+      case "Recently":
+        return pdfs.sort((a, b) => b.viewedAt - a.viewedAt); // Most recent first
+      case "Oldest":
+        return pdfs.sort((a, b) => a.viewedAt - b.viewedAt); // Oldest first
+      case "Most Views":
+        return pdfs.sort((a, b) => b.views - a.views); // Most views first
+      case "Alphabet":
+        return pdfs.sort((a, b) => a.name.localeCompare(b.name)); // Alphabetical order
+      default:
+        return pdfs;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch categories and authors from Firestore
         const [fetchedCategories, fetchedAuthors] = await Promise.all([
           fetchCategories(),
           fetchAuthorName(),
         ]);
-        setCategories(fetchedCategories.map((cat) => cat.name)); // Assuming 'name' field for categories
+        setCategories(fetchedCategories.map((cat) => cat.name));
         setAuthors(fetchedAuthors);
 
-        // Fetch PDF files based on search, category, author or all saved PDFs
         const searchTerm = searchParams.get("s");
         let pdfs = searchTerm
           ? await fetchPdfBySearchNameAndAuthor(searchTerm)
           : await fetchSavedPdfs();
 
-        // Filter PDFs by selected category and author
         const categoryFilter = selectedCategories.length
           ? selectedCategories
           : searchParams.getAll("c");
@@ -45,16 +58,24 @@ const BookList = () => {
           ? selectedAuthors
           : searchParams.getAll("a");
 
-        // Fetch PDFs based on selected categories and authors
         if (categoryFilter.length) {
-          const categoryPdfs = await Promise.all(categoryFilter.map(cat => fetchPdfByCategoryName(cat)));
-          pdfs = pdfs.filter(pdf => categoryPdfs.flat().some(categoryPdf => categoryPdf.id === pdf.id));
+          const categoryPdfs = await Promise.all(
+            categoryFilter.map((cat) => fetchPdfByCategoryName(cat))
+          );
+          pdfs = pdfs.filter((pdf) =>
+            categoryPdfs.flat().some((categoryPdf) => categoryPdf.id === pdf.id)
+          );
         }
         if (authorFilter.length) {
-          const authorPdfs = await Promise.all(authorFilter.map(auth => fetchPdfByAuthor(auth)));
-          pdfs = pdfs.filter(pdf => authorPdfs.flat().some(authorPdf => authorPdf.id === pdf.id));
+          const authorPdfs = await Promise.all(
+            authorFilter.map((auth) => fetchPdfByAuthor(auth))
+          );
+          pdfs = pdfs.filter((pdf) =>
+            authorPdfs.flat().some((authorPdf) => authorPdf.id === pdf.id)
+          );
         }
 
+        pdfs = sortedPdfs(pdfs); // Sort PDFs based on selected order
         setPdfFiles(pdfs);
       } catch (error) {
         console.error("Failed to fetch PDF files or filters", error);
@@ -64,7 +85,7 @@ const BookList = () => {
     };
 
     fetchData();
-  }, [searchParams, selectedCategories, selectedAuthors]);
+  }, [searchParams, selectedCategories, selectedAuthors, selectedOrder]); // Add selectedOrder to dependencies
 
   const handleCategoryChange = (category) => {
     const updatedCategories = selectedCategories.includes(category)
@@ -92,42 +113,58 @@ const BookList = () => {
   return (
     <div className="flex">
       <div className="w-1/6 p-4 mt-10">
-        <h2>Category</h2>
+        {/* Order By Selection */}
         <div>
+          <h3>Order</h3>
           <div>
-            {categories.map((cat, index) => (
-              <div key={index}>
-                <label>
-                  <input
-                    type="checkbox"
-                    value={cat}
-                    checked={selectedCategories.includes(cat)}
-                    onChange={() => handleCategoryChange(cat)}
-                  />
-                  {cat}
-                </label>
-              </div>
+            {["Recently", "Oldest", "Most Views", "Alphabet"].map((option) => (
+              <label
+                key={option}
+                style={{ display: "block", marginBottom: "5px" }}
+              >
+                <input
+                  type="radio"
+                  value={option}
+                  checked={selectedOrder === option}
+                  onChange={() => setSelectedOrder(option)}
+                />
+                {option}
+              </label>
             ))}
           </div>
+        </div>
+        <h2>Category</h2>
+        <div>
+          {categories.map((cat, index) => (
+            <div key={index}>
+              <label>
+                <input
+                  type="checkbox"
+                  value={cat}
+                  checked={selectedCategories.includes(cat)}
+                  onChange={() => handleCategoryChange(cat)}
+                />
+                {cat}
+              </label>
+            </div>
+          ))}
         </div>
 
         <div>
           <h3>Author</h3>
-          <div>
-            {authors.map((author, index) => (
-              <div key={index}>
-                <label>
-                  <input
-                    type="checkbox"
-                    value={author}
-                    checked={selectedAuthors.includes(author)}
-                    onChange={() => handleAuthorChange(author)}
-                  />
-                  {author}
-                </label>
-              </div>
-            ))}
-          </div>
+          {authors.map((author, index) => (
+            <div key={index}>
+              <label>
+                <input
+                  type="checkbox"
+                  value={author}
+                  checked={selectedAuthors.includes(author)}
+                  onChange={() => handleAuthorChange(author)}
+                />
+                {author}
+              </label>
+            </div>
+          ))}
         </div>
       </div>
 
