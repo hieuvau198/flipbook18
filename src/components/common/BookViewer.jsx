@@ -13,9 +13,10 @@ const BookViewer = ({ pdfUrl }) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [pdfDocument, setPdfDocument] = useState(null);
     const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
-    const [magnifyPosition, setMagnifyPosition] = useState({ x: 0, y: 0 });
-
-    const size = 4; // Magnification size
+    const [textPages, setTextPages] = useState([]);
+    const [searchTerm, setSearchTerm] = useState(''); // Track search term
+    const [searchResults, setSearchResults] = useState([]);
+    const [currentResultIndex, setCurrentResultIndex] = useState(0);
 
     const toggleMagnify = () => {
         setIsMagnifyEnabled((prev) => !prev);
@@ -29,6 +30,17 @@ const BookViewer = ({ pdfUrl }) => {
             document.exitFullscreen();
             setIsFullscreen(false);
         }
+    };
+
+    const extractTextFromPdf = async (pdf) => {
+        const pagesText = [];
+        for (let i = 0; i < pdf.numPages; i++) {
+            const page = await pdf.getPage(i + 1);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            pagesText.push(pageText);
+        }
+        setTextPages(pagesText); // Save all extracted text
     };
 
     const renderPdfToFlipbook = async (pdf) => {
@@ -66,36 +78,26 @@ const BookViewer = ({ pdfUrl }) => {
         });
     };
 
-    const handleMouseMove = (e) => {
-        if (!isMagnifyEnabled || !resultRef.current) return;
-
-        const imgElement = e.target.tagName === 'CANVAS' ? e.target : null;
-        if (!imgElement) return;
-
-        const result = resultRef.current;
-        result.classList.remove('hide');
-
-        const rect = imgElement.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-        const posX = e.clientX;
-        const posY = e.clientY;
-
-        result.style.cssText = `
-            background-image: url(${imgElement.toDataURL()});
-            background-size: ${imgElement.width * size}px ${imgElement.height * size}px;
-            background-position: ${x}% ${y}% ;
-            left: ${posX}px;
-            top: ${posY}px;
-            display: block;
-        `;
+    const handleSearch = () => {
+        const results = [];
+        textPages.forEach((text, index) => {
+            if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
+                results.push(index + 1); // Store page numbers where term is found
+            }
+        });
+        setSearchResults(results);
+        setCurrentResultIndex(0); // Start with the first result
+        if (results.length > 0) {
+            $(flipbookRef.current).turn('page', results[0]); // Navigate to first result
+        }
     };
 
-    const handleMouseLeave = () => {
-        if (resultRef.current) {
-            resultRef.current.classList.add('hide');
-            resultRef.current.style = '';
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && searchResults.length > 0) {
+            // Navigate to the next search result on each Enter press
+            const nextIndex = (currentResultIndex + 1) % searchResults.length; // Loop back to start
+            $(flipbookRef.current).turn('page', searchResults[nextIndex]); // Navigate to next page
+            setCurrentResultIndex(nextIndex); // Update current result index
         }
     };
 
@@ -104,6 +106,7 @@ const BookViewer = ({ pdfUrl }) => {
             if (pdfUrl) {
                 const pdf = await loadPdfDocument(pdfUrl);
                 setPdfDocument(pdf);
+                extractTextFromPdf(pdf); // Extract text from each page
             }
         };
 
@@ -117,15 +120,10 @@ const BookViewer = ({ pdfUrl }) => {
     }, [pdfDocument]);
 
     return (
-        <div ref={containerRef} className="flipbook-container">
+        <div ref={containerRef} className="flipbook-container" onKeyDown={handleKeyPress} tabIndex="0">
             <div className="flipbook-pdf-viewer">
                 <div className={`flipbook-magazine-viewport ${isMagnifyEnabled ? 'zoomer' : ''}`}>
-                    <div
-                        ref={flipbookRef}
-                        className="flipbook-magazine"
-                        onMouseMove={handleMouseMove}
-                        onMouseLeave={handleMouseLeave}
-                    ></div>
+                    <div ref={flipbookRef} className="flipbook-magazine"></div>
                     <div ref={resultRef} className="result hide"></div>
                 </div>
 
@@ -141,11 +139,18 @@ const BookViewer = ({ pdfUrl }) => {
                 >
                     <img src={nextIcon} alt="Next" style={styles.icon} />
                 </button>
+
+                {/* Pass searchTerm and handleSearchChange to Toolbar */}
                 <Toolbar
                     toggleFullscreen={toggleFullscreen}
                     isFullscreen={isFullscreen}
                     onToggleMagnify={toggleMagnify}
                     isMagnifyEnabled={isMagnifyEnabled}
+                    searchTerm={searchTerm}
+                    onSearchChange={(newTerm) => {
+                        setSearchTerm(newTerm);
+                        handleSearch();  // Perform search when term changes
+                    }}
                 />
             </div>
         </div>
