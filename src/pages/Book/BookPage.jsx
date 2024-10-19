@@ -7,6 +7,7 @@ import BookViewer from "../../components/common/BookViewer";
 import ShareButton from "../../components/common/ShareButton";
 import BookList from "./BookList";
 import "../../styles/App.css";
+import { Container } from "postcss";
 
 
 const BookPage = () => {
@@ -216,7 +217,7 @@ const BookPage = () => {
       {isFullScreen && (
         <div className="read-pdf-overlay">
           {/* Centered and responsive PDF viewer */}
-          <div className="read-pdf-container">
+          <div className="read-pdf-container" style={container}>
             <BookViewer pdfUrl={pdfData.url} className="read-pdf-viewer" />
           </div>
         </div>
@@ -225,6 +226,15 @@ const BookPage = () => {
     </>
   );
 };
+
+const container = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  height: '100%',
+};
+
 
   
 export default BookPage;
