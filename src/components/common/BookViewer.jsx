@@ -16,9 +16,10 @@ const BookViewer = ({ pdfUrl }) => {
   const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
   const [pageImages, setPageImages] = useState([]);
   const [textPages, setTextPages] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // Track search term
+  const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [currentResultIndex, setCurrentResultIndex] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1); // Track the current page
 
   const toggleMagnify = () => {
     setIsMagnifyEnabled((prev) => !prev);
@@ -42,7 +43,7 @@ const BookViewer = ({ pdfUrl }) => {
       const pageText = textContent.items.map((item) => item.str).join(" ");
       pagesText.push(pageText);
     }
-    setTextPages(pagesText); // Save all extracted text
+    setTextPages(pagesText);
   };
 
   const renderPdfToFlipbook = async (pdf) => {
@@ -50,29 +51,22 @@ const BookViewer = ({ pdfUrl }) => {
     flipbook.empty();
 
     const pages = [];
-    const scaleFactor = 1.6; // Adjust this value for how much bigger you want the PDF (e.g., 1.2 for 20% bigger)
+    const scaleFactor = 1.6;
     const pageImages = [];
     console.log("Starting to render PDF with scale factor:", scaleFactor);
 
     for (let i = 0; i < pdf.numPages; i++) {
       const page = await pdf.getPage(i + 1);
-
-      // Adjust scaleFactor to increase the size of the PDF
       const viewport = page.getViewport({ scale: scaleFactor });
 
-      // Get device pixel ratio for high-quality rendering
       const scale = window.devicePixelRatio || 1;
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
 
-      // Set canvas dimensions with the scale factor applied
       canvas.height = viewport.height * scale;
       canvas.width = viewport.width * scale;
-
-      // Scale the context for high resolution
       context.scale(scale, scale);
 
-      // Render the page onto the canvas
       console.log(
         `Rendering page ${i + 1} with size ${canvas.width}x${canvas.height}`
       );
@@ -82,10 +76,10 @@ const BookViewer = ({ pdfUrl }) => {
       }).promise;
 
       pages.push(canvas);
-      pageImages.push(canvas.toDataURL()); // Convert canvas to image URL for sidebar
+      pageImages.push(canvas.toDataURL());
     }
-    setPageImages(pageImages); // Store page images for Sidebar
-    // Append rendered pages to flipbook
+    setPageImages(pageImages);
+
     pages.forEach((canvas) => {
       const pageContainer = document.createElement("div");
       pageContainer.className = "flipbook-page image";
@@ -93,21 +87,24 @@ const BookViewer = ({ pdfUrl }) => {
       flipbook.append(pageContainer);
     });
 
-    // Centering flipbook with CSS if autoCenter doesn't fully work
     flipbook.turn({
-      width: 922 * scaleFactor, // Apply scale factor to width
-      height: 600 * scaleFactor, // Apply scale factor to height
-      autoCenter: true, // Ensure flipbook tries to auto-center the pages
+      width: 922 * scaleFactor,
+      height: 600 * scaleFactor,
+      autoCenter: true,
       display: "double",
       elevation: 50,
       gradients: true,
+      when: {
+        turned: (event, page) => {
+          setCurrentPage(page); // Update current page when turned
+        },
+      },
     });
 
-    // Apply a flexbox style for better centering if necessary
     $(flipbookRef.current).css({
       display: "flex",
-      justifyContent: "center", // Center horizontally
-      alignItems: "center", // Center vertically
+      justifyContent: "center",
+      alignItems: "center",
     });
 
     console.log("PDF rendering complete and flipbook centered.");
@@ -117,13 +114,13 @@ const BookViewer = ({ pdfUrl }) => {
     const results = [];
     textPages.forEach((text, index) => {
       if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
-        results.push(index + 1); // Store page numbers where term is found
+        results.push(index + 1);
       }
     });
     setSearchResults(results);
-    setCurrentResultIndex(0); // Start with the first result
+    setCurrentResultIndex(0);
     if (results.length > 0) {
-      $(flipbookRef.current).turn("page", results[0]); // Navigate to first result
+      $(flipbookRef.current).turn("page", results[0]);
     }
   };
 
@@ -136,16 +133,15 @@ const BookViewer = ({ pdfUrl }) => {
     const rightKeys = ["ArrowRight", "ArrowDown", "S", "D", "s", "d"];
 
     if (leftKeys.includes(e.key)) {
-      $(flipbookRef.current).turn("previous"); // Turn to the previous page
+      $(flipbookRef.current).turn("previous");
     } else if (rightKeys.includes(e.key)) {
-      $(flipbookRef.current).turn("next"); // Turn to the next page
+      $(flipbookRef.current).turn("next");
     }
 
-    // Handle search navigation with Enter key if search results are available
     if (e.key === "Enter" && searchResults.length > 0) {
-      const nextIndex = (currentResultIndex + 1) % searchResults.length; // Loop back to start
-      $(flipbookRef.current).turn("page", searchResults[nextIndex]); // Navigate to next result
-      setCurrentResultIndex(nextIndex); // Update current result index
+      const nextIndex = (currentResultIndex + 1) % searchResults.length;
+      $(flipbookRef.current).turn("page", searchResults[nextIndex]);
+      setCurrentResultIndex(nextIndex);
     }
   };
 
@@ -154,7 +150,7 @@ const BookViewer = ({ pdfUrl }) => {
       if (pdfUrl) {
         const pdf = await loadPdfDocument(pdfUrl);
         setPdfDocument(pdf);
-        extractTextFromPdf(pdf); // Extract text from each page
+        extractTextFromPdf(pdf);
       }
     };
 
@@ -174,7 +170,11 @@ const BookViewer = ({ pdfUrl }) => {
       onKeyDown={handleKeyPress}
       tabIndex="0"
     >
-      <BookViewerSidebar pages={pageImages} onPageClick={handlePageClick} />
+      <BookViewerSidebar
+        pages={pageImages}
+        onPageClick={handlePageClick}
+        currentPage={currentPage} // Pass current page to the sidebar
+      />
       <div
         className={`flipbook-magazine-viewport ${
           isMagnifyEnabled ? "zoomer" : ""
