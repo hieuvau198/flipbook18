@@ -89,8 +89,8 @@
     position: fixed;
     top: 10px;  /* Cố định ở góc trên cùng bên phải */
     right: 10px;
-    width: 400px;  /* Kích thước kính lúp hình vuông */
-    height: 600px;
+    width: 300px;  /* Kích thước kính lúp hình vuông */
+    height: 400px;
     border-radius: 0;  /* Không bo góc, là hình vuông */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Hiệu ứng đổ bóng */
     background-repeat: no-repeat;

@@ -51,7 +51,7 @@ const BookViewer = ({ pdfUrl }) => {
 
         const pages = [];
         const pageImages = [];
-        const scaleFactor = 1.2;  // Adjust this value for how much bigger you want the PDF (e.g., 1.2 for 20% bigger)
+        const scaleFactor = 1.3;  // Adjust this value for how much bigger you want the PDF (e.g., 1.2 for 20% bigger)
         for (let i = 0; i < pdf.numPages; i++) {
             const page = await pdf.getPage(i + 1);
             const viewport = page.getViewport({ scale: scaleFactor });
