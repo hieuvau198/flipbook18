@@ -214,7 +214,7 @@ const BookPage = () => {
     {/* Display book fullscreen overlay */}
     <div>
       {isFullScreen && (
-        <div className="read-pdf-overlay">
+        <div className="">
           {/* Centered and responsive PDF viewer */}
           <div className="">
             <BookViewer pdfUrl={pdfData.url} className="read-pdf-viewer" />

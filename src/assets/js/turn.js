@@ -70,7 +70,7 @@ var version = '4.1.1',
 
     // Duration of transition in milliseconds
 
-    duration: 600,
+    duration: 900,
 
     // First page
 
@@ -338,17 +338,17 @@ turnMethods = {
       if (data.display=='double') {
         var view = this.turn('view', page || data.tpage || data.page);
 
-        if (data.direction=='ltr') {
-          if (!view[0])
-            left -= size.width/4;
-          else if (!view[1])
-            left += size.width/4;
-        } else {
-          if (!view[0])
-            left += size.width/4;
-          else if (!view[1])
-            left -= size.width/4;
-        }
+        // if (data.direction=='ltr') {
+        //   if (!view[0])
+        //     left -= size.width/2;
+        //   else if (!view[1])
+        //     left += size.width/2;
+        // } else {
+        //   if (!view[0])
+        //     left += size.width/2;
+        //   else if (!view[1])
+        //     left -= size.width/2;
+        // }
       
       }
 

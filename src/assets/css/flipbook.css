@@ -1,21 +1,4 @@
-.flipbook-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-}
 
-.flipbook-upload-container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f0f0f0;
-    border: 2px dashed #ccc;
-}
 
 .flipbook-pdf-viewer {
     position: fixed;
@@ -26,22 +9,20 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);;
 }
 
 .flipbook-magazine-viewport {
     width: 100%; /* Chiều rộng linh hoạt theo kích thước màn hình */
-    max-width: 1500px; /* Giới hạn chiều rộng tối đa */
+    max-width: 1500px; 
     height: auto; /* Chiều cao tự động dựa trên tỷ lệ hình ảnh */
-    max-height: 100vh; /* Giới hạn chiều cao tối đa theo 80% chiều cao viewport */
+    /* max-height: 80vh; Giới hạn chiều cao tối đa theo 80% chiều cao viewport */
     position: relative;
-    top: -15px;
-    margin: auto;
     transition: transform 0.3s ease; /* Hiệu ứng mượt khi zoom */
     transform-origin: center center;
-    display: flex;
     justify-content: center;
     align-items: center;
+    display: flex;
 }
 
 .flipbook-magazine {
@@ -59,6 +40,7 @@
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     perspective: 1000px; /* Keeps the 3D effect */
+    background-color: azure;
 }
 
 .flipbook-page canvas, 
@@ -101,34 +83,25 @@
     right: 10px; /* Sát cạnh phải */
 }
 
-.magnifying-glass {
-    position: absolute;
-    border-radius: 50%;
-    width: 150px; /* Width of magnifying glass */
-    height: 150px; /* Height of magnifying glass */
-    border: 3px solid black;
-    background-repeat: no-repeat;
-    pointer-events: none; /* So it doesn’t block interactions */
-    display: none;
-    z-index: 100;
-}
 .flipbook-magazine-viewport.zoomer {
-    cursor: none; /* Ẩn con trỏ mặc định */
+    transform: scale(1.2); /* Tăng kích thước lên 20% khi phóng to */
+    transition: transform 0.3s ease; /* Hiệu ứng mượt khi chuyển đổi */
 }
 
-.result {
-    pointer-events: none; /* Để kính lúp không chặn sự kiện chuột */
-    position: fixed; /* Đặt kính lúp theo vị trí cố định */
-    transform: translate(-50%, -50%); /* Căn giữa kính lúp với con trỏ */
-    border-radius: 50%;
-    width: 400px;
-    height: 400px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-
-    display: none; /* Mặc định ẩn */
-    z-index: 100;
+.flipbook-magazine-viewport.zoomer .flipbook-magazine {
+    pointer-events: none; /* Ngăn chặn thao tác với các phần tử khi phóng to */
 }
 
-.hide {
-    display: none;
+.flipbook-page.zoomer {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); /* Đổ bóng rõ ràng hơn khi phóng to */
+}
+
+.flipbook-page.zoomer canvas {
+    transform: scale(1.2); /* Phóng to nội dung canvas */
+    transition: transform 0.3s ease;
+}
+
+.flipbook-page.zoomer img {
+    transform: scale(1.2); /* Phóng to hình ảnh khi dùng ảnh làm trang */
+    transition: transform 0.3s ease;
 }
