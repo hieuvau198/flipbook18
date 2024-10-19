@@ -1,5 +1,3 @@
-
-
 .flipbook-pdf-viewer {
     position: fixed;
     top: 0;
@@ -9,14 +7,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
 .flipbook-magazine-viewport {
     width: 100%; /* Chiều rộng linh hoạt theo kích thước màn hình */
     max-width: 1500px; 
     height: auto; /* Chiều cao tự động dựa trên tỷ lệ hình ảnh */
-    /* max-height: 80vh; Giới hạn chiều cao tối đa theo 80% chiều cao viewport */
     position: relative;
     transition: transform 0.3s ease; /* Hiệu ứng mượt khi zoom */
     transform-origin: center center;
@@ -44,13 +40,12 @@
 }
 
 .flipbook-page canvas, 
-.flipbook-page div {
+.flipbook-page img {
     max-width: 100%; /* Đảm bảo phần tử vừa với chiều rộng container */
     max-height: 100%; /* Đảm bảo chiều cao */
-    object-fit: contain; /* Nếu phần tử hỗ trợ thuộc tính này */
+    object-fit: contain; /* Giữ tỷ lệ hình ảnh hoặc canvas */
     transition: transform 0.6s ease-out;
 }
-
 
 .flipbook-page .turning {
     transform: rotateY(180deg); /* Lật theo trục Y */
@@ -58,7 +53,6 @@
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
-/* flipbook.css */
 .flipbook-nav-button {
     display: flex;
     justify-content: center;
@@ -72,36 +66,40 @@
     cursor: pointer;
     z-index: 10;
     border-radius: 50%;
-    object-fit: contain;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease;
+}
+
+.flipbook-nav-button:hover {
+    background-color: #f0f0f0;
 }
 
 .flipbook-nav-button.previous {
-    left: 10px; /* Sát cạnh trái */
+    left: 10px;
 }
 
 .flipbook-nav-button.next {
-    right: 10px; /* Sát cạnh phải */
+    right: 10px;
+}
+.zoomer {
+    position: relative;
 }
 
-.flipbook-magazine-viewport.zoomer {
-    transform: scale(1.2); /* Tăng kích thước lên 20% khi phóng to */
-    transition: transform 0.3s ease; /* Hiệu ứng mượt khi chuyển đổi */
+.result {
+    position: fixed;
+    top: 10px;  /* Cố định ở góc trên cùng bên phải */
+    right: 10px;
+    width: 400px;  /* Kích thước kính lúp hình vuông */
+    height: 600px;
+    border-radius: 0;  /* Không bo góc, là hình vuông */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Hiệu ứng đổ bóng */
+    background-repeat: no-repeat;
+    background-size: 400%;  /* Phóng to nội dung bên trong */
+    background-position: center;
+    pointer-events: none;  /* Không ảnh hưởng đến sự tương tác của chuột */
+    z-index: 9999;  /* Đặt kính lúp lên trên các phần tử khác */
 }
 
-.flipbook-magazine-viewport.zoomer .flipbook-magazine {
-    pointer-events: none; /* Ngăn chặn thao tác với các phần tử khi phóng to */
-}
-
-.flipbook-page.zoomer {
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); /* Đổ bóng rõ ràng hơn khi phóng to */
-}
-
-.flipbook-page.zoomer canvas {
-    transform: scale(1.2); /* Phóng to nội dung canvas */
-    transition: transform 0.3s ease;
-}
-
-.flipbook-page.zoomer img {
-    transform: scale(1.2); /* Phóng to hình ảnh khi dùng ảnh làm trang */
-    transition: transform 0.3s ease;
+.result.hide {
+    display: none;  /* Ẩn khi không cần thiết */
 }

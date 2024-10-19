@@ -10,6 +10,7 @@ import $ from 'jquery';
 const BookViewer = ({ pdfUrl }) => {
     const containerRef = useRef(null);
     const flipbookRef = useRef(null);
+    const resultRef = useRef(null);  // Added resultRef
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [pdfDocument, setPdfDocument] = useState(null);
     const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
@@ -18,11 +19,11 @@ const BookViewer = ({ pdfUrl }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(0);
-
+    const [magnifyPosition, setMagnifyPosition] = useState({ x: 0, y: 0 });
+    const size = 4; // Magnification size
     const toggleMagnify = () => {
         setIsMagnifyEnabled((prev) => !prev);
     };
-
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
             containerRef.current.requestFullscreen();
@@ -50,9 +51,10 @@ const BookViewer = ({ pdfUrl }) => {
 
         const pages = [];
         const pageImages = [];
+        const scaleFactor = 1.2;  // Adjust this value for how much bigger you want the PDF (e.g., 1.2 for 20% bigger)
         for (let i = 0; i < pdf.numPages; i++) {
             const page = await pdf.getPage(i + 1);
-            const viewport = page.getViewport({ scale: 1.6 });
+            const viewport = page.getViewport({ scale: scaleFactor });
             const canvas = document.createElement("canvas");
             const context = canvas.getContext("2d");
 
@@ -74,8 +76,8 @@ const BookViewer = ({ pdfUrl }) => {
         });
 
         flipbook.turn({
-            width: 922,
-            height: 600,
+            width: 922 * scaleFactor,
+            height: 600 * scaleFactor,
             autoCenter: true,
             display: 'double',
             elevation: 50,
@@ -109,6 +111,34 @@ const BookViewer = ({ pdfUrl }) => {
         }
     };
 
+    const handleMouseMove = (e) => {
+        if (!isMagnifyEnabled || !resultRef.current) return;
+    
+        const imgElement = e.target.tagName === 'CANVAS' ? e.target : null;
+        if (!imgElement) return;
+    
+        const result = resultRef.current;
+        result.classList.remove('hide');
+    
+        const rect = imgElement.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+        // Cập nhật hình ảnh trong vùng kính lúp cố định
+        result.style.cssText = `
+            background-image: url(${imgElement.toDataURL()});
+            background-size: ${imgElement.width * size}px ${imgElement.height * size}px;
+            background-position: ${x}% ${y}%;
+        `;
+    };
+    
+    const handleMouseLeave = () => {
+        if (resultRef.current) {
+            resultRef.current.classList.add('hide');
+            resultRef.current.style = '';
+        }
+    };
+
     useEffect(() => {
         const fetchPdf = async () => {
             if (pdfUrl) {
@@ -131,7 +161,13 @@ const BookViewer = ({ pdfUrl }) => {
         <div className="flipbook-pdf-viewer" ref={containerRef} onKeyDown={handleKeyPress} tabIndex="0">
             <Sidebar pages={pageImages} onPageClick={handlePageClick} />
             <div className={`flipbook-magazine-viewport ${isMagnifyEnabled ? 'zoomer' : ''}`}>
-                <div ref={flipbookRef} className="flipbook-magazine"></div>
+                <div
+                    ref={flipbookRef}
+                    className="flipbook-magazine"
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={handleMouseLeave}
+                ></div>
+                <div ref={resultRef} className="result hide"></div> {/* Added this */}
             </div>
 
             <button
