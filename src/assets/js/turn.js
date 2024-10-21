@@ -338,19 +338,6 @@ turnMethods = {
       if (data.display=='double') {
         var view = this.turn('view', page || data.tpage || data.page);
 
-<<<<<<< HEAD
-        if (data.direction=='ltr') {
-          if (!view[0])
-            left -= size.width/2;
-          else if (!view[1])
-            left += size.width/2;
-        } else {
-          if (!view[0])
-            left += size.width/2;
-          else if (!view[1])
-            left -= size.width/2;
-        }
-=======
         // if (data.direction=='ltr') {
         //   if (!view[0])
         //     left -= size.width/2;
@@ -362,7 +349,6 @@ turnMethods = {
         //   else if (!view[1])
         //     left -= size.width/2;
         // }
->>>>>>> 39a9cb2193a96b14f025ad1e611cca1bcb280c97
       
       }
 

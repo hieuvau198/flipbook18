@@ -105,6 +105,7 @@ const BookViewer = ({ pdfUrl }) => {
       display: "double",
       elevation: 50,
       gradients: true,
+      duration: 1000,
       when: {
         turned: (event, page) => {
           setCurrentPage(page); // Update current page when turned
