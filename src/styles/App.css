@@ -119,8 +119,21 @@
 }
 
 .flipbook-container {
-  
-  
+  height: 100vh; /* Example height: fill the viewport height */
+  width: 100%; /* Example width: fill the parent width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  /* Relative positioning for absolute children */
+  z-index: 1;
+  /* Ensures the container appears above the background */
+  /* Add padding around the content */
+  border-radius: 10px;
+  /* Optional: rounded corners */
+  /* Slightly transparent white background for readability */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  /* Optional: shadow for depth */
 }
 
 .toolbar {
@@ -351,18 +364,6 @@
   /* Needed for absolute positioning of children */
 }
 
-.flipbook-container {
-  position: relative;
-  /* Relative positioning for absolute children */
-  z-index: 1;
-  /* Ensures the container appears above the background */
-  /* Add padding around the content */
-  border-radius: 10px;
-  /* Optional: rounded corners */
-  /* Slightly transparent white background for readability */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  /* Optional: shadow for depth */
-}
 
 .main-background {
 
