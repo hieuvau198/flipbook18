@@ -608,7 +608,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 90%; /* Prevent horizontal overflow */
+  width: auto; /* Prevent horizontal overflow */
   height: 90%; /* Prevent vertical overflow */
   max-width: 1000px; /* Optional max width */
   max-height: 800px; /* Optional max height */
@@ -767,3 +767,38 @@
   }
 }
 
+.bookviewer-sidebar {
+  width: 120px;
+  max-height: 100%; /* Chiều cao phù hợp với BookViewer */
+  overflow-y: auto; /* Kích hoạt khả năng cuộn dọc */
+  background-color: #f5f5f5;
+  padding: 10px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.bookviewer-sidebar-thumbnail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.bookviewer-sidebar-thumbnail:hover {
+  transform: scale(1.05);
+}
+
+.bookviewer-thumbnail-image {
+  width: 100px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.bookviewer-page-number {
+  margin-top: 5px;
+  font-size: 12px;
+  color: #333;
+}
