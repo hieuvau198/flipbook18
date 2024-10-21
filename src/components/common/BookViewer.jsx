@@ -51,8 +51,22 @@ const BookViewer = ({ pdfUrl }) => {
     flipbook.empty();
 
     const pages = [];
-    const scaleFactor = 1.6;
     const pageImages = [];
+    // Get the device width and height, then pdf first page width and height
+    const deviceWidth = window.innerWidth;
+    const deviceHeight = window.innerHeight;
+    const firstPage = await pdf.getPage(1);
+    const firstViewport = firstPage.getViewport({ scale: 1 }); // Use scale 1 to get the natural size
+    const pdfPageWidth = firstViewport.width;
+    const pdfPageHeight = firstViewport.height;
+
+    // Calculate the global scale factor
+    const scaleWidth = (deviceWidth * 0.8) / pdfPageWidth;
+    const scaleHeight = (deviceHeight * 0.9) / pdfPageHeight;
+    const scaleFactor = Math.min(scaleWidth, scaleHeight);
+
+    console.log("Device dimensions:", deviceWidth, "x", deviceHeight);
+    console.log("PDF Page dimensions:", pdfPageWidth, "x", pdfPageHeight);
     console.log("Starting to render PDF with scale factor:", scaleFactor);
 
     for (let i = 0; i < pdf.numPages; i++) {
@@ -67,9 +81,6 @@ const BookViewer = ({ pdfUrl }) => {
       canvas.width = viewport.width * scale;
       context.scale(scale, scale);
 
-      console.log(
-        `Rendering page ${i + 1} with size ${canvas.width}x${canvas.height}`
-      );
       await page.render({
         canvasContext: context,
         viewport,
