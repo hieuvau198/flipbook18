@@ -111,3 +111,19 @@
 .result.hide {
     display: none;  /* Ẩn khi không cần thiết */
 }
+
+.toolbar {
+    position: absolute;
+    bottom: 10px; /* Đặt Toolbar ở phía dưới */
+    left: 50%;
+    margin-left: 110px;
+    transform: translateX(-50%); /* Căn giữa theo chiều ngang */
+    z-index: 10; /* Đảm bảo Toolbar nằm phía trên các thành phần khác */
+    opacity: 0.5; /* Đặt độ mờ ban đầu là 50% */
+    transition: opacity 0.3s ease; /* Hiệu ứng mượt khi thay đổi độ mờ */
+  }
+  
+  .toolbar:hover {
+    opacity: 1; /* Độ mờ trở lại 100% khi hover */
+  }
+  
