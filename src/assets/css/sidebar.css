@@ -1,8 +1,7 @@
-/* sidebar.css */
 .sidebar {
-    width: 120px;
-    max-height: 100%; /* Chiều cao phù hợp với BookViewer */
-    overflow-y: auto; /* Kích hoạt khả năng cuộn dọc */
+    width: 250px;
+    max-height: 100%;
+    overflow-y: auto;
     background-color: #f5f5f5;
     padding: 10px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -33,4 +32,12 @@
     margin-top: 5px;
     font-size: 12px;
     color: #333;
+}
+
+.flipbook-sidebar img:hover {
+    transform: scale(1.05);
+}
+
+.flipbook-sidebar .current-page {
+    border: 2px solid #007bff;
 }

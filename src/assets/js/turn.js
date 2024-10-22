@@ -337,21 +337,18 @@ turnMethods = {
     if (!data.noCenter) {
       if (data.display=='double') {
         var view = this.turn('view', page || data.tpage || data.page);
-
-        // if (data.direction=='ltr') {
-        //   if (!view[0])
-        //     left -= size.width/2;
-        //   else if (!view[1])
-        //     left += size.width/2;
-        // } else {
-        //   if (!view[0])
-        //     left += size.width/2;
-        //   else if (!view[1])
-        //     left -= size.width/2;
-        // }
-      
+        if (data.direction=='ltr') {
+          if (!view[0])
+            left -= size.width/2;
+          else if (!view[1])
+            left += size.width/2;
+        } else {
+          if (!view[0])
+            left += size.width/2;
+          else if (!view[1])
+            left -= size.width/2;
+        }
       }
-
       $(this).css({marginLeft: left});
     }
 

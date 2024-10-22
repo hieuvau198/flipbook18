@@ -1,36 +1,36 @@
 .toolbar {
-  background-color: black; /* Nền đen cho toolbar */
-  width: 70%; /* Chiều dài 70% */
+  background-color: black;
+  width: 70%;
   height: 7%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px; /* Thêm padding để nút không dính sát nhau */
-  margin: 0 auto; /* Căn giữa toolbar */
-  border: 1px solid rgb(114, 112, 112); /* Viền trắng cho nút */
-  border-radius: 10px; /* Làm tròn góc nút */
-  position: fixed; /* Giữ thanh công cụ ở vị trí cố định */
-  bottom: 0; /* Đặt ở dưới cùng của trang */
+  padding: 10px;
+  margin: 0 auto;
+  border: 1px solid rgb(114, 112, 112);
+  border-radius: 10px;
+  position: fixed;
+  bottom: 0;
 }
 
 .toolbar-btn {
-  font-size: 1em; /* Kích thước font bình thường */
+  font-size: 1em;
   font-weight: 500;
-  background-color: white; /* Nền nút trắng */
-  border: 1px solid white; /* Viền trắng cho nút */
-  border-radius: 10px; /* Làm tròn góc nút */
-  padding: 8px 12px; /* Kích thước padding nút */
-  margin: 0 8px; /* Khoảng cách giữa các nút */
-  color: black; /* Chữ màu đen cho nút */
-  transition: all 0.3s ease; /* Thêm hiệu ứng mượt */
+  background-color: white;
+  border: 1px solid white;
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin: 0 8px;
+  color: black;
+  transition: all 0.3s ease;
 }
 
 .toolbar-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Đổi màu nền khi hover */
-  transform: scale(1.1); /* Phóng to nhẹ khi hover */
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.1);
 }
 
 .toolbar-btn img {
-  width: 24px;  /* Đảm bảo kích thước icon chuẩn */
+  width: 24px;
   height: 24px;
 }
