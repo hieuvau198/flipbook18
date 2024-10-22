@@ -25,53 +25,37 @@
       setIsMagnifyEnabled((prev) => !prev);
     };
 
-    const toggleFullscreen = () => {
-      if (!document.fullscreenElement) {
-        containerRef.current.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    };
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
 
-    const extractTextFromPdf = async (pdf) => {
-      const pagesText = [];
-      for (let i = 0; i < pdf.numPages; i++) {
-        const page = await pdf.getPage(i + 1);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item) => item.str).join(" ");
-        pagesText.push(pageText);
-      }
-      setTextPages(pagesText);
-    };
+  const extractTextFromPdf = async (pdf) => {
+    const pagesText = [];
+    for (let i = 0; i < pdf.numPages; i++) {
+      const page = await pdf.getPage(i + 1);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items.map((item) => item.str).join(" ");
+      pagesText.push(pageText);
+    }
+    setTextPages(pagesText);
+  };
 
-    const renderPdfToFlipbook = async (pdf) => {
-      const flipbook = $(flipbookRef.current);
-      flipbook.empty();
+  const renderPdfToFlipbook = async (pdf) => {
+    const flipbook = $(flipbookRef.current);
+    flipbook.empty();
+    const pages = [];
+    const scaleFactor = 1.25;
+    const initialLoadPages = 10;
 
-      const pages = [];
-      const pageImages = [];
-      // Get the device width and height, then pdf first page width and height
-      const deviceWidth = window.innerWidth;
-      const deviceHeight = window.innerHeight;
-      const firstPage = await pdf.getPage(1);
-      const firstViewport = firstPage.getViewport({ scale: 1 }); // Use scale 1 to get the natural size
-      const pdfPageWidth = firstViewport.width;
-      const pdfPageHeight = firstViewport.height;
-
-      // Calculate the global scale factor
-      const scaleWidth = (deviceWidth * 0.8) / pdfPageWidth;
-      const scaleHeight = (deviceHeight * 0.9) / pdfPageHeight;
-      const scaleFactor = Math.min(scaleWidth, scaleHeight);
-
-      console.log("Device dimensions:", deviceWidth, "x", deviceHeight);
-      console.log("PDF Page dimensions:", pdfPageWidth, "x", pdfPageHeight);
-      console.log("Starting to render PDF with scale factor:", scaleFactor);
-
-      for (let i = 0; i < pdf.numPages; i++) {
-        const page = await pdf.getPage(i + 1);
-        const viewport = page.getViewport({ scale: scaleFactor });
+    const renderPage = async (pageIndex) => {
+      const page = await pdf.getPage(pageIndex + 1);
+      const viewport = page.getViewport({ scale: scaleFactor });
 
         const scale = window.devicePixelRatio || 1;
         const canvas = document.createElement("canvas");
@@ -90,6 +74,9 @@
         pageImages.push(canvas.toDataURL());
       }
       setPageImages(pageImages);
+      pages.push(canvas);
+      const newPageImage = canvas.toDataURL();
+      setPageImages((prevImages) => [...prevImages, newPageImage]);
 
       pages.forEach((canvas) => {
         const pageContainer = document.createElement("div");
@@ -97,6 +84,25 @@
         pageContainer.appendChild(canvas);
         flipbook.append(pageContainer);
       });
+      const pageContainer = document.createElement("div");
+      pageContainer.className = "flipbook-page image";
+      pageContainer.appendChild(canvas);
+      flipbook.append(pageContainer);
+
+      if (flipbook.turn("is")) {
+        flipbook.turn("addPage", pageContainer, pageIndex + 1);
+      }
+
+      $(flipbookRef.current).css({
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      });
+    };
+
+    for (let i = 0; i < Math.min(initialLoadPages, pdf.numPages); i++) {
+      await renderPage(i);
+    }
 
       flipbook.turn({
         width: 922 * scaleFactor,
@@ -112,15 +118,36 @@
           },
         },
       });
+    flipbook.turn({
+      width: 922 * scaleFactor,
+      height: 600 * scaleFactor,
+      autoCenter: true,
+      display: "double",
+      elevation: 50,
+      gradients: true,
+      when: {
+        turned: (event, page) => {
+          setCurrentPage(page);
+        },
+      },
+    });
 
       $(flipbookRef.current).css({
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
       });
+    const loadRemainingPages = async () => {
+      for (let i = initialLoadPages; i < pdf.numPages; i++) {
+        await renderPage(i);
+      }
+    };
 
       console.log("PDF rendering complete and flipbook centered.");
     };
+    loadRemainingPages();
+  };
+  
 
     const handleSearch = () => {
       const results = [];
