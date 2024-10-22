@@ -1,11 +1,22 @@
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  updatePassword,
   signInWithPopup,
   GoogleAuthProvider,
 } from "firebase/auth";
+
+export const doCreateUserWithEmailAndPassword = async (email, password) => {
+  return createUserWithEmailAndPassword(auth, email, password);
+};
+
+export const doSignInWithEmailAndPassword = (email, password) => {
+  return signInWithEmailAndPassword(auth, email, password);
+};
 
 export const signUp = async (email, password, userData) => {
   try {
@@ -34,42 +45,52 @@ export const signUp = async (email, password, userData) => {
     throw error; // Rethrow the error for further handling if necessary
   }
 };
+
 export const signIn = async (email, password) => {
   try {
-    const user = await signInWithEmailAndPassword(email, password);
-    return user;
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Fetch user data from Firestore
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      return { user, role: userData.role };
+    } else {
+      throw new Error("No such user document!");
+    }
   } catch (error) {
     console.error("Error signing in: ", error);
     throw error;
   }
 };
-
 export const doSignInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
-    // Prepare userData to store in Firestore
-    const userData = {
-      displayName: user.displayName,
-      email: user.email,
-      photoURL: user.photoURL,
-      uid: user.uid,
-      role: 'customer',
-      provider: "google",
-    };
+    // Fetch user data from Firestore
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
 
-    // Save user data to Firestore
-    await setDoc(doc(db, "users", user.uid), userData, { merge: true });
-
-    return user;
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      return { user, role: userData.role };
+    } else {
+      throw new Error("No such user document!");
+    }
   } catch (error) {
     console.error("Error during Google sign-in:", error);
     throw error;
   }
 };
 
+export const doSignOut = () => {
+  return auth.signOut();
+};
 
 export const logout = async () => {
   try {

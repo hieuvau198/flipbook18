@@ -1,16 +1,24 @@
-import "./App.css";
-import './index.css';
+import "./styles/App.css";
+import './styles/index.css';
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/auth/Login.jsx";
 import Register from "./components/auth/Register.jsx";
-import Header from "./components/Header.jsx";
-import Home from "./components/Homepage.jsx";
-import FlipBook from "./components/Flipbook.jsx";
-import Share from "./components/Share"; // Import the Share component
+import Header from "./components/layout/Header.jsx";
+import Home from "./pages/Homepage/Homepage.jsx";
+import FlipBook from "./pages/Flipbook/Flipbook.jsx";
+import Share from "./pages/Share/Share.jsx"; // Import the Share component
+import BookPage from "./pages/Book/BookPage.jsx";
+import BookManagement from "./pages/Management/BookManagement.jsx";
 import { AuthProvider } from "./contexts/authContext.jsx";
 import { PdfProvider } from "./contexts/PdfContext.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ProtectedRoute from "./components/common/ProtectedRoute.jsx";
+import { useAuth } from "./contexts/authContext.jsx";
+
+function AdminRoute({ children }) {
+  const { role } = useAuth(); // Fetch the user info
+  return role === 'admin' ? children : <Navigate to="/home" replace />;
+}
 
 function App() {
   return (
@@ -22,6 +30,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/book" element={<BookPage />} />
               <Route
                 path="/home"
                 element={
@@ -39,6 +48,18 @@ function App() {
                 }
               />
               <Route path="/share" element={<Share />} />
+              <Route
+                path="/library"
+                element={
+                  <ProtectedRoute>
+                    <AdminRoute>
+                      <BookManagement />
+                    </AdminRoute>
+                      
+                    
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/"
                 element={
