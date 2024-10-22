@@ -11,6 +11,8 @@ const BookViewer = ({ pdfUrl }) => {
   const containerRef = useRef(null);
   const flipbookRef = useRef(null);
   const resultRef = useRef(null);
+
+  // State variables
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [pdfDocument, setPdfDocument] = useState(null);
   const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
@@ -20,7 +22,9 @@ const BookViewer = ({ pdfUrl }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [currentResultIndex, setCurrentResultIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
-
+  const [pdfHeight, setPdfHeight] = useState(null);  // New height state
+  const [pdfWidth, setPdfWidth] = useState(null);    // New width state
+  const size = 4; // Magnification size
   const toggleMagnify = () => {
     setIsMagnifyEnabled((prev) => !prev);
   };
@@ -56,6 +60,15 @@ const BookViewer = ({ pdfUrl }) => {
     const renderPage = async (pageIndex) => {
       const page = await pdf.getPage(pageIndex + 1);
       const viewport = page.getViewport({ scale: scaleFactor });
+
+      const width = viewport.width;
+      const height = viewport.height;
+
+      // Set height and width of the PDF page
+      setPdfHeight(height);
+      setPdfWidth(width);
+
+      console.log(`Page ${pageIndex + 1} - Width: ${width}, Height: ${height}`);
 
       const scale = window.devicePixelRatio || 1;
       const canvas = document.createElement("canvas");
@@ -116,7 +129,6 @@ const BookViewer = ({ pdfUrl }) => {
 
     loadRemainingPages();
   };
-  
 
   const handleSearch = () => {
     const results = [];
@@ -153,6 +165,34 @@ const BookViewer = ({ pdfUrl }) => {
     }
   };
 
+  const handleMouseMove = (e) => {
+    if (!isMagnifyEnabled || !resultRef.current) return;
+
+    const imgElement = e.target.tagName === 'CANVAS' ? e.target : null;
+    if (!imgElement) return;
+
+    const result = resultRef.current;
+    result.classList.remove('hide');
+
+    const rect = imgElement.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    // Cập nhật hình ảnh trong vùng kính lúp cố định
+    result.style.cssText = `
+        background-image: url(${imgElement.toDataURL()});
+        background-size: ${imgElement.width * size}px ${imgElement.height * size}px;
+        background-position: ${x}% ${y}%;
+    `;
+  };
+
+  const handleMouseLeave = () => {
+    if (resultRef.current) {
+      resultRef.current.classList.add('hide');
+      resultRef.current.style = '';
+    }
+  };
+
   useEffect(() => {
     const fetchPdf = async () => {
       if (pdfUrl) {
@@ -184,11 +224,14 @@ const BookViewer = ({ pdfUrl }) => {
         currentPage={currentPage} // Pass current page to the sidebar
       />
       <div
-        className={`flipbook-magazine-viewport ${
-          isMagnifyEnabled ? "zoomer" : ""
-        }`}
+        className={`flipbook-magazine-viewport ${isMagnifyEnabled ? "zoomer" : ""
+          }`}
       >
-        <div ref={flipbookRef} className="flipbook-magazine"></div>
+        <div ref={flipbookRef} className="flipbook-magazine"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}>
+        </div>
+        <div ref={resultRef} className="result hide"></div> {/* Added this */}
       </div>
 
       <button

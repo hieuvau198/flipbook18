@@ -12,6 +12,8 @@ export const readFileData = (file) => {
 
 // Function to load PDF document
 export const loadPdfDocument = async (pdfSource) => {
+    console.log("Preparing to load PDF...");
+
     let pdfData;
 
     // Check if the pdfSource is a URL or Blob
@@ -34,7 +36,24 @@ export const loadPdfDocument = async (pdfSource) => {
         throw new Error('Invalid PDF source provided');
     }
 
+    console.log("PDF data loaded. Now loading the PDF document...");
+
     // Use PDF.js to load the document
     const pdf = await getDocument({ data: pdfData }).promise;
+
+    console.log("PDF document loaded. Now getting the first page...");
+
+    // Get the first page to extract its size
+    const page = await pdf.getPage(1);
+    const viewport = page.getViewport({ scale: 1 });
+
+    // Extract width and height from the viewport
+    const width = viewport.width;
+    const height = viewport.height;
+
+    // Log the width and height of the first page
+    console.log('Page width:', width);
+    console.log('Page height:', height);
+
     return pdf;
 };
