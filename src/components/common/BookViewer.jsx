@@ -1,29 +1,29 @@
-  import React, { useRef, useState, useEffect } from "react";
-  import Toolbar from "./Toolbar.jsx";
-  import BookViewerSidebar from "./BookViewerSideBar.jsx";
-  import previousIcon from "../../assets/icons/previous.svg";
-  import nextIcon from "../../assets/icons/next.svg";
-  import { loadPdfDocument } from "../../utils/pdfUtils.js";
-  import "../../assets/css/flipbook.css";
-  import $ from "jquery";
+import React, { useRef, useState, useEffect } from "react";
+import Toolbar from "./Toolbar.jsx";
+import BookViewerSidebar from "./BookViewerSideBar.jsx";
+import previousIcon from "../../assets/icons/previous.svg";
+import nextIcon from "../../assets/icons/next.svg";
+import { loadPdfDocument } from "../../utils/pdfUtils.js";
+import "../../assets/css/flipbook.css";
+import $ from "jquery";
 
-  const BookViewer = ({ pdfUrl }) => {
-    const containerRef = useRef(null);
-    const flipbookRef = useRef(null);
-    const resultRef = useRef(null);
-    const [isFullscreen, setIsFullscreen] = useState(false);
-    const [pdfDocument, setPdfDocument] = useState(null);
-    const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
-    const [pageImages, setPageImages] = useState([]);
-    const [textPages, setTextPages] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [searchResults, setSearchResults] = useState([]);
-    const [currentResultIndex, setCurrentResultIndex] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1); // Track the current page
+const BookViewer = ({ pdfUrl }) => {
+  const containerRef = useRef(null);
+  const flipbookRef = useRef(null);
+  const resultRef = useRef(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [pdfDocument, setPdfDocument] = useState(null);
+  const [isMagnifyEnabled, setIsMagnifyEnabled] = useState(false);
+  const [pageImages, setPageImages] = useState([]);
+  const [textPages, setTextPages] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [currentResultIndex, setCurrentResultIndex] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1); // Track the current page
 
-    const toggleMagnify = () => {
-      setIsMagnifyEnabled((prev) => !prev);
-    };
+  const toggleMagnify = () => {
+    setIsMagnifyEnabled((prev) => !prev);
+  };
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -57,33 +57,23 @@
       const page = await pdf.getPage(pageIndex + 1);
       const viewport = page.getViewport({ scale: scaleFactor });
 
-        const scale = window.devicePixelRatio || 1;
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
+      const scale = window.devicePixelRatio || 1;
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
 
-        canvas.height = viewport.height * scale;
-        canvas.width = viewport.width * scale;
-        context.scale(scale, scale);
+      canvas.height = viewport.height * scale;
+      canvas.width = viewport.width * scale;
+      context.scale(scale, scale);
 
-        await page.render({
-          canvasContext: context,
-          viewport,
-        }).promise;
+      await page.render({
+        canvasContext: context,
+        viewport,
+      }).promise;
 
-        pages.push(canvas);
-        pageImages.push(canvas.toDataURL());
-      }
-      setPageImages(pageImages);
       pages.push(canvas);
       const newPageImage = canvas.toDataURL();
       setPageImages((prevImages) => [...prevImages, newPageImage]);
 
-      pages.forEach((canvas) => {
-        const pageContainer = document.createElement("div");
-        pageContainer.className = "flipbook-page image";
-        pageContainer.appendChild(canvas);
-        flipbook.append(pageContainer);
-      });
       const pageContainer = document.createElement("div");
       pageContainer.className = "flipbook-page image";
       pageContainer.appendChild(canvas);
@@ -104,20 +94,6 @@
       await renderPage(i);
     }
 
-      flipbook.turn({
-        width: 922 * scaleFactor,
-        height: 600 * scaleFactor,
-        autoCenter: true,
-        display: "double",
-        elevation: 50,
-        gradients: true,
-        duration: 1000,
-        when: {
-          turned: (event, page) => {
-            setCurrentPage(page); // Update current page when turned
-          },
-        },
-      });
     flipbook.turn({
       width: 922 * scaleFactor,
       height: 600 * scaleFactor,
@@ -132,129 +108,122 @@
       },
     });
 
-      $(flipbookRef.current).css({
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      });
     const loadRemainingPages = async () => {
       for (let i = initialLoadPages; i < pdf.numPages; i++) {
         await renderPage(i);
       }
     };
 
-      console.log("PDF rendering complete and flipbook centered.");
-    };
     loadRemainingPages();
   };
   
 
-    const handleSearch = () => {
-      const results = [];
-      textPages.forEach((text, index) => {
-        if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
-          results.push(index + 1);
-        }
-      });
-      setSearchResults(results);
-      setCurrentResultIndex(0);
-      if (results.length > 0) {
-        $(flipbookRef.current).turn("page", results[0]);
+  const handleSearch = () => {
+    const results = [];
+    textPages.forEach((text, index) => {
+      if (text.toLowerCase().includes(searchTerm.toLowerCase())) {
+        results.push(index + 1);
+      }
+    });
+    setSearchResults(results);
+    setCurrentResultIndex(0);
+    if (results.length > 0) {
+      $(flipbookRef.current).turn("page", results[0]);
+    }
+  };
+
+  const handlePageClick = (page) => {
+    $(flipbookRef.current).turn("page", page);
+  };
+
+  const handleKeyPress = (e) => {
+    const leftKeys = ["ArrowLeft", "ArrowUp", "A", "W", "a", "w"];
+    const rightKeys = ["ArrowRight", "ArrowDown", "S", "D", "s", "d"];
+
+    if (leftKeys.includes(e.key)) {
+      $(flipbookRef.current).turn("previous");
+    } else if (rightKeys.includes(e.key)) {
+      $(flipbookRef.current).turn("next");
+    }
+
+    if (e.key === "Enter" && searchResults.length > 0) {
+      const nextIndex = (currentResultIndex + 1) % searchResults.length;
+      $(flipbookRef.current).turn("page", searchResults[nextIndex]);
+      setCurrentResultIndex(nextIndex);
+    }
+  };
+
+  useEffect(() => {
+    const fetchPdf = async () => {
+      if (pdfUrl) {
+        const pdf = await loadPdfDocument(pdfUrl);
+        setPdfDocument(pdf);
+        extractTextFromPdf(pdf);
       }
     };
 
-    const handlePageClick = (page) => {
-      $(flipbookRef.current).turn("page", page);
-    };
+    fetchPdf();
+  }, [pdfUrl]);
 
-    const handleKeyPress = (e) => {
-      const leftKeys = ["ArrowLeft", "ArrowUp", "A", "W", "a", "w"];
-      const rightKeys = ["ArrowRight", "ArrowDown", "S", "D", "s", "d"];
+  useEffect(() => {
+    if (pdfDocument && flipbookRef.current) {
+      renderPdfToFlipbook(pdfDocument);
+    }
+  }, [pdfDocument]);
 
-      if (leftKeys.includes(e.key)) {
-        $(flipbookRef.current).turn("previous");
-      } else if (rightKeys.includes(e.key)) {
-        $(flipbookRef.current).turn("next");
-      }
-
-      if (e.key === "Enter" && searchResults.length > 0) {
-        const nextIndex = (currentResultIndex + 1) % searchResults.length;
-        $(flipbookRef.current).turn("page", searchResults[nextIndex]);
-        setCurrentResultIndex(nextIndex);
-      }
-    };
-
-    useEffect(() => {
-      const fetchPdf = async () => {
-        if (pdfUrl) {
-          const pdf = await loadPdfDocument(pdfUrl);
-          setPdfDocument(pdf);
-          extractTextFromPdf(pdf);
-        }
-      };
-
-      fetchPdf();
-    }, [pdfUrl]);
-
-    useEffect(() => {
-      if (pdfDocument && flipbookRef.current) {
-        renderPdfToFlipbook(pdfDocument);
-      }
-    }, [pdfDocument]);
-
-    return (
+  return (
+    <div
+      className="flipbook-pdf-viewer"
+      ref={containerRef}
+      onKeyDown={handleKeyPress}
+      tabIndex="0"
+    >
+      <BookViewerSidebar
+        pages={pageImages}
+        onPageClick={handlePageClick}
+        currentPage={currentPage} // Pass current page to the sidebar
+      />
       <div
-        className="flipbook-pdf-viewer"
-        ref={containerRef}
-        onKeyDown={handleKeyPress}
-        tabIndex="0"
+        className={`flipbook-magazine-viewport ${
+          isMagnifyEnabled ? "zoomer" : ""
+        }`}
       >
-        <BookViewerSidebar
-          pages={pageImages}
-          onPageClick={handlePageClick}
-          currentPage={currentPage} // Pass current page to the sidebar
-        />
-        <div
-          className={`flipbook-magazine-viewport ${
-            isMagnifyEnabled ? "zoomer" : ""
-          }`}
-        >
-          <div ref={flipbookRef} className="flipbook-magazine"></div>
-        </div>
-
-        <button
-          className="flipbook-nav-button previous"
-          onClick={() => $(flipbookRef.current).turn("previous")}
-        >
-          <img src={previousIcon} alt="Previous" style={styles.icon} />
-        </button>
-        <button
-          className="flipbook-nav-button next"
-          onClick={() => $(flipbookRef.current).turn("next")}
-        >
-          <img src={nextIcon} alt="Next" style={styles.icon} />
-        </button>
-
-        <Toolbar
-          toggleFullscreen={toggleFullscreen}
-          isFullscreen={isFullscreen}
-          onToggleMagnify={toggleMagnify}
-          isMagnifyEnabled={isMagnifyEnabled}
-          searchTerm={searchTerm}
-          onSearchChange={(newTerm) => {
-            setSearchTerm(newTerm);
-            handleSearch();
-          }}
-        />
+        <div ref={flipbookRef} className="flipbook-magazine"></div>
       </div>
-    );
-  };
 
-  const styles = {
-    icon: {
-      width: "24px",
-      height: "24px",
-    },
-  };
+      <button
+        className="flipbook-nav-button previous"
+        onClick={() => $(flipbookRef.current).turn("previous")}
+      >
+        <img src={previousIcon} alt="Previous" style={styles.icon} />
+      </button>
+      <button
+        className="flipbook-nav-button next"
+        onClick={() => $(flipbookRef.current).turn("next")}
+      >
+        <img src={nextIcon} alt="Next" style={styles.icon} />
+      </button>
 
-  export default BookViewer;
+      <Toolbar
+        toggleFullscreen={toggleFullscreen}
+        isFullscreen={isFullscreen}
+        onToggleMagnify={toggleMagnify}
+        isMagnifyEnabled={isMagnifyEnabled}
+        searchTerm={searchTerm}
+        onSearchChange={(newTerm) => {
+          setSearchTerm(newTerm);
+          handleSearch();
+        }}
+      />
+    </div>
+  );
+};
+
+const styles = {
+  icon: {
+    width: "24px",
+    height: "24px",
+  },
+};
+
+export default BookViewer;
