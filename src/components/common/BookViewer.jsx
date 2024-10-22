@@ -54,8 +54,9 @@ const BookViewer = ({ pdfUrl }) => {
     const flipbook = $(flipbookRef.current);
     flipbook.empty();
     const pages = [];
-    const scaleFactor = 1.25;
+    const scaleFactor = 1.55;
     const initialLoadPages = 10;
+    let firstPageWidth, firstPageHeight, contextScale;
 
     const renderPage = async (pageIndex) => {
       const page = await pdf.getPage(pageIndex + 1);
@@ -64,11 +65,17 @@ const BookViewer = ({ pdfUrl }) => {
       const width = viewport.width;
       const height = viewport.height;
 
+      if (pageIndex === 0) {
+        // Store the width and height of the first page
+        firstPageWidth = width;
+        firstPageHeight = height;
+        console.log(`Page ${pageIndex + 1} - Width: ${width}, Height: ${height}`);
+        console.log(`Page ${pageIndex + 1} - firstPageWidth: ${width}, firstPageHeight: ${height}`);
+      }
+
       // Set height and width of the PDF page
       setPdfHeight(height);
       setPdfWidth(width);
-
-      console.log(`Page ${pageIndex + 1} - Width: ${width}, Height: ${height}`);
 
       const scale = window.devicePixelRatio || 1;
       const canvas = document.createElement("canvas");
@@ -77,6 +84,12 @@ const BookViewer = ({ pdfUrl }) => {
       canvas.height = viewport.height * scale;
       canvas.width = viewport.width * scale;
       context.scale(scale, scale);
+      
+
+      if (pageIndex === 0) {
+        contextScale = scale;
+        console.log(`Canvas ${pageIndex + 1} - w: ${canvas.width}, h: ${canvas.height}`);
+      }
 
       await page.render({
         canvasContext: context,
@@ -108,8 +121,8 @@ const BookViewer = ({ pdfUrl }) => {
     }
 
     flipbook.turn({
-      width: 922 * scaleFactor,
-      height: 600 * scaleFactor,
+      width: firstPageWidth * contextScale,  // Use the first page's width
+      height: firstPageHeight * contextScale,  // Use the first page's height
       autoCenter: true,
       display: "double",
       elevation: 50,
