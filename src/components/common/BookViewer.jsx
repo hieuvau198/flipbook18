@@ -23,6 +23,17 @@ const BookViewer = ({ pdfUrl }) => {
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
   const { setIsRenderingFlipbook } = usePdf();
 
+  const [scale, setScale] = useState(1); // Thêm state cho zoom
+  const startPosition = useRef({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const isDragging = useRef(false);
+
+  const initialState = useRef({
+    scale: 1,
+    position: { x: 0, y: 0 },
+    isFullscreen: false,
+  });
+
   const toggleMagnify = () => {
     setIsMagnifyEnabled((prev) => !prev);
   };
@@ -53,7 +64,7 @@ const BookViewer = ({ pdfUrl }) => {
     const flipbook = $(flipbookRef.current);
     flipbook.empty();
     const pages = [];
-    const scaleFactor = 1.25;
+    const scaleFactor = 1.3;
     const initialLoadPages = 10;
 
     const deviceHeight = window.innerHeight;
@@ -123,7 +134,6 @@ const BookViewer = ({ pdfUrl }) => {
     };
 
     loadRemainingPages();
-    
   };
 
   const handleSearch = () => {
@@ -159,6 +169,45 @@ const BookViewer = ({ pdfUrl }) => {
       $(flipbookRef.current).turn("page", searchResults[nextIndex]);
       setCurrentResultIndex(nextIndex);
     }
+
+    // Điều khiển Alt + 0 để reset view
+    if (e.altKey && e.key === "0") {
+      resetView(); // Gọi hàm reset view
+    }
+
+    // Điều khiển Alt + + để zoom in
+    if (e.altKey && (e.key === "+" || e.key === "=")) {
+      e.preventDefault(); // Ngăn chặn hành vi mặc định của trình duyệt
+      handleZoomIn(); // Gọi hàm zoom in
+    }
+
+    // Điều khiển Alt + - để zoom out
+    if (e.altKey && (e.key === "-" || e.key === "_")) {
+      e.preventDefault(); // Ngăn chặn hành vi mặc định của trình duyệt
+      handleZoomOut(); // Gọi hàm zoom out
+    }
+
+    if (e.key === "F" || e.key === "f") {
+      toggleFullscreen();
+    }
+  };
+
+  // Hàm reset trạng thái
+  const resetView = () => {
+    setScale(initialState.current.scale);
+    setPosition(initialState.current.position);
+    if (isFullscreen) {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+  // Zoom In và Zoom Out
+  const handleZoomIn = () => {
+    setScale((prevScale) => Math.min(prevScale + 0.1, 2)); // Giới hạn zoom tối đa là 2
+  };
+
+  const handleZoomOut = () => {
+    setScale((prevScale) => Math.max(prevScale - 0.1, 0.5)); // Giới hạn zoom tối thiểu là 0.5
   };
 
   useEffect(() => {
@@ -186,7 +235,7 @@ const BookViewer = ({ pdfUrl }) => {
     return () => {
       setIsRenderingFlipbook(false); // Set flipbook rendering to false when the component unmounts (i.e., closed)
     };
-  }, []);  
+  }, []);
 
   return (
     <div
@@ -204,6 +253,10 @@ const BookViewer = ({ pdfUrl }) => {
         className={`flipbook-magazine-viewport ${
           isMagnifyEnabled ? "zoomer" : ""
         }`}
+        style={{
+          transform: `scale(${scale}) translate(${position.x}px, ${position.y}px)`, // Zoom và Pan
+          transition: "transform 0.3s ease",
+        }}
       >
         <div ref={flipbookRef} className="flipbook-magazine"></div>
       </div>
@@ -231,6 +284,10 @@ const BookViewer = ({ pdfUrl }) => {
           setSearchTerm(newTerm);
           handleSearch();
         }}
+        handleZoomIn={handleZoomIn} // Nút Zoom In
+        handleZoomOut={handleZoomOut} // Nút Zoom Out
+        handleResetView={resetView}
+        
       />
     </div>
   );
