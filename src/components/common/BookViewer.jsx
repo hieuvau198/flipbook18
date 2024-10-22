@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Toolbar from "./Toolbar.jsx";
 import BookViewerSidebar from "./BookViewerSideBar.jsx";
+import { usePdf } from "../../contexts/PdfContext.jsx";
 import previousIcon from "../../assets/icons/previous.svg";
 import nextIcon from "../../assets/icons/next.svg";
 import { loadPdfDocument } from "../../utils/pdfUtils.js";
@@ -20,6 +21,7 @@ const BookViewer = ({ pdfUrl }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [currentResultIndex, setCurrentResultIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(1); // Track the current page
+  const { setIsRenderingFlipbook } = usePdf();
 
   const toggleMagnify = () => {
     setIsMagnifyEnabled((prev) => !prev);
@@ -47,11 +49,17 @@ const BookViewer = ({ pdfUrl }) => {
   };
 
   const renderPdfToFlipbook = async (pdf) => {
+    // setIsRenderingFlipbook(true);
     const flipbook = $(flipbookRef.current);
     flipbook.empty();
     const pages = [];
     const scaleFactor = 1.25;
     const initialLoadPages = 10;
+
+    const deviceHeight = window.innerHeight;
+    const deviceWidth = window.innerWidth;
+
+    console.log("Device Height x Width: ", deviceHeight, " x ", deviceWidth);
 
     const renderPage = async (pageIndex) => {
       const page = await pdf.getPage(pageIndex + 1);
@@ -115,8 +123,8 @@ const BookViewer = ({ pdfUrl }) => {
     };
 
     loadRemainingPages();
+    
   };
-  
 
   const handleSearch = () => {
     const results = [];
@@ -170,6 +178,15 @@ const BookViewer = ({ pdfUrl }) => {
       renderPdfToFlipbook(pdfDocument);
     }
   }, [pdfDocument]);
+
+  useEffect(() => {
+    setIsRenderingFlipbook(true); // Set flipbook rendering to true when the component mounts
+
+    // Cleanup function runs when the component unmounts
+    return () => {
+      setIsRenderingFlipbook(false); // Set flipbook rendering to false when the component unmounts (i.e., closed)
+    };
+  }, []);  
 
   return (
     <div

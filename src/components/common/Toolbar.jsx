@@ -12,7 +12,7 @@ function Toolbar({
   onToggleMagnify,
   isMagnifyEnabled,
   searchTerm, // Add search term prop
-  onSearchChange // Add search change handler prop
+  onSearchChange, // Add search change handler prop
 }) {
   const [isToggled, setIsToggled] = useState(false);
   const [isMagnifyToggled, setIsMagnifyToggled] = useState(isMagnifyEnabled);
@@ -60,13 +60,13 @@ Toolbar.propTypes = {
   onToggleMagnify: PropTypes.func.isRequired,
   isMagnifyEnabled: PropTypes.bool.isRequired,
   searchTerm: PropTypes.string.isRequired, // Added prop for search term
-  onSearchChange: PropTypes.func.isRequired // Added prop for search change handler
+  onSearchChange: PropTypes.func.isRequired, // Added prop for search change handler
 };
 
 const styles = {
   icon: {
     width: '24px',
-    height: '24px',
+    height: '20px',
   },
 };
 

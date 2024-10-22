@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/authContext";
 import { logout } from "../../firebase/auth";
 import { FaBook } from "react-icons/fa";
+import { usePdf } from "../../contexts/PdfContext";
 import "../../styles/App.css";
 
 const Header = () => {
+  const { isRenderingFlipbook } = usePdf();
   const navigate = useNavigate();
   const { userLoggedIn, currentUser } = useAuth();
   const [error, setError] = React.useState(null);
@@ -34,6 +36,8 @@ const Header = () => {
     // Cleanup event listener on unmount
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollTop]);
+
+  
 
   const { role } = useAuth();
 
@@ -78,7 +82,9 @@ const Header = () => {
   };
 
   return (
-    <nav
+    
+    !isRenderingFlipbook && (
+      <nav
       className={`app-header ${
         isScrolled ? "scrolled" : ""
       } flex items-center justify-between px-4 w-full z-20 fixed top-0 left-0 h-16 border-b transition-all`}
@@ -157,6 +163,7 @@ const Header = () => {
         )}
       </div>
     </nav>
+    )
   );
 };
 

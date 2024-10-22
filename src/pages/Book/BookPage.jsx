@@ -10,6 +10,7 @@ import "../../styles/App.css";
 
 
 const BookPage = () => {
+
   const [searchParams] = useSearchParams();
   const b = searchParams.get("b") || "";
 
@@ -217,6 +218,7 @@ const BookPage = () => {
         <div className="">
           {/* Centered and responsive PDF viewer */}
           <div className="">
+            
             <BookViewer pdfUrl={pdfData.url} className="read-pdf-viewer" />
           </div>
         </div>
