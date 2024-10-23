@@ -66,6 +66,8 @@ const BookViewer = ({ pdfUrl }) => {
     const pages = [];
     const scaleFactor = 1.3;
     const initialLoadPages = 10;
+    let firstPage = null;
+    const dpr = window.devicePixelRatio || 1;
 
     const deviceHeight = window.innerHeight;
     const deviceWidth = window.innerWidth;
@@ -74,15 +76,19 @@ const BookViewer = ({ pdfUrl }) => {
 
     const renderPage = async (pageIndex) => {
       const page = await pdf.getPage(pageIndex + 1);
-      const viewport = page.getViewport({ scale: scaleFactor });
-
-      const scale = window.devicePixelRatio || 1;
+      const viewport = page.getViewport({ scale: dpr });
+      
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
 
-      canvas.height = viewport.height * scale;
-      canvas.width = viewport.width * scale;
-      context.scale(scale, scale);
+      canvas.height = viewport.height * dpr;
+      canvas.width = viewport.width * dpr;
+      context.scale(dpr, dpr);
+
+      if(pageIndex === 0){
+        firstPage = viewport;
+      }
+        
 
       await page.render({
         canvasContext: context,
@@ -113,19 +119,22 @@ const BookViewer = ({ pdfUrl }) => {
       await renderPage(i);
     }
 
-    flipbook.turn({
-      width: 922 * scaleFactor,
-      height: 600 * scaleFactor,
-      autoCenter: true,
-      display: "double",
-      elevation: 50,
-      gradients: true,
-      when: {
-        turned: (event, page) => {
-          setCurrentPage(page);
+    if(firstPage){
+      flipbook.turn({
+        width: firstPage.width * dpr * 2,
+        height: firstPage.height * dpr,
+        autoCenter: true,
+        display: "double",
+        elevation: 50,
+        gradients: true,
+        when: {
+          turned: (event, page) => {
+            setCurrentPage(page);
+          },
         },
-      },
-    });
+      });
+    }
+    
 
     const loadRemainingPages = async () => {
       for (let i = initialLoadPages; i < pdf.numPages; i++) {
