@@ -8,7 +8,6 @@ import { loadPdfDocument } from "../../utils/pdfUtils.js";
 import "../../assets/css/flipbook.css";
 import $ from "jquery";
 
-
 const BookViewer = ({ pdfUrl }) => {
   const containerRef = useRef(null);
   const flipbookRef = useRef(null);
@@ -59,7 +58,6 @@ const BookViewer = ({ pdfUrl }) => {
     }
     setTextPages(pagesText);
   };
-  
 
   const renderPdfToFlipbook = async (pdf) => {
     // setIsRenderingFlipbook(true);
